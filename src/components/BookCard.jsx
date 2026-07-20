@@ -1,10 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Book, Clock } from 'lucide-react';
 
 const BookCard = ({ book }) => {
     return (
-        <Link to={`/reader/${book.id}`} className="block">
+        <Link href={`/reader/${book.id}`} className="block">
             <div className="bg-black/30 rounded-lg p-4 hover:bg-black/40 transition-colors group">
                 <div className="relative mb-4 aspect-[3/4] overflow-hidden rounded-lg bg-black/50">
                     {book.coverImage ? (

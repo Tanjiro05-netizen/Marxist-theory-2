@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
-import './WhatIfAnalysis.css';
 
 const WhatIfAnalysis = ({ dataType = 'economic', onSentimentChange = () => {}, inline = false }) => {
     const [isOpen, setIsOpen] = useState(inline);

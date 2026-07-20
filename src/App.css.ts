@@ -265,6 +265,49 @@ export const guestSubtitle = style({
   maxWidth: '600px',
 });
 
+export const statsRow = style({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(4, 1fr)',
+  gap: vars.space.md,
+  marginBottom: vars.space.xxl,
+  '@media': {
+    'screen and (max-width: 640px)': {
+      gridTemplateColumns: 'repeat(2, 1fr)',
+    },
+  },
+});
+
+export const statCard = style({
+  textAlign: 'center',
+  padding: vars.space.lg,
+  background: vars.color.surfaceSoft,
+  border: vars.border.subtle,
+  borderRadius: vars.radius.lg,
+});
+
+export const statNumber = style({
+  fontFamily: vars.font.display,
+  fontSize: '36px',
+  fontWeight: 600,
+  letterSpacing: '-0.02em',
+  color: vars.color.accent,
+  lineHeight: 1,
+  marginBottom: vars.space.xxs,
+  '@media': {
+    'screen and (max-width: 640px)': {
+      fontSize: '28px',
+    },
+  },
+});
+
+export const statLabel = style({
+  fontFamily: vars.font.mono,
+  fontSize: '11px',
+  letterSpacing: '0.06em',
+  textTransform: 'uppercase',
+  color: vars.color.textMuted,
+});
+
 export const guestGrid = style({
   display: 'grid',
   gridTemplateColumns: 'repeat(3, 1fr)',

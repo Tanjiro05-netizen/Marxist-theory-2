@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Book, BookOpen, FileText, GraduationCap, Library, Loader2, Search, Sparkles } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 
@@ -197,7 +197,7 @@ const Bibliography = () => {
                             <div className="grid gap-3 md:grid-cols-2">
                                 {results.glossary.map((entry) => (
                                     <ResultCard key={entry.id} source="glossary">
-                                        <Link to={`/glossary/${encodeURIComponent(entry.term)}`} state={{ from: 'bibliography' }} className="group">
+                                        <Link href={`/glossary/${encodeURIComponent(entry.term)}?from=bibliography`} className="group">
                                             <h4 className="text-base font-medium text-white group-hover:text-red-300">{entry.term}</h4>
                                             <span className="mt-1 inline-block rounded-full border border-zinc-700 px-2 py-0.5 text-[11px] text-zinc-400">{entry.type}</span>
                                             <p className="mt-2 line-clamp-3 text-sm leading-6 text-zinc-400">{entry.explanation}</p>
@@ -217,7 +217,7 @@ const Bibliography = () => {
                             <div className="grid gap-3 md:grid-cols-2">
                                 {results.theory.map((article) => (
                                     <ResultCard key={article.id} source="theory">
-                                        <Link to={`/theory/article/${article.slug}`} className="group">
+                                        <Link href={`/theory/article/${article.slug}`} className="group">
                                             <h4 className="text-base font-medium text-white group-hover:text-red-300">{article.title}</h4>
                                             <div className="mt-1 flex flex-wrap gap-2">
                                                 {article.collection && <span className="rounded-full border border-zinc-700 px-2 py-0.5 text-[11px] text-zinc-400">{article.collection}</span>}
@@ -249,7 +249,7 @@ const Bibliography = () => {
                                         </div>
                                         <p className="mt-2 line-clamp-3 text-sm leading-6 text-zinc-400">{res.excerpt || 'No description available.'}</p>
                                         {res.digital_library_book_id && (
-                                            <Link to={`/book/${res.digital_library_book_id}`} className="mt-2 inline-flex items-center gap-1.5 text-xs text-red-300 hover:text-red-200">
+                                            <Link href={`/book/${res.digital_library_book_id}`} className="mt-2 inline-flex items-center gap-1.5 text-xs text-red-300 hover:text-red-200">
                                                 <BookOpen className="h-3 w-3" /> Open in reader
                                             </Link>
                                         )}
@@ -268,7 +268,7 @@ const Bibliography = () => {
                             <div className="grid gap-3 md:grid-cols-2">
                                 {results.library.map((book) => (
                                     <ResultCard key={book.id} source="library">
-                                        <Link to={`/book/${book.id}`} className="group">
+                                        <Link href={`/book/${book.id}`} className="group">
                                             <h4 className="text-base font-medium text-white group-hover:text-red-300">{book.title}</h4>
                                             <div className="mt-1 flex flex-wrap gap-2">
                                                 {book.author && <span className="text-xs text-zinc-500">{book.author}</span>}

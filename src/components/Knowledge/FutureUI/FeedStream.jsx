@@ -1,82 +1,266 @@
-import React, { useState } from 'react';
-import { Video, Edit3, FileText, Compass, Loader2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Edit3, MessageSquare, HelpCircle, Send, Loader2, AlertCircle, CheckCircle, ChevronDown, X } from 'lucide-react';
 import FeedCard from './FeedCard';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
+import { knowledgeApiService } from '../api';
+import { useTopics } from '../hooks/useTopics';
 
-const FeedStream = ({ questions, loading, user, profile, activeTab, onTabChange }) => {
-  // Controlled by parent
+const TABS = [
+  { key: 'recommend', label: 'Recommended' },
+  { key: 'follow',    label: 'Following' },
+  { key: 'hot',       label: 'Hot' },
+];
+
+const inputCls = "w-full bg-[#090909] border border-white/[0.06] rounded-xl px-4 py-3 text-[13px] text-white/80 placeholder-white/20 focus:outline-none focus:border-[rgba(200,30,30,0.4)] transition-all font-[Hanken_Grotesk,sans-serif]";
+const labelCls = "block font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-[0.1em] text-white/35 mb-2";
+
+const FeedStream = ({ questions, loading, user, profile, activeTab, onTabChange, viewMode, isFollowing, onToggleFollow, onVote, isFavorited, onToggleFavorite, hasMore, onLoadMore }) => {
+  const [expanded, setExpanded] = useState(false);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [topicId, setTopicId] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const { topics, loading: topicsLoading } = useTopics(knowledgeApiService);
+  const titleRef = useRef(null);
+
+  useEffect(() => {
+    if (expanded && titleRef.current) titleRef.current.focus();
+  }, [expanded]);
+
+  const resetForm = () => {
+    setTitle(''); setContent(''); setTopicId('');
+    setError(null); setSuccess(false); setExpanded(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    if (title.length < 10) { setError('Title must be at least 10 characters'); return; }
+    if (title.length > 300) { setError('Title must be less than 300 characters'); return; }
+    if (content.length < 20) { setError('Description must be at least 20 characters'); return; }
+    setSubmitting(true);
+    const result = await knowledgeApiService.createQuestion(
+      { title: title.trim(), content: content.trim(), topic_id: topicId || null },
+      user.id
+    );
+    if (result.success) { setSuccess(true); }
+    else { setError(result.error?.message || 'Failed to submit question'); }
+    setSubmitting(false);
+  };
 
   return (
     <>
-      {/* Top Banner Carousel/Widgets */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-        <div className="md:col-span-2 bg-gradient-to-r from-gray-900/50 to-[#2a0a0a] border border-gray-800 rounded-sm p-3 relative overflow-hidden h-32 flex flex-col justify-end group cursor-pointer hover:border-red-500/30 transition-colors">
-          <div className="absolute top-2 left-2 bg-red-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold uppercase">Featured</div>
-          <h3 className="text-lg font-bold text-white relative z-10 leading-tight">Dialectical Materialism in the AI Age</h3>
-          <p className="text-xs text-red-200 relative z-10 mt-1">Exclusive analysis on automated production.</p>
-          <Video className="absolute right-3 top-3 text-white/20 w-8 h-8 group-hover:text-white/40 transition-colors" />
+      {/* ── Page Header ── */}
+      <div className="relative mb-6 pb-5 border-b border-white/[0.06] overflow-hidden">
+        {/* Ambient glow */}
+        <div className="pointer-events-none absolute -top-10 -left-10 w-64 h-64 rounded-full bg-[rgba(200,30,30,0.06)] blur-3xl" />
+        <p className="relative font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-[0.16em] text-[#c81e1e] opacity-70 mb-2">
+          Community · Knowledge Q&amp;A
+        </p>
+        <div className="relative flex items-end justify-between gap-4 flex-wrap">
+          <h1 className="font-[Cormorant_Garamond,Georgia,serif] text-[40px] font-[500] leading-none tracking-[-0.03em] text-white">
+            Knowledge Base
+          </h1>
+          <Link href="/knowledge/ask"
+            className="flex items-center gap-2 bg-[rgba(200,30,30,0.12)] hover:bg-[rgba(200,30,30,0.2)] border border-[rgba(200,30,30,0.28)] text-[#c81e1e] px-4 py-2 rounded-xl text-[11px] font-[JetBrains_Mono,monospace] uppercase tracking-[0.08em] transition-all"
+          >
+            <Edit3 className="w-3.5 h-3.5" />
+            Ask a Question
+          </Link>
         </div>
-        <div className="md:col-span-1 bg-gray-900/50 border border-gray-800 rounded-sm p-3 flex flex-col justify-between h-32 md:h-auto">
-           <div>
-             <div className="text-[10px] text-slate-500 uppercase font-bold mb-1">Daily Challenge</div>
-             <div className="text-xs font-bold text-white leading-tight">Define 'Surplus Value' in 100 words</div>
-           </div>
-           <button className="text-[10px] bg-white/10 hover:bg-white/20 text-center py-1 rounded transition-colors text-slate-300">Start Now</button>
-        </div>
+        <p className="relative mt-2 text-[13px] text-white/40 font-[300] leading-relaxed max-w-xl">
+          Ask, answer, and explore questions on Marxist theory, history, economics, and practice.
+        </p>
       </div>
 
-      {/* Post Creator (Compact) */}
-      <div className="bg-gray-900/50 border border-gray-800 rounded-sm p-3">
-        <div className="flex gap-2">
-           <div className="w-8 h-8 rounded bg-slate-800 shrink-0 overflow-hidden">
-              <img src={profile?.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=User"} className="w-full h-full" alt="avatar" />
-           </div>
-           <Link to="/knowledge/ask" className="flex-1 bg-white/5 rounded border border-white/5 p-2 hover:bg-white/10 transition-colors cursor-text">
-             <span className="text-slate-500 text-xs font-medium block pt-0.5">Share your insights or ask a question...</span>
-           </Link>
-        </div>
-        <div className="flex items-center justify-between pt-2 mt-2 border-t border-white/5">
-          <div className="flex gap-4">
-             <Link to="/knowledge/ask" className="flex items-center gap-1.5 text-slate-400 hover:text-red-400 text-xs font-medium transition-colors"><Edit3 className="w-3 h-3" /> Answer</Link>
-             <button className="flex items-center gap-1.5 text-slate-400 hover:text-red-400 text-xs font-medium transition-colors"><Video className="w-3 h-3" /> Video</button>
-             <button className="flex items-center gap-1.5 text-slate-400 hover:text-red-400 text-xs font-medium transition-colors"><FileText className="w-3 h-3" /> Article</button>
+      {/* ── Post Creator ── */}
+      <div className="bg-[#0f0f0f] border border-white/[0.06] rounded-2xl p-4">
+        {success ? (
+          <div className="flex items-center gap-3 py-2">
+            <CheckCircle size={18} className="text-emerald-500 shrink-0" />
+            <p className="text-white/60 text-[13px] font-[Hanken_Grotesk,sans-serif] flex-1">
+              Question submitted! It will appear once approved.
+            </p>
+            <button onClick={resetForm} className="text-white/30 hover:text-white/60 text-[11px] font-[JetBrains_Mono,monospace] uppercase tracking-[0.06em] transition-colors">
+              Dismiss
+            </button>
           </div>
-        </div>
+        ) : !expanded ? (
+          <>
+            <div className="flex gap-3 items-center">
+              <div className="w-9 h-9 rounded-full bg-white/[0.06] shrink-0 overflow-hidden border border-white/[0.08]">
+                <img
+                  src={profile?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.email || 'User'}`}
+                  className="w-full h-full object-cover"
+                  alt="avatar"
+                />
+              </div>
+              <button
+                onClick={() => setExpanded(true)}
+                className="flex-1 bg-white/[0.03] rounded-xl border border-white/[0.06] px-4 py-2.5 hover:bg-white/[0.06] hover:border-white/[0.1] transition-all text-left"
+              >
+                <span className="text-white/30 text-xs font-[Hanken_Grotesk,sans-serif]">
+                  Share your insights or ask a question…
+                </span>
+              </button>
+            </div>
+            <div className="flex items-center gap-4 pt-2.5 mt-2.5 border-t border-white/[0.04]">
+              <button
+                onClick={() => setExpanded(true)}
+                className="flex items-center gap-1.5 text-white/40 hover:text-[#c81e1e] text-[11px] font-[JetBrains_Mono,monospace] uppercase tracking-[0.06em] transition-colors"
+              >
+                <Edit3 className="w-3 h-3" /> Answer
+              </button>
+              <button
+                onClick={() => setExpanded(true)}
+                className="flex items-center gap-1.5 text-white/40 hover:text-[#c81e1e] text-[11px] font-[JetBrains_Mono,monospace] uppercase tracking-[0.06em] transition-colors"
+              >
+                <HelpCircle className="w-3 h-3" /> Question
+              </button>
+              <button
+                onClick={() => setExpanded(true)}
+                className="flex items-center gap-1.5 text-white/40 hover:text-[#c81e1e] text-[11px] font-[JetBrains_Mono,monospace] uppercase tracking-[0.06em] transition-colors"
+              >
+                <MessageSquare className="w-3 h-3" /> Discuss
+              </button>
+            </div>
+          </>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-[0.12em] text-[#c81e1e] opacity-70">Ask a Question</span>
+              <button type="button" onClick={resetForm} className="text-white/25 hover:text-white/60 transition-colors"><X size={16} /></button>
+            </div>
+
+            {error && (
+              <div className="flex items-center gap-2 bg-[rgba(200,30,30,0.1)] border border-[rgba(200,30,30,0.25)] text-[#c81e1e] px-3 py-2 rounded-xl text-[12px]">
+                <AlertCircle size={14} className="shrink-0" /> {error}
+              </div>
+            )}
+
+            {/* Topic */}
+            <div>
+              <label className={labelCls}>Topic <span className="text-white/20 normal-case tracking-normal">— optional</span></label>
+              <select value={topicId} onChange={e => setTopicId(e.target.value)} disabled={topicsLoading} className={`${inputCls} appearance-none cursor-pointer`}>
+                <option value="">Select a topic…</option>
+                {topics.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+              </select>
+            </div>
+
+            {/* Title */}
+            <div>
+              <label className={labelCls}>Question Title <span className="text-[#c81e1e]">*</span></label>
+              <input
+                ref={titleRef}
+                type="text"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                placeholder="What do you want to know?"
+                className={inputCls}
+                maxLength={300}
+                disabled={submitting}
+              />
+              <div className="flex items-center justify-between mt-1 px-0.5">
+                <span className={`font-[JetBrains_Mono,monospace] text-[9px] ${title.length > 0 && title.length < 10 ? 'text-[#c81e1e]' : 'text-white/20'}`}>
+                  {title.length > 0 && title.length < 10 ? `${10 - title.length} more characters needed` : 'Min 10 characters'}
+                </span>
+                <span className={`font-[JetBrains_Mono,monospace] text-[9px] ${title.length > 280 ? 'text-[#c81e1e]' : 'text-white/20'}`}>{title.length}/300</span>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className={labelCls}>Description <span className="text-[#c81e1e]">*</span></label>
+              <textarea
+                value={content}
+                onChange={e => setContent(e.target.value)}
+                placeholder="Provide more details… Markdown is supported."
+                className={`${inputCls} min-h-[120px] resize-y`}
+                disabled={submitting}
+              />
+              <div className="flex items-center justify-between mt-1 px-0.5">
+                <span className={`font-[JetBrains_Mono,monospace] text-[9px] ${content.length > 0 && content.length < 20 ? 'text-[#c81e1e]' : 'text-white/20'}`}>
+                  {content.length > 0 && content.length < 20 ? `${20 - content.length} more characters needed` : 'Min 20 characters'}
+                </span>
+                <span className={`font-[JetBrains_Mono,monospace] text-[9px] ${content.length < 20 && content.length > 0 ? 'text-[#c81e1e]' : 'text-white/20'}`}>{content.length}/20 min</span>
+              </div>
+            </div>
+
+            {/* Submit */}
+            <div className="flex items-center justify-between pt-3 border-t border-white/[0.05]">
+              <span className="font-[JetBrains_Mono,monospace] text-[9px] text-white/20 uppercase tracking-wider">Reviewed before publishing</span>
+              <button
+                type="submit"
+                disabled={submitting || title.length < 10 || content.length < 20}
+                className="flex items-center gap-2 bg-[#c81e1e] hover:bg-[#e02424] text-white px-4 py-2 rounded-xl text-[11px] font-[JetBrains_Mono,monospace] uppercase tracking-[0.08em] transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:bg-[#c81e1e] shadow-[0_0_20px_rgba(200,30,30,0.2)] hover:shadow-[0_0_28px_rgba(200,30,30,0.35)]"
+              >
+                {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                Submit
+              </button>
+            </div>
+          </form>
+        )}
       </div>
 
-      {/* Navigation Tabs (Sticky) */}
-      <div className="bg-[#12131A]/95 backdrop-blur z-40 sticky top-28 border-b border-gray-800 pt-2">
-        <div className="flex items-center gap-4 px-2 text-xs font-bold">
-          <button onClick={() => onTabChange('recommend')} className={`pb-2 relative transition-colors ${activeTab === 'recommend' ? 'text-red-500' : 'text-slate-500 hover:text-slate-300'}`}>
-            Recommended
-            {activeTab === 'recommend' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-500"></div>}
-          </button>
-          <button onClick={() => onTabChange('follow')} className={`pb-2 relative transition-colors ${activeTab === 'follow' ? 'text-red-500' : 'text-slate-500 hover:text-slate-300'}`}>Following</button>
-          <button onClick={() => onTabChange('hot')} className={`pb-2 relative transition-colors ${activeTab === 'hot' ? 'text-red-500' : 'text-slate-500 hover:text-slate-300'}`}>Hot</button>
-          <span className="flex-1"></span>
-          <button className="text-slate-600 text-[10px] pb-2 flex items-center gap-1 hover:text-slate-400">Customize <Compass className="w-3 h-3"/></button>
+      {/* ── Navigation Tabs ── */}
+      <div className="bg-[#090909]/95 backdrop-blur z-30 sticky top-[104px]">
+        <div className="flex items-center gap-1.5 py-2">
+          {TABS.map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => onTabChange(tab.key)}
+              className={`px-4 py-1.5 rounded-full text-[11px] font-[JetBrains_Mono,monospace] uppercase tracking-[0.08em] transition-all ${
+                activeTab === tab.key
+                  ? 'bg-[rgba(200,30,30,0.15)] text-[#c81e1e] border border-[rgba(200,30,30,0.3)]'
+                  : 'text-white/30 hover:text-white/70 hover:bg-white/[0.04] border border-transparent'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
+        <div className="h-px bg-white/[0.06]" />
       </div>
 
-      {/* Feed List */}
+      {/* ── Feed List ── */}
       <div className="space-y-2">
         {loading ? (
-           <div className="py-12 flex justify-center text-red-500">
-               <Loader2 className="animate-spin w-6 h-6" />
-           </div>
+          <div className="py-16 flex justify-center">
+            <div className="w-6 h-6 rounded-full border-2 border-white/[0.12] border-t-[#c81e1e] animate-spin" />
+          </div>
         ) : questions && questions.length > 0 ? (
-           questions.map((item) => (
-             <FeedCard key={item.id} item={{...item, type: 'question'}} />
-           ))
+          questions.map((item) => (
+            <FeedCard
+              key={item.id}
+              item={{ ...item, type: 'question' }}
+              isFollowing={isFollowing}
+              onToggleFollow={onToggleFollow}
+              onVote={onVote}
+              isFavorited={isFavorited}
+              onToggleFavorite={onToggleFavorite}
+            />
+          ))
+        ) : viewMode === 'following' ? (
+          <div className="py-16 text-center space-y-2 bg-[#0f0f0f] border border-white/[0.06] rounded-2xl">
+            <p className="text-white/50 text-sm font-medium font-[Hanken_Grotesk,sans-serif]">No questions from followed topics yet.</p>
+            <p className="text-white/25 text-xs">Click a topic tag on any question to follow it.</p>
+          </div>
         ) : (
-           <div className="py-12 text-center text-slate-500 text-xs">
-               No questions found. Be the first to ask!
-           </div>
+          <div className="py-16 text-center bg-[#0f0f0f] border border-white/[0.06] rounded-2xl">
+            <p className="text-white/30 text-sm font-[Hanken_Grotesk,sans-serif]">No questions found. Be the first to ask!</p>
+          </div>
         )}
-        
-         <button className="w-full py-2 bg-gray-900/50 border border-gray-800 text-xs text-slate-500 hover:text-slate-300 rounded-sm hover:bg-white/5 transition-all">
-            Load More Content (R)
-         </button>
+
+        {hasMore && (
+          <button
+            onClick={onLoadMore}
+            className="w-full py-2.5 bg-[#0f0f0f] border border-white/[0.06] text-[11px] font-[JetBrains_Mono,monospace] uppercase tracking-[0.08em] text-white/25 hover:text-white/60 hover:bg-white/[0.04] rounded-2xl transition-all"
+          >
+            Load More
+          </button>
+        )}
       </div>
     </>
   );

@@ -5,10 +5,11 @@ export const header = style({
   position: 'fixed',
   top: 0,
   width: '100%',
+  height: '64px',
   zIndex: 50,
   background: vars.color.background,
   borderBottom: vars.border.subtle,
-  padding: `${vars.space.sm} 0`,
+  padding: `0`,
 });
 
 export const headerInner = style({
@@ -17,6 +18,7 @@ export const headerInner = style({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
+  height: '100%',
   padding: `0 ${vars.space.md}`,
 });
 
@@ -47,6 +49,15 @@ export const desktopNav = style({
 export const navRow = style({
   display: 'flex',
   alignItems: 'center',
+  overflowX: 'visible',
+  overflowY: 'visible',
+  flexWrap: 'nowrap',
+  scrollbarWidth: 'none',
+  selectors: {
+    '&::-webkit-scrollbar': {
+      display: 'none',
+    },
+  },
 });
 
 export const navLink = style({
@@ -191,6 +202,110 @@ export const iconButton = style({
   selectors: {
     '&:hover': {
       background: vars.color.surfaceSoft,
+      color: vars.color.text,
+    },
+  },
+});
+
+export const notificationWrap = style({
+  position: 'relative',
+});
+
+export const notificationBadge = style({
+  position: 'absolute',
+  top: '4px',
+  right: '3px',
+  minWidth: '16px',
+  height: '16px',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: vars.radius.pill,
+  background: vars.color.accent,
+  color: vars.color.text,
+  fontSize: '10px',
+  fontWeight: 700,
+  lineHeight: 1,
+  padding: '0 4px',
+});
+
+export const notificationPanel = style({
+  position: 'absolute',
+  right: 0,
+  top: 'calc(100% + 8px)',
+  width: '360px',
+  maxWidth: 'calc(100vw - 24px)',
+  maxHeight: '520px',
+  overflow: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
+  border: vars.border.subtle,
+  borderRadius: vars.radius.md,
+  background: vars.color.surface,
+  boxShadow: vars.shadow.panel,
+  zIndex: 80,
+});
+
+export const notificationPanelHeader = style({
+  minHeight: '46px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: vars.space.sm,
+  padding: `0 ${vars.space.md}`,
+  borderBottom: vars.border.subtle,
+  color: vars.color.text,
+  fontSize: '14px',
+  fontWeight: 700,
+});
+
+export const notificationList = style({
+  overflowY: 'auto',
+});
+
+export const notificationItem = style({
+  width: '100%',
+  display: 'block',
+  padding: `${vars.space.sm} ${vars.space.md}`,
+  border: 0,
+  borderBottom: vars.border.subtle,
+  background: 'transparent',
+  color: vars.color.textSoft,
+  textAlign: 'left',
+  cursor: 'pointer',
+  selectors: {
+    '&:hover': {
+      background: vars.color.surfaceSoft,
+      color: vars.color.text,
+    },
+  },
+});
+
+export const notificationItemUnread = style({
+  background: vars.color.accentWash,
+});
+
+export const notificationText = style({
+  display: 'block',
+  fontSize: '13px',
+  lineHeight: 1.35,
+});
+
+export const notificationMeta = style({
+  display: 'block',
+  marginTop: vars.space.xxs,
+  color: vars.color.textFaint,
+  fontSize: '11px',
+});
+
+export const notificationAction = style({
+  background: 'transparent',
+  border: 0,
+  color: vars.color.textMuted,
+  cursor: 'pointer',
+  fontSize: '12px',
+  selectors: {
+    '&:hover': {
       color: vars.color.text,
     },
   },

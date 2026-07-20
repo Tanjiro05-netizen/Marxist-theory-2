@@ -1,5 +1,11 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import {
+  buildAiProviders,
+  completeWithAiProviders,
+  parseJsonObjectFromText,
+  sourcesFromRecommendedResources,
+} from '../_shared/aiProviders.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -66,7 +72,7 @@ serve(async (req) => {
     // Fetch available resources for context
     const { data: resources } = await supabase
       .from('study_resources')
-      .select('title, type, author, category, excerpt')
+      .select('title, type, author, category, excerpt, digital_library_book_id')
       .limit(30)
 
     const { data: glossary } = await supabase
@@ -97,162 +103,87 @@ Key Concepts in Glossary:
 ${glossaryContext}
 `
 
-    // Try providers in order: DeepSeek → Qwen → Kimi
-    const providers = [
-      {
-        name: 'DeepSeek',
-        keyEnv: 'DEEPSEEK_API_KEY',
-        url: 'https://api.deepseek.com/chat/completions',
-        model: 'deepseek-chat',
-      },
-      {
-        name: 'Qwen',
-        keyEnv: 'DASHSCOPE_API_KEY',
-        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-        model: 'qwen-turbo',
-      },
-      {
-        name: 'Kimi',
-        keyEnv: 'KIMI_API_KEY',
-        url: 'https://api.moonshot.cn/v1/chat/completions',
-        model: 'moonshot-v1-8k',
-      },
-    ]
-
     const apiMessages = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user', content: userContext }
+      { role: 'system' as const, content: SYSTEM_PROMPT },
+      { role: 'user' as const, content: userContext }
     ]
 
-    let lastError: string | null = null
+    try {
+      const completion = await completeWithAiProviders({
+        providers: buildAiProviders(Deno.env),
+        messages: apiMessages,
+        maxTokens: 2048,
+        temperature: 0.55,
+        jsonMode: true,
+      })
 
-    for (const provider of providers) {
-      const apiKey = Deno.env.get(provider.keyEnv)
-      if (!apiKey) {
-        lastError = `${provider.name}: API key not configured`
-        continue
+      const studyPath = parseJsonObjectFromText(completion.content)
+
+      if (!studyPath.milestones || !Array.isArray(studyPath.milestones)) {
+        throw new Error('Invalid study path structure')
       }
 
-      try {
-        console.log(`Trying ${provider.name} for study path generation...`)
-        const response = await fetch(provider.url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({
-            model: provider.model,
-            messages: apiMessages,
-            max_tokens: 2048,
-            temperature: 0.7,
-          }),
-        })
-
-        if (!response.ok) {
-          const errText = await response.text()
-          lastError = `${provider.name}: ${response.status} - ${errText}`
-          console.error(lastError)
-          continue
-        }
-
-        const data = await response.json()
-        const rawContent = data.choices?.[0]?.message?.content
-
-        if (!rawContent) {
-          lastError = `${provider.name}: empty response`
-continue
-        }
-
-        // Parse JSON from response (handle potential markdown code blocks)
-        let jsonStr = rawContent.trim()
-        if (jsonStr.startsWith('```json')) {
-          jsonStr = jsonStr.slice(7)
-        } else if (jsonStr.startsWith('```')) {
-          jsonStr = jsonStr.slice(3)
-        }
-        if (jsonStr.endsWith('```')) {
-          jsonStr = jsonStr.slice(0, -3)
-        }
-        jsonStr = jsonStr.trim()
-
-        let studyPath
-        try {
-          studyPath = JSON.parse(jsonStr)
-        } catch (parseError) {
-          console.error('JSON parse error:', parseError)
-          // Try to extract JSON using regex
-          const jsonMatch = jsonStr.match(/\{[\s\S]*\}/)
-          if (jsonMatch) {
-            studyPath = JSON.parse(jsonMatch[0])
-          } else {
-            throw new Error('Could not parse JSON from response')
-          }
-        }
-
-        // Validate structure
-        if (!studyPath.milestones || !Array.isArray(studyPath.milestones)) {
-          throw new Error('Invalid study path structure')
-        }
-
-        // Optionally save to database
-        if (saveToUser && userId) {
-          try {
-            // Save each milestone
-            for (let i = 0; i < studyPath.milestones.length; i++) {
-              const milestone = studyPath.milestones[i]
-              await supabase.from('study_milestones').insert({
-                title: milestone.title,
-                chinese_title: milestone.title, // Store original in chinese_title
-                description: milestone.description,
-                sort_order: i,
-                ai_generated: true,
-                generated_for_user: userId,
-                key_concepts: milestone.key_concepts,
-                difficulty: milestone.difficulty,
-                estimated_days: milestone.estimated_days
-              })
-            }
-          } catch (dbError) {
-            console.error('Database save error:', dbError)
-            // Don't fail the request if save fails
-          }
-        }
-
-        return new Response(
-          JSON.stringify({ 
-            success: true, 
-            studyPath,
-            provider: provider.name
-          }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-        )
-      } catch (err) {
-        lastError = `${provider.name}: ${err.message}`
-        console.error(lastError)
-        continue
+      if (saveToUser && userId) {
+        await saveGeneratedMilestones(supabase, studyPath, userId)
       }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          studyPath,
+          provider: completion.provider,
+          model: completion.model,
+          sources: sourcesFromRecommendedResources(studyPath, resources || []),
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      )
+    } catch (error) {
+      const details = error instanceof Error ? error.message : String(error)
+      console.error(`Study path AI failed: ${details}`)
+
+      const fallbackPath = getFallbackStudyPath(level, interests)
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          studyPath: fallbackPath,
+          provider: 'fallback',
+          model: 'local-fallback',
+          sources: sourcesFromRecommendedResources(fallbackPath, resources || []),
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      )
     }
 
-    // All providers failed - return fallback study path
-    const fallbackPath = getFallbackStudyPath(level, interests)
-
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        studyPath: fallbackPath,
-        provider: 'fallback'
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-    )
-
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     )
   }
 })
+
+async function saveGeneratedMilestones(supabase: any, studyPath: any, userId: string) {
+  try {
+    for (let i = 0; i < studyPath.milestones.length; i++) {
+      const milestone = studyPath.milestones[i]
+      await supabase.from('study_milestones').insert({
+        title: milestone.title,
+        chinese_title: milestone.title,
+        description: milestone.description,
+        sort_order: i,
+        ai_generated: true,
+        generated_for_user: userId,
+        key_concepts: milestone.key_concepts,
+        difficulty: milestone.difficulty,
+        estimated_days: milestone.estimated_days
+      })
+    }
+  } catch (dbError) {
+    console.error('Database save error:', dbError)
+  }
+}
 
 function getFallbackStudyPath(level: string, interests: string[]): any {
   const basePath = {

@@ -1,56 +1,60 @@
 import React, { useState } from 'react';
-import { Menu, LogOut, BarChart, BookOpen, FileText, Home, BookMarked, LineChart, Users, Shield, MessageSquare, HelpCircle, ChevronDown } from 'lucide-react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Menu, LogOut, BarChart, BookOpen, FileText, Home, BookMarked, LineChart, Users, Shield, HelpCircle, ChevronDown, Newspaper, Radio } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
+import LanguageSwitcher from './LanguageSwitcher';
 import * as s from './Header.css.ts';
 
 const Header = () => {
     const { user, logout, isAdmin, canManagePolitics } = useAuth();
-    const { theme } = useTheme();
-    const navigate = useNavigate();
-    const location = useLocation();
+    const { t } = useTranslation();
+    const router = useRouter();
+    const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const isAdminUser = isAdmin();
     const canEditPolitics = canManagePolitics();
 
-    const isActive = (path) => location.pathname === path;
+    const isActive = (path) => pathname === path || pathname.startsWith(`${path}/`);
 
-    const handleLogout = async () => {
-        await logout();
-        navigate('/login');
+    const handleLogout = () => {
+        logout();
+        router.push('/login');
     };
     
     // All nav items - some are guest-accessible, others require login
     const allNavItems = [
-        { path: '/home', label: 'Home', icon: Home, guestAccessible: true },
+        { path: '/home', label: t('nav.home'), icon: Home, guestAccessible: true },
         {
-            label: 'Revolutionary Theory',
+            label: t('nav.theory'),
             icon: BookMarked,
             guestAccessible: false,
+            featureKey: 'theory',
             children: [
-                { path: '/theory', label: 'Read', description: 'Browse & read theory articles' },
-                { path: '/analysis', label: 'Analyze', description: 'Deep analysis tools & texts' },
+                { path: '/theory', label: t('nav.theoryRead'), description: t('nav.theoryReadDesc') },
+                { path: '/analysis', label: t('nav.theoryAnalyze'), description: t('nav.theoryAnalyzeDesc') },
             ],
         },
-        { path: '/digital-library', label: 'Digital Library', icon: BookOpen, guestAccessible: true },
-        { path: '/study', label: 'Study Center', icon: BarChart, guestAccessible: false },
-        { path: '/science-tech', label: 'Science & Tech', icon: FileText, guestAccessible: false },
-        { path: '/politics', label: 'Politics', icon: FileText, guestAccessible: false },
-        { path: '/visualizations', label: 'Data', icon: LineChart, guestAccessible: false },
-        { path: '/directory', label: 'Directory', icon: Users, guestAccessible: false },
-        { path: '/forum', label: 'Forum', icon: MessageSquare, guestAccessible: true },
-        { path: '/knowledge', label: 'Knowledge Q&A', icon: HelpCircle, guestAccessible: false }
+        { path: '/digital-library', label: t('nav.library'), icon: BookOpen, guestAccessible: true },
+        { path: '/study', label: t('nav.study'), icon: BarChart, guestAccessible: false, featureKey: 'study' },
+        { path: '/science-tech', label: t('nav.scienceTech'), icon: FileText, guestAccessible: false, featureKey: 'science-tech' },
+        { path: '/politics', label: t('nav.politics'), icon: FileText, guestAccessible: false, featureKey: 'politics' },
+        { path: '/substack', label: t('nav.substack'), icon: Newspaper, guestAccessible: true },
+        { path: '/visualizations', label: t('nav.data'), icon: LineChart, guestAccessible: false, featureKey: 'visualizations' },
+        { path: '/directory', label: t('nav.directory'), icon: Users, guestAccessible: false, featureKey: 'directory' },
+        { path: '/feed', label: t('nav.feed'), icon: Radio, guestAccessible: true, featureKey: 'feed' },
+        { path: '/knowledge', label: t('nav.knowledgeQA'), icon: HelpCircle, guestAccessible: false, featureKey: 'knowledge' }
     ];
     
-    // Show all nav items to everyone (guests see "Coming Soon" for restricted ones)
+    // Show all nav items to everyone; guests see member-only gates for restricted ones.
     const navItems = allNavItems;
     
     return (
         <header className={s.header}>
             <div className={s.headerInner}>
-                <Link to="/" className={s.logo}>
+                <Link href="/home" className={s.logo}>
                     Marxist.info
                 </Link>
                 
@@ -75,7 +79,7 @@ const Header = () => {
                                                 {item.children.map(child => (
                                                     <Link
                                                         key={child.path}
-                                                        to={isRestricted ? '/coming-soon' : child.path}
+                                                        href={isRestricted ? `/coming-soon?feature=${item.featureKey || ''}` : child.path}
                                                         className={`${s.dropdownItem} ${isActive(child.path) ? s.dropdownItemActive : ''}`}
                                                     >
                                                         <span className={s.dropdownItemLabel}>{child.label}</span>
@@ -92,9 +96,9 @@ const Header = () => {
                             return (
                                 <Link 
                                     key={item.path}
-                                    to={isRestricted ? '/coming-soon' : item.path}
+                                    href={isRestricted ? `/coming-soon?feature=${item.featureKey || ''}` : item.path}
                                     className={`${s.navLink} ${isRestricted ? s.navLinkRestricted : isActive(item.path) ? s.navLinkActive : ''}`}
-                                    title={isRestricted ? 'Coming Soon' : ''}
+                                    title={isRestricted ? t('nav.membersOnly') : ''}
                                 >
                                     <span>{item.label}</span>
                                     {isRestricted && <span className={s.restrictedMark}>✦</span>}
@@ -108,8 +112,7 @@ const Header = () => {
                                     <span>Editorial</span>
                                 </div>
                                 <div className={s.dropdownMenu}>
-                                        <Link
-                                            to="/admin/politics/upload"
+                                        <Link href="/admin/politics/upload"
                                             className={`${s.dropdownItem} ${isActive('/admin/politics/upload') ? s.dropdownItemActive : ''}`}
                                         >
                                             Politics Upload
@@ -140,7 +143,7 @@ const Header = () => {
                                         ].map((link) => (
                                             <Link
                                                 key={link.to}
-                                                to={link.to}
+                                                href={link.to}
                                                 className={`${s.dropdownItem} ${isActive(link.to) ? s.dropdownItemActive : ''}`}
                                             >
                                                 {link.label}
@@ -150,13 +153,14 @@ const Header = () => {
                             </div>
                         )}
                         {user && (
-                            <Link to="/profile" className={s.navLink}>
-                                My Profile
+                            <Link href="/profile" className={s.navLink}>
+                                {t('nav.profile')}
                             </Link>
                         )}
                     </nav>
                     
                     <div className={s.actionsRow}>
+                        <LanguageSwitcher />
                         {user ? (
                             <button
                                 onClick={handleLogout}
@@ -166,8 +170,8 @@ const Header = () => {
                                 <LogOut size={18} />
                             </button>
                         ) : (
-                            <Link to="/" className={s.loginButton}>
-                                Log In
+                            <Link href="/login" className={s.loginButton}>
+                                {t('nav.login')}
                             </Link>
                         )}
                     </div>
@@ -203,7 +207,7 @@ const Header = () => {
                                                 {item.children.map(child => (
                                                     <Link
                                                         key={child.path}
-                                                        to={isRestricted ? '/coming-soon' : child.path}
+                                                        href={isRestricted ? `/coming-soon?feature=${item.featureKey || ''}` : child.path}
                                                         className={`${s.mobileSubLink} ${isActive(child.path) ? s.mobileLinkActive : ''}`}
                                                         onClick={() => setMobileMenuOpen(false)}
                                                     >
@@ -221,34 +225,31 @@ const Header = () => {
                                 return (
                                     <Link 
                                         key={item.path}
-                                        to={isRestricted ? '/coming-soon' : item.path}
+                                        href={isRestricted ? `/coming-soon?feature=${item.featureKey || ''}` : item.path}
                                         className={`${s.mobileLink} ${isRestricted ? s.mobileLinkRestricted : isActive(item.path) ? s.mobileLinkActive : ''}`}
                                         onClick={() => setMobileMenuOpen(false)}
                                     >
                                         <span>{item.label}</span>
-                                        {isRestricted && <span className={s.mobileComingSoon}>Coming Soon</span>}
+                                        {isRestricted && <span className={s.mobileComingSoon}>{t('nav.membersOnly')}</span>}
                                     </Link>
                                 );
                             })}
                             {isAdminUser && (
                                 <>
-                                    <Link
-                                        to="/admin/tags"
+                                    <Link href="/admin/tags"
                                         className={`${s.mobileLink} ${isActive('/admin/tags') ? s.mobileLinkActive : ''}`}
                                         onClick={() => setMobileMenuOpen(false)}
                                     >
                                         <Shield size={20} style={{ marginRight: 8 }} />
                                         <span>Admin Tools</span>
                                     </Link>
-                                    <Link
-                                        to="/admin/roles"
+                                    <Link href="/admin/roles"
                                         className={`${s.mobileSubLink} ${isActive('/admin/roles') ? s.mobileLinkActive : ''}`}
                                         onClick={() => setMobileMenuOpen(false)}
                                     >
                                         Role Management
                                     </Link>
-                                    <Link
-                                        to="/admin/politics/upload"
+                                    <Link href="/admin/politics/upload"
                                         className={`${s.mobileSubLink} ${isActive('/admin/politics/upload') ? s.mobileLinkActive : ''}`}
                                         onClick={() => setMobileMenuOpen(false)}
                                     >
@@ -257,8 +258,7 @@ const Header = () => {
                                 </>
                             )}
                             {!isAdminUser && canEditPolitics && (
-                                <Link
-                                    to="/admin/politics/upload"
+                                <Link href="/admin/politics/upload"
                                     className={`${s.mobileLink} ${isActive('/admin/politics/upload') ? s.mobileLinkActive : ''}`}
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
@@ -267,8 +267,7 @@ const Header = () => {
                                 </Link>
                             )}
                             {user && (
-                                <Link 
-                                    to="/profile"
+                                <Link href="/profile"
                                     className={s.mobileLink}
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
@@ -283,11 +282,11 @@ const Header = () => {
                                     className={s.mobileLogout}
                                 >
                                     <LogOut size={18} />
-                                    <span>Logout</span>
+                                    <span>{t('nav.logout')}</span>
                                 </button>
                             ) : (
-                                <Link to="/" onClick={() => setMobileMenuOpen(false)} className={s.loginButton}>
-                                    Log In
+                                <Link href="/login" onClick={() => setMobileMenuOpen(false)} className={s.loginButton}>
+                                    {t('nav.login')}
                                 </Link>
                             )}
                         </div>

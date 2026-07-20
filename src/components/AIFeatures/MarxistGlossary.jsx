@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../../supabaseClient';
 import { Loader, BookOpen, Search, ChevronDown, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 function stripMarkdown(text) {
     if (!text) return '';
@@ -196,7 +196,7 @@ const MarxistGlossary = () => {
                                         {items.map(item => (
                                             <Link
                                                 key={item.term}
-                                                to={`/glossary/${encodeURIComponent(item.term)}`}
+                                                href={`/glossary/${encodeURIComponent(item.term)}`}
                                                 className="block bg-gray-900/50 hover:bg-gray-900/80 p-4 rounded-lg transition-colors border border-transparent hover:border-red-900/30"
                                             >
                                                 <div className="flex items-start justify-between gap-3">

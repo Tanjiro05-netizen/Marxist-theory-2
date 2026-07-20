@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { supabase } from '../../../supabaseClient';
 import { useAuth } from '../../../context/AuthContext';
 import { 
@@ -10,7 +11,7 @@ import {
 import TextCard from './TextCard';
 
 const TextBrowser = () => {
-    const navigate = useNavigate();
+    const router = useRouter();
     const { user, isAdmin } = useAuth();
     const [texts, setTexts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -184,8 +185,7 @@ const TextBrowser = () => {
                             Read, annotate, and deeply analyze revolutionary texts
                         </p>
                     </div>
-                    <Link
-                        to="/theory"
+                    <Link href="/theory"
                         className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg text-sm font-medium transition-colors"
                     >
                         <BookOpen size={16} />

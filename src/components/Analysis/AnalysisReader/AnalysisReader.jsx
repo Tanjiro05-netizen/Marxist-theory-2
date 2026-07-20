@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { usePathname, useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Loader2, ArrowLeft, Users, MessageSquare, Bookmark, Highlighter, Link2, BarChart3, Trash2, BookOpen } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { supabase } from '../../../supabaseClient';
@@ -19,8 +19,9 @@ import useCrossReferences from '../hooks/useCrossReferences';
 
 const AnalysisReader = () => {
     const { slug } = useParams();
-    const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const { isAdmin } = useAuth();
     const [viewMode, setViewMode] = useState(searchParams.get('mode') === 'read' ? 'reading' : 'analysis');
     const isReadingMode = viewMode === 'reading';
@@ -28,8 +29,10 @@ const AnalysisReader = () => {
     const toggleViewMode = useCallback(() => {
         const newMode = isReadingMode ? 'analysis' : 'reading';
         setViewMode(newMode);
-        setSearchParams(newMode === 'reading' ? { mode: 'read' } : {}, { replace: true });
-    }, [isReadingMode, setSearchParams]);
+        const next = new URLSearchParams();
+        if (newMode === 'reading') next.set('mode', 'read');
+        router.replace(next.toString() ? `${pathname}?${next.toString()}` : pathname);
+    }, [isReadingMode, pathname, router]);
     const {
         text,
         loading,
@@ -169,7 +172,7 @@ const AnalysisReader = () => {
                 .eq('id', text.id);
             
             if (deleteError) throw deleteError;
-            navigate('/analysis');
+            router.push('/analysis');
         } catch (err) {
             console.error('Error deleting text:', err);
             alert('Failed to delete text: ' + err.message);
@@ -190,7 +193,7 @@ const AnalysisReader = () => {
                 <h2 className="text-2xl font-bold mb-4">Text Not Found</h2>
                 <p className="text-gray-400 mb-6">{error || 'The requested text could not be loaded.'}</p>
                 <button
-                    onClick={() => navigate('/analysis')}
+                    onClick={() => router.push('/analysis')}
                     className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
                 >
                     Back to Analysis
@@ -214,7 +217,7 @@ const AnalysisReader = () => {
             {/* Back button and admin delete */}
             <div className="fixed top-20 left-4 z-30 flex gap-2">
                 <button
-                    onClick={() => navigate('/analysis')}
+                    onClick={() => router.push('/analysis')}
                     className="p-2 bg-gray-800/80 hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-2 text-sm"
                 >
                     <ArrowLeft size={18} />

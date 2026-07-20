@@ -144,19 +144,19 @@ const ScenarioPlayer = ({ scenario, onBack, onComplete }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-red-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#c81e1e]" />
       </div>
     );
   }
 
   if (!fullScenario || !currentNode) {
     return (
-      <div className="text-center py-20 text-gray-500">
-        <AlertTriangle className="w-12 h-12 mx-auto mb-3" />
-        <p>Scenario not found or has no content.</p>
+      <div className="text-center py-20 text-white/25">
+        <AlertTriangle className="w-10 h-10 mx-auto mb-3" />
+        <p className="text-sm">Scenario not found or has no content.</p>
         <button
           onClick={onBack}
-          className="mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+          className="mt-4 px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] rounded-xl text-white/60 text-sm transition-colors"
         >
           Go Back
         </button>
@@ -169,53 +169,54 @@ const ScenarioPlayer = ({ scenario, onBack, onComplete }) => {
     : null;
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto font-[Hanken_Grotesk,sans-serif]">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-5">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-white/30 hover:text-white/70 text-[11px] font-[JetBrains_Mono,monospace] uppercase tracking-[0.08em] transition-colors"
         >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Exit Scenario</span>
+          <ArrowLeft size={13} /> Exit Scenario
         </button>
-        
-        <div className="flex items-center gap-4 text-sm text-gray-500">
-          <span className="flex items-center gap-1">
-            <BookOpen className="w-4 h-4" />
-            {fullScenario.setting || 'Historical Scenario'}
-          </span>
-          <span className="flex items-center gap-1">
-            <Target className="w-4 h-4" />
-            {fullScenario.difficulty}
-          </span>
+        <div className="flex items-center gap-4 font-[JetBrains_Mono,monospace] text-[10px] text-white/20">
+          <span className="flex items-center gap-1"><BookOpen size={11} />{fullScenario.setting || 'Historical Scenario'}</span>
+          <span className="flex items-center gap-1 capitalize"><Target size={11} />{fullScenario.difficulty}</span>
         </div>
       </div>
 
       {/* Progress Bar */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-xs text-gray-500">Progress</span>
-          <span className="text-xs text-gray-400">{choicesMade.length} choices made</span>
+      <div className="mb-5">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-[0.1em] text-white/20">Progress</span>
+          <span className="font-[JetBrains_Mono,monospace] text-[9px] text-white/20">{choicesMade.length} choices</span>
         </div>
-        <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-red-600 to-orange-500 transition-all duration-500"
+        <div className="h-0.5 bg-white/[0.05] rounded-full overflow-hidden">
+          <div
+            className="h-full bg-[#c81e1e] transition-all duration-500"
             style={{ width: `${Math.min((choicesMade.length / 5) * 100, 100)}%` }}
           />
         </div>
       </div>
 
       {/* Story Card */}
-      <div className={`rounded-xl overflow-hidden border ${
-        endingStyle 
-          ? `bg-gradient-to-br ${endingStyle.bg} ${endingStyle.border}` 
-          : 'bg-gray-900/80 border-gray-700'
+      <div className={`rounded-2xl overflow-hidden border ${
+        endingStyle
+          ? endingStyle.border === 'border-green-500/50'
+            ? 'bg-emerald-900/10 border-emerald-800/30'
+            : endingStyle.border === 'border-yellow-500/50'
+              ? 'bg-yellow-900/10 border-yellow-800/30'
+              : 'bg-[rgba(200,30,30,0.06)] border-[rgba(200,30,30,0.2)]'
+          : 'bg-[#0f0f0f] border-white/[0.07]'
       }`}>
         {/* Node Title */}
         {currentNode.title && (
-          <div className="px-6 py-4 border-b border-gray-700/50">
-            <h2 className={`text-xl font-bold ${endingStyle?.color || 'text-white'}`}>
+          <div className="px-6 py-4 border-b border-white/[0.06]">
+            <h2 className={`font-[Cormorant_Garamond,Georgia,serif] text-[20px] font-[500] ${
+              endingStyle?.color ||
+              (endingStyle?.border === 'border-green-500/50' ? 'text-emerald-400' :
+               endingStyle?.border === 'border-yellow-500/50' ? 'text-yellow-400' :
+               endingStyle ? 'text-[#c81e1e]' : 'text-white')
+            }`}>
               {endingStyle ? `${endingStyle.icon} ${endingStyle.title}` : currentNode.title}
             </h2>
           </div>
@@ -223,67 +224,58 @@ const ScenarioPlayer = ({ scenario, onBack, onComplete }) => {
 
         {/* Image */}
         {currentNode.image_url && (
-          <div className="w-full h-48 bg-gray-800">
-            <img 
-              src={currentNode.image_url} 
-              alt="" 
-              className="w-full h-full object-cover"
-            />
+          <div className="w-full h-48 bg-white/[0.03]">
+            <img src={currentNode.image_url} alt="" className="w-full h-full object-cover" />
           </div>
         )}
 
         {/* Content */}
         <div className="p-6">
-          <div className="prose prose-invert max-w-none mb-6">
-            <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-              {currentNode.content}
-            </p>
-          </div>
+          <p className="text-white/55 text-[14px] leading-relaxed whitespace-pre-wrap mb-6">
+            {currentNode.content}
+          </p>
 
           {/* Ending Insight */}
           {isEnding && currentNode.ending_insight && (
-            <div className="mt-6 p-4 bg-black/30 rounded-lg border border-gray-700">
-              <h4 className="text-sm font-bold text-gray-400 mb-2 flex items-center gap-2">
-                <Star className="w-4 h-4" />
-                Historical Insight
+            <div className="p-4 bg-white/[0.03] rounded-xl border border-white/[0.06] mb-4">
+              <h4 className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-[0.1em] text-white/25 mb-2 flex items-center gap-2">
+                <Star size={11} /> Historical Insight
               </h4>
-              <p className="text-sm text-gray-300">{currentNode.ending_insight}</p>
+              <p className="text-[13px] text-white/50">{currentNode.ending_insight}</p>
             </div>
           )}
 
           {/* XP Earned */}
           {isEnding && xpEarned > 0 && (
-            <div className="mt-4 flex items-center justify-center gap-2 text-orange-400">
-              <Flame className="w-5 h-5" />
-              <span className="font-bold text-lg">+{xpEarned} XP Earned!</span>
+            <div className="flex items-center justify-center gap-2 text-orange-400/80 mb-4">
+              <Flame size={16} />
+              <span className="font-[JetBrains_Mono,monospace] text-[14px] font-bold">+{xpEarned} XP Earned!</span>
             </div>
           )}
 
           {/* Choices */}
           {!isEnding && currentNode.choices && currentNode.choices.length > 0 && (
-            <div className="space-y-3 mt-6">
-              <h4 className="text-sm font-bold text-gray-400 mb-3">What do you do?</h4>
+            <div className="space-y-2.5">
+              <p className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-[0.1em] text-white/25 mb-3">What do you do?</p>
               {currentNode.choices.map((choice, index) => (
                 <button
                   key={choice.id}
                   onClick={() => handleChoice(choice)}
-                  className="w-full text-left p-4 bg-gray-800/50 hover:bg-gray-800 border border-gray-700 hover:border-red-500/50 rounded-lg transition-all group"
+                  className="w-full text-left p-4 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.07] hover:border-[rgba(200,30,30,0.3)] rounded-xl transition-all group"
                 >
                   <div className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-400 group-hover:bg-red-600 group-hover:text-white transition-colors">
+                    <span className="shrink-0 w-6 h-6 rounded-full bg-white/[0.06] flex items-center justify-center font-[JetBrains_Mono,monospace] text-[10px] font-bold text-white/30 group-hover:bg-[#c81e1e] group-hover:text-white transition-colors">
                       {String.fromCharCode(65 + index)}
                     </span>
                     <div className="flex-1">
-                      <p className="text-white group-hover:text-red-300 transition-colors">
+                      <p className="text-white/70 group-hover:text-white text-[13px] transition-colors">
                         {choice.choice_text}
                       </p>
                       {choice.consequence_preview && (
-                        <p className="text-xs text-gray-500 mt-1 italic">
-                          {choice.consequence_preview}
-                        </p>
+                        <p className="text-[11px] text-white/25 mt-1 italic">{choice.consequence_preview}</p>
                       )}
                     </div>
-                    <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-red-400 transition-colors" />
+                    <ChevronRight size={15} className="text-white/20 group-hover:text-[#c81e1e] transition-colors shrink-0 mt-0.5" />
                   </div>
                 </button>
               ))}
@@ -292,20 +284,18 @@ const ScenarioPlayer = ({ scenario, onBack, onComplete }) => {
 
           {/* Ending Actions */}
           {isEnding && (
-            <div className="flex gap-3 mt-6">
+            <div className="flex gap-3 mt-4">
               <button
                 onClick={handleRestart}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl text-white/50 text-[12px] font-[JetBrains_Mono,monospace] uppercase tracking-wider transition-colors"
               >
-                <RefreshCw className="w-5 h-5" />
-                <span>Try Again</span>
+                <RefreshCw size={14} /> Try Again
               </button>
               <button
                 onClick={() => onComplete?.(xpEarned)}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-500 rounded-lg transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#c81e1e] hover:bg-[#e02424] rounded-xl text-white text-[12px] font-[JetBrains_Mono,monospace] uppercase tracking-wider transition-colors"
               >
-                <Trophy className="w-5 h-5" />
-                <span>Continue</span>
+                <Trophy size={14} /> Continue
               </button>
             </div>
           )}

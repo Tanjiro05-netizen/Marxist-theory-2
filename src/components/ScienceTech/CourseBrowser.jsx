@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { supabase } from '../../supabaseClient';
 import CourseCard from './CourseCard';
 import SubjectCard from './SubjectCard';
@@ -156,8 +156,7 @@ const CourseBrowser = () => {
                 <p className="text-white font-medium">
                   {userProgress.stem_lessons.stem_chapters?.title} → {userProgress.stem_lessons.title}
                 </p>
-                <Link
-                  to={`/science-tech/courses/${userProgress.stem_lessons.stem_chapters?.stem_courses?.slug}/${userProgress.stem_lessons.stem_chapters?.slug}/${userProgress.stem_lessons.slug}`}
+                <Link href={`/science-tech/courses/${userProgress.stem_lessons.stem_chapters?.stem_courses?.slug}/${userProgress.stem_lessons.stem_chapters?.slug}/${userProgress.stem_lessons.slug}`}
                   className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
                 >
                   Resume <TrendingUp className="w-4 h-4" />

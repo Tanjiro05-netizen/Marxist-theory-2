@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { supabase } from '../../supabaseClient';
 import { Search, ChevronRight, BookOpen, ExternalLink, Newspaper } from 'lucide-react';
 
@@ -120,8 +120,7 @@ const NewsFeed = () => {
               </div>
               <h3 className="text-white text-lg font-semibold mb-2">{article.title}</h3>
               <p className="text-gray-400 text-sm mb-4 line-clamp-3">{article.excerpt}</p>
-              <Link
-                to={`/science-tech/news/${article.id}`}
+              <Link href={`/science-tech/news/${article.id}`}
                 className="text-red-400 hover:text-red-300 text-sm flex items-center gap-1"
               >
                 Read more <ChevronRight className="w-4 h-4" />

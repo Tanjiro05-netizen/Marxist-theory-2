@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './EnhancedChart.css';
 
 // Sample data for demonstration purposes
 const generateSampleData = (type, sentiment) => {

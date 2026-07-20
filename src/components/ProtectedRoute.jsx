@@ -1,19 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import React from 'react';
+import RedirectTo from './RedirectTo.jsx';
 import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = ({ children }) => {
     const { user, profile, loading, isAdmin } = useAuth();
-    const [timedOut, setTimedOut] = useState(false);
 
-    // If auth hangs, stop blocking after 3 seconds
-    useEffect(() => {
-        if (!loading) return;
-        const id = setTimeout(() => setTimedOut(true), 3000);
-        return () => clearTimeout(id);
-    }, [loading]);
-
-    if (loading && !timedOut) {
+    if (loading) {
         return (
             <div className="min-h-screen bg-[#12131A] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
@@ -25,7 +17,7 @@ const ProtectedRoute = ({ children }) => {
     }
 
     if (!user) {
-        return <Navigate to="/" replace />;
+        return <RedirectTo href="/login" replace />;
     }
 
     // Admins always have access
@@ -35,7 +27,7 @@ const ProtectedRoute = ({ children }) => {
 
     // Check invite access
     if (!profile?.has_invite_access) {
-        return <Navigate to="/pending-access" replace />;
+        return <RedirectTo href="/pending-access" replace />;
     }
 
     return children;

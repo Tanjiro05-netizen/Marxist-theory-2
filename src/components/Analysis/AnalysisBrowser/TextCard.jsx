@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { Calendar, User, Clock, Globe, Tag, Languages, ArrowRight, Trash2 } from 'lucide-react';
 
 const LanguageFlags = {
@@ -14,7 +14,7 @@ const LanguageFlags = {
 };
 
 const TextCard = ({ text, variant = 'grid', isAdmin = false, onDelete }) => {
-    const navigate = useNavigate();
+    const router = useRouter();
     
     const metadata = text.metadata?.[text.primary_language] || text.metadata?.en || text.metadata || {};
     const {
@@ -27,7 +27,7 @@ const TextCard = ({ text, variant = 'grid', isAdmin = false, onDelete }) => {
     } = metadata;
 
     const handleClick = () => {
-        navigate(`/analysis/text/${text.slug}`);
+        router.push(`/analysis/text/${text.slug}`);
     };
 
     if (variant === 'list') {

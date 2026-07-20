@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { supabase } from '../../supabaseClient';
 import { Book, Download, Search, FileText, User } from 'lucide-react';
 
@@ -114,7 +114,7 @@ const TextbookBrowser = () => {
           {filteredTextbooks.map((book) => (
             <Link
               key={book.id}
-              to={`/science-tech/textbooks/${book.id}`}
+              href={`/science-tech/textbooks/${book.id}`}
               className="group bg-black/40 backdrop-blur-lg rounded-xl overflow-hidden border border-red-900/30 hover:border-red-500/50 transition-all duration-300"
             >
               {/* Cover */}

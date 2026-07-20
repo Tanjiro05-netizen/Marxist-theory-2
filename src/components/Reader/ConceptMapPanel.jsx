@@ -1,5 +1,7 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
-import ForceGraph2D from 'react-force-graph-2d';
+import dynamic from 'next/dynamic';
+
+const ForceGraph2D = dynamic(() => import('react-force-graph-2d'), { ssr: false });
 
 const COLORS = {
   heading: '#f97316',

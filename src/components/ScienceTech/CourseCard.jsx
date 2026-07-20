@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Clock, BookOpen, BarChart2, ChevronRight, CheckCircle } from 'lucide-react';
 
 const difficultyColors = {
@@ -12,8 +12,7 @@ const CourseCard = ({ course, isEnrolled }) => {
   const chapterCount = course.stem_chapters?.length || 0;
   
   return (
-    <Link
-      to={`/science-tech/courses/${course.slug}`}
+    <Link href={`/science-tech/courses/${course.slug}`}
       className="group bg-black/40 backdrop-blur-lg rounded-xl overflow-hidden border border-red-900/30 hover:border-red-500/50 transition-all duration-300 hover:scale-[1.02]"
     >
       {/* Thumbnail */}

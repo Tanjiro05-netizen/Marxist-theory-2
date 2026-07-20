@@ -62,75 +62,68 @@ const CellLeaderboard = ({ userId, userCell, onCellChange }) => {
   };
 
   return (
-    <div className="bg-gray-900/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div className="bg-[#0f0f0f] border border-white/[0.06] rounded-2xl overflow-hidden font-[Hanken_Grotesk,sans-serif]">
       {/* Header */}
-      <div className="bg-gray-800/50 border-b border-gray-700 px-4 py-3 flex items-center justify-between">
+      <div className="border-b border-white/[0.05] px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Users className="w-4 h-4 text-blue-400" />
-          <span className="text-sm font-bold text-white">Cell Leaderboard</span>
+          <Users size={13} className="text-white/30" />
+          <span className="font-[JetBrains_Mono,monospace] text-[10px] uppercase tracking-[0.1em] text-white/40">Cell Leaderboard</span>
         </div>
-        <span className="text-[10px] text-slate-500 uppercase">Weekly</span>
+        <span className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-wider text-white/15">Weekly</span>
       </div>
 
       {/* Leaderboard List */}
-      <div className="divide-y divide-gray-800">
+      <div className="divide-y divide-white/[0.04]">
         {loading ? (
           <div className="p-4 space-y-3">
             {[1, 2, 3].map(i => (
               <div key={i} className="flex items-center gap-3 animate-pulse">
-                <div className="w-4 h-4 bg-gray-700 rounded" />
-                <div className="flex-1 h-4 bg-gray-700 rounded" />
-                <div className="w-12 h-4 bg-gray-700 rounded" />
+                <div className="w-4 h-4 bg-white/[0.06] rounded" />
+                <div className="flex-1 h-3 bg-white/[0.06] rounded" />
+                <div className="w-10 h-3 bg-white/[0.06] rounded" />
               </div>
             ))}
           </div>
         ) : cells.length === 0 ? (
-          <div className="p-6 text-center text-slate-500 text-sm">
+          <div className="p-6 text-center text-white/20 text-[12px]">
             No cells yet. Be the first to create one!
           </div>
         ) : (
           cells.map((cell, index) => {
             const isUserCell = userCell?.id === cell.id;
             const memberCount = cell.members?.length || 0;
-            
             return (
-              <div 
+              <div
                 key={cell.id}
                 className={`px-4 py-3 flex items-center gap-3 transition-colors ${
-                  isUserCell ? 'bg-blue-500/10' : 'hover:bg-gray-800/30'
+                  isUserCell ? 'bg-[rgba(200,30,30,0.05)]' : 'hover:bg-white/[0.02]'
                 }`}
               >
-                {/* Rank */}
-                <div className="w-6 flex items-center justify-center">
+                <div className="w-5 flex items-center justify-center shrink-0">
                   {getRankIcon(index)}
                 </div>
-
-                {/* Cell Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className={`text-sm font-medium truncate ${
-                      isUserCell ? 'text-blue-400' : 'text-white'
+                    <span className={`text-[12px] font-medium truncate ${
+                      isUserCell ? 'text-[#c81e1e]' : 'text-white/70'
                     }`}>
                       {cell.name}
                     </span>
                     {isUserCell && (
-                      <span className="text-[10px] bg-blue-500/30 text-blue-400 px-1.5 py-0.5 rounded">
-                        YOU
+                      <span className="font-[JetBrains_Mono,monospace] text-[8px] bg-[rgba(200,30,30,0.15)] text-[#c81e1e] px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                        You
                       </span>
                     )}
                   </div>
-                  <div className="text-[10px] text-slate-500 flex items-center gap-1">
-                    <Users className="w-3 h-3" />
-                    {memberCount}/5 members
+                  <div className="font-[JetBrains_Mono,monospace] text-[9px] text-white/15 flex items-center gap-1 mt-0.5">
+                    <Users size={9} />{memberCount}/5
                   </div>
                 </div>
-
-                {/* XP */}
-                <div className="text-right">
-                  <div className="text-sm font-bold text-white">
+                <div className="text-right shrink-0">
+                  <div className="font-[JetBrains_Mono,monospace] text-[12px] font-bold text-white/60">
                     {(cell.weekly_xp || 0).toLocaleString()}
                   </div>
-                  <div className="text-[10px] text-slate-500">XP</div>
+                  <div className="font-[JetBrains_Mono,monospace] text-[8px] text-white/15 uppercase">XP</div>
                 </div>
               </div>
             );
@@ -140,27 +133,25 @@ const CellLeaderboard = ({ userId, userCell, onCellChange }) => {
 
       {/* Actions */}
       {userId && (
-        <div className="border-t border-gray-700 p-3 flex gap-2">
+        <div className="border-t border-white/[0.05] p-3 flex gap-2">
           {!userCell ? (
             <>
               <button
                 onClick={() => setShowJoinModal(true)}
-                className="flex-1 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-xs font-bold transition-all"
+                className="flex-1 flex items-center justify-center gap-1.5 bg-[#c81e1e] hover:bg-[#e02424] text-white py-2 rounded-xl font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-wider transition-all"
               >
-                <UserPlus className="w-4 h-4" />
-                Join Cell
+                <UserPlus size={12} /> Join
               </button>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="flex-1 flex items-center justify-center gap-1.5 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg text-xs font-bold transition-all"
+                className="flex-1 flex items-center justify-center gap-1.5 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] text-white/50 py-2 rounded-xl font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-wider transition-all"
               >
-                <Plus className="w-4 h-4" />
-                Create Cell
+                <Plus size={12} /> Create
               </button>
             </>
           ) : (
-            <div className="flex-1 text-center text-xs text-slate-400">
-              Member of <span className="text-blue-400 font-medium">{userCell.name}</span>
+            <div className="flex-1 text-center font-[JetBrains_Mono,monospace] text-[9px] text-white/25 uppercase tracking-wider">
+              Member of <span className="text-[#c81e1e]">{userCell.name}</span>
             </div>
           )}
         </div>
@@ -168,28 +159,28 @@ const CellLeaderboard = ({ userId, userCell, onCellChange }) => {
 
       {/* Create Cell Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 max-w-sm w-full space-y-4">
-            <h3 className="text-lg font-bold text-white">Create New Cell</h3>
+        <div className="fixed inset-0 bg-[#090909]/90 backdrop-blur flex items-center justify-center z-50 p-4">
+          <div className="bg-[#0f0f0f] border border-white/[0.08] rounded-2xl p-6 max-w-sm w-full space-y-4">
+            <h3 className="font-[Cormorant_Garamond,Georgia,serif] text-[20px] font-[500] text-white">Create New Cell</h3>
             <input
               type="text"
               placeholder="Cell name..."
               value={newCellName}
               onChange={(e) => setNewCellName(e.target.value)}
-              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              className="w-full p-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-[rgba(200,30,30,0.4)] text-[13px] transition-colors"
               maxLength={30}
             />
             <div className="flex gap-2">
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-all"
+                className="flex-1 py-2.5 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] text-white/50 rounded-xl font-[JetBrains_Mono,monospace] text-[10px] uppercase tracking-wider transition-all"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateCell}
                 disabled={!newCellName.trim() || creating}
-                className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-lg text-sm font-bold transition-all"
+                className="flex-1 py-2.5 bg-[#c81e1e] hover:bg-[#e02424] disabled:bg-white/[0.05] disabled:text-white/20 text-white rounded-xl font-[JetBrains_Mono,monospace] text-[10px] uppercase tracking-wider transition-all"
               >
                 {creating ? 'Creating...' : 'Create'}
               </button>
@@ -200,31 +191,31 @@ const CellLeaderboard = ({ userId, userCell, onCellChange }) => {
 
       {/* Join Cell Modal */}
       {showJoinModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 max-w-sm w-full space-y-4">
-            <h3 className="text-lg font-bold text-white">Join a Cell</h3>
+        <div className="fixed inset-0 bg-[#090909]/90 backdrop-blur flex items-center justify-center z-50 p-4">
+          <div className="bg-[#0f0f0f] border border-white/[0.08] rounded-2xl p-6 max-w-sm w-full space-y-4">
+            <h3 className="font-[Cormorant_Garamond,Georgia,serif] text-[20px] font-[500] text-white">Join a Cell</h3>
             <div className="max-h-64 overflow-y-auto space-y-2">
               {cells.filter(c => (c.members?.length || 0) < 5).map(cell => (
                 <button
                   key={cell.id}
                   onClick={() => handleJoinCell(cell.id)}
-                  className="w-full p-3 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg text-left transition-all"
+                  className="w-full p-3 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.07] rounded-xl text-left transition-all"
                 >
-                  <div className="text-white font-medium">{cell.name}</div>
-                  <div className="text-xs text-slate-500">
-                    {cell.members?.length || 0}/5 members • {cell.weekly_xp || 0} XP
+                  <div className="text-white/70 text-[13px] font-medium">{cell.name}</div>
+                  <div className="font-[JetBrains_Mono,monospace] text-[9px] text-white/25 mt-0.5">
+                    {cell.members?.length || 0}/5 · {cell.weekly_xp || 0} XP
                   </div>
                 </button>
               ))}
               {cells.filter(c => (c.members?.length || 0) < 5).length === 0 && (
-                <p className="text-slate-500 text-sm text-center py-4">
+                <p className="text-white/25 text-[12px] text-center py-4">
                   All cells are full. Create a new one!
                 </p>
               )}
             </div>
             <button
               onClick={() => setShowJoinModal(false)}
-              className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-all"
+              className="w-full py-2.5 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] text-white/40 rounded-xl font-[JetBrains_Mono,monospace] text-[10px] uppercase tracking-wider transition-all"
             >
               Cancel
             </button>

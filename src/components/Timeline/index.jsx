@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { ChevronDown, ExternalLink, MapPin, X, Calendar, Tag, ArrowRight } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 import * as s from './Timeline.css.ts';
@@ -339,7 +339,7 @@ const Timeline = () => {
                                 {modalEvent.related_people.map(person => (
                                     <Link
                                         key={person}
-                                        to={`/glossary/${encodeURIComponent(person)}`}
+                                        href={`/glossary/${encodeURIComponent(person)}`}
                                         className={s.personTag}
                                         onClick={() => setModalEvent(null)}
                                     >
@@ -359,8 +359,7 @@ const Timeline = () => {
                                             <span className={s.glossaryCardType}>{g.type}</span>
                                         </div>
                                         <p className={s.glossaryCardExcerpt}>{g.explanation}</p>
-                                        <Link
-                                            to={`/glossary/${encodeURIComponent(g.term)}`}
+                                        <Link href={`/glossary/${encodeURIComponent(g.term)}`}
                                             className={s.glossaryCardLink}
                                             onClick={() => setModalEvent(null)}
                                         >

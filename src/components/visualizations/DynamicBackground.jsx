@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import './DynamicBackground.css';
 
 const DynamicBackground = ({ sentiment = 'neutral', intensity = 0.5, interactionEnabled = true }) => {
     const canvasRef = useRef(null);

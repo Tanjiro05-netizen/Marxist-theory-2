@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import EnhancedChart from './EnhancedChart';
 import WhatIfAnalysis from './WhatIfAnalysis';
-import './SplitView.css';
 
 const SplitView = ({ 
     chartType = 'bar',

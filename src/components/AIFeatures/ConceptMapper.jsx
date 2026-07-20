@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 import ConceptMapPanel from '../Reader/ConceptMapPanel';
 import { buildConceptGraphData, extractPassages } from '../../utils/readerInsights';
 
 const ConceptMapper = () => {
-    const navigate = useNavigate();
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedArticle, setSelectedArticle] = useState(null);
@@ -57,11 +57,11 @@ const ConceptMapper = () => {
     const handleNodeClick = (node) => {
         if (!selectedArticle?.slug || !node) return;
         if (node.type === 'heading' && node.passageId) {
-            navigate(`/theory/article/${selectedArticle.slug}?passage=${node.passageId}`);
+            router.push(`/theory/article/${selectedArticle.slug}?passage=${node.passageId}`);
             return;
         }
         if (node.type === 'concept' && node.concept) {
-            navigate(`/theory/article/${selectedArticle.slug}?concept=${encodeURIComponent(node.concept)}`);
+            router.push(`/theory/article/${selectedArticle.slug}?concept=${encodeURIComponent(node.concept)}`);
         }
     };
 

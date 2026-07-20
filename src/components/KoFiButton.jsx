@@ -1,5 +1,4 @@
 import React from 'react';
-import './KoFiButton.css';
 
 const KoFiButton = ({ 
     text = 'Support me on Ko-fi', 

@@ -310,6 +310,63 @@ export const bubble = styleVariants({
   },
 });
 
+export const messageBody = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: vars.space.xs,
+  minWidth: 0,
+});
+
+export const sourceList = style({
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  gap: vars.space.xs,
+});
+
+export const sourceListLabel = style({
+  fontFamily: vars.font.mono,
+  fontSize: '9px',
+  lineHeight: 1,
+  letterSpacing: '0.08em',
+  textTransform: 'uppercase',
+  color: vars.color.textFaint,
+});
+
+export const sourceChip = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '5px',
+  maxWidth: '100%',
+  borderRadius: vars.radius.pill,
+  border: vars.border.subtle,
+  background: vars.color.surfaceSoft,
+  color: vars.color.textMuted,
+  padding: '5px 8px',
+  fontSize: '10px',
+  lineHeight: 1,
+  textDecoration: 'none',
+  transition: 'border-color 160ms ease, color 160ms ease, background 160ms ease',
+  selectors: {
+    '&:hover': {
+      borderColor: vars.color.borderAccent,
+      color: vars.color.text,
+      background: vars.color.accentWash,
+    },
+  },
+});
+
+export const sourceMarker = style({
+  fontFamily: vars.font.mono,
+  color: vars.color.accent,
+});
+
+export const sourceTitle = style({
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+});
+
 export const typingBubble = style([panelInset, {
   display: 'inline-flex',
   gap: '6px',

@@ -27,7 +27,7 @@ export function emailWrapper(bodyHtml: string): string {
                       MARXIST<span style="color:#6b7280;">.</span><span style="color:#e5e7eb;">INFO</span>
                     </h1>
                     <p style="margin:6px 0 0 0; font-size:11px; text-transform:uppercase; letter-spacing:2.5px; color:#4b5563; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-                      Advancing Revolutionary Theory
+                      Theory &middot; Education &middot; Analysis
                     </p>
                   </td>
                 </tr>
@@ -55,8 +55,6 @@ export function emailWrapper(bodyHtml: string): string {
                   <td>
                     <p style="margin:0; font-size:12px; color:#4b5563; line-height:1.6; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
                       <a href="https://x.com/Leninistwarrior" style="color:#6b7280; text-decoration:none;">Twitter</a>
-                      &nbsp;&middot;&nbsp;
-                      <a href="https://ko-fi.com/MarxistInfo" style="color:#6b7280; text-decoration:none;">Support on Ko-fi</a>
                     </p>
                   </td>
                 </tr>

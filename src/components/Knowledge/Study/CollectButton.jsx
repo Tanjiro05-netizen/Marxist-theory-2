@@ -47,130 +47,106 @@ const CollectButton = ({ results, quiz, userId, onCollected, onClose }) => {
   const percentage = results.percentage;
   const streakMultiplier = studyApiService.getStreakMultiplier(0); // Will be updated by backend
 
+  const grade =
+    percentage >= 80 ? { label: 'Excellent!', icon: '🏆' } :
+    percentage >= 60 ? { label: 'Well Done!', icon: '⚡' } :
+    percentage >= 40 ? { label: 'Good Effort!', icon: '📖' } :
+                       { label: 'Keep Studying!', icon: '✊' };
+
   return (
-    <div className="text-center space-y-6">
-      {/* Close button */}
-      <button 
+    <div className="text-center space-y-5 font-[Hanken_Grotesk,sans-serif]">
+      {/* Close */}
+      <button
         onClick={onClose}
-        className="absolute top-4 right-4 p-2 hover:bg-gray-800 rounded-lg transition-colors"
+        className="absolute top-4 right-4 p-1.5 hover:bg-white/[0.06] rounded-xl transition-colors"
       >
-        <X className="w-5 h-5 text-slate-400" />
+        <X size={16} className="text-white/30" />
       </button>
 
-      {/* Trophy */}
-      <div className="flex justify-center">
-        <div className={`p-4 rounded-full ${
-          percentage >= 80 ? 'bg-yellow-500/20' :
-          percentage >= 60 ? 'bg-green-500/20' :
-          percentage >= 40 ? 'bg-blue-500/20' : 'bg-gray-500/20'
-        }`}>
-          <Trophy className={`w-12 h-12 ${
-            percentage >= 80 ? 'text-yellow-400' :
-            percentage >= 60 ? 'text-green-400' :
-            percentage >= 40 ? 'text-blue-400' : 'text-gray-400'
-          }`} />
+      {/* Trophy / Grade */}
+      <div className="flex flex-col items-center gap-2 pt-2">
+        <span className="text-4xl">{grade.icon}</span>
+        <h2 className="font-[Cormorant_Garamond,Georgia,serif] text-[24px] font-[500] text-white">{grade.label}</h2>
+        <p className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-[0.12em] text-white/25">Quiz Complete</p>
+      </div>
+
+      {/* Score breakdown */}
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 space-y-2.5 text-left">
+        {[
+          { label: 'Score', value: `${results.score}/${results.maxScore}` },
+          { label: 'Accuracy', value: `${percentage}%` },
+        ].map(({ label, value }) => (
+          <div key={label} className="flex items-center justify-between text-[12px]">
+            <span className="text-white/30">{label}</span>
+            <span className="text-white/70 font-medium">{value}</span>
+          </div>
+        ))}
+        <div className="h-px bg-white/[0.06]" />
+        <div className="flex items-center justify-between text-[12px]">
+          <span className="text-white/30">Base XP</span>
+          <span className="text-orange-400/80 font-medium font-[JetBrains_Mono,monospace]">+{results.xpEarned}</span>
         </div>
       </div>
 
-      {/* Title */}
-      <div>
-        <h2 className="text-2xl font-bold text-white">
-          {percentage >= 80 ? 'Excellent!' :
-           percentage >= 60 ? 'Well Done!' :
-           percentage >= 40 ? 'Good Effort!' : 'Keep Studying!'}
-        </h2>
-        <p className="text-slate-400 mt-1">Quiz Complete</p>
-      </div>
-
-      {/* Score */}
-      <div className="bg-gray-800/50 rounded-xl p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-slate-400">Score</span>
-          <span className="text-white font-bold">{results.score}/{results.maxScore}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-slate-400">Accuracy</span>
-          <span className="text-white font-bold">{percentage}%</span>
-        </div>
-        <div className="h-px bg-gray-700" />
-        <div className="flex items-center justify-between">
-          <span className="text-slate-400">Base XP</span>
-          <span className="text-white font-bold">+{results.xpEarned}</span>
-        </div>
-      </div>
-
-      {/* XP Display */}
-      <div className={`relative overflow-hidden rounded-xl border-2 p-6 transition-all duration-500 ${
-        collected 
-          ? 'bg-gradient-to-br from-yellow-500/30 to-orange-500/30 border-yellow-500/50' 
-          : 'bg-gray-800/50 border-gray-700'
+      {/* XP collect panel */}
+      <div className={`relative overflow-hidden rounded-xl border p-5 transition-all duration-500 ${
+        collected
+          ? 'bg-yellow-900/20 border-yellow-700/40'
+          : 'bg-white/[0.03] border-white/[0.07]'
       }`}>
-        {/* Sparkle effects when collected */}
         {collected && (
           <>
-            <Sparkles className="absolute top-2 left-4 w-5 h-5 text-yellow-400 animate-pulse" />
-            <Sparkles className="absolute top-4 right-6 w-4 h-4 text-orange-400 animate-pulse delay-100" />
-            <Sparkles className="absolute bottom-3 left-8 w-4 h-4 text-yellow-300 animate-pulse delay-200" />
-            <Sparkles className="absolute bottom-4 right-4 w-5 h-5 text-orange-300 animate-pulse delay-300" />
+            <Sparkles size={16} className="absolute top-2 left-4 text-yellow-400 animate-pulse" />
+            <Sparkles size={14} className="absolute top-3 right-6 text-orange-400 animate-pulse" />
+            <Sparkles size={14} className="absolute bottom-3 left-8 text-yellow-300 animate-pulse" />
           </>
         )}
-
         <div className="flex items-center justify-center gap-2">
-          <Coins className={`w-8 h-8 ${collected ? 'text-yellow-400' : 'text-slate-500'}`} />
-          <span className={`text-4xl font-black ${collected ? 'text-yellow-400' : 'text-white'}`}>
+          <Coins size={24} className={collected ? 'text-yellow-400' : 'text-white/20'} />
+          <span className={`font-[JetBrains_Mono,monospace] text-[36px] font-black leading-none ${collected ? 'text-yellow-400' : 'text-white'}`}>
             +{finalXp ?? results.xpEarned}
           </span>
-          <span className={`text-xl ${collected ? 'text-yellow-400' : 'text-slate-400'}`}>XP</span>
+          <span className={`text-[16px] ${collected ? 'text-yellow-400' : 'text-white/30'}`}>XP</span>
         </div>
-
         {streakMultiplier > 1 && !collected && (
-          <p className="text-xs text-orange-400 mt-2">
-            Streak bonus: ×{streakMultiplier} will be applied!
+          <p className="font-[JetBrains_Mono,monospace] text-[9px] text-orange-400/70 mt-2 uppercase tracking-wider">
+            Streak ×{streakMultiplier} bonus applied!
           </p>
         )}
       </div>
 
-      {/* Error Message */}
-      {error && (
-        <p className="text-red-400 text-sm">{error}</p>
-      )}
+      {error && <p className="text-[#c81e1e] text-[12px]">{error}</p>}
 
-      {/* Collect Button */}
+      {/* Collect / Collected */}
       {!collected ? (
         <button
           onClick={handleCollect}
           disabled={collecting}
-          className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${
+          className={`w-full py-3.5 rounded-xl font-[JetBrains_Mono,monospace] text-[11px] uppercase tracking-[0.1em] transition-all active:scale-[0.98] ${
             collecting
-              ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-              : 'bg-gradient-to-r from-yellow-500 to-orange-500 text-black hover:from-yellow-400 hover:to-orange-400 hover:shadow-lg hover:shadow-orange-500/30 active:scale-[0.98]'
+              ? 'bg-white/[0.04] text-white/20 cursor-not-allowed'
+              : 'bg-gradient-to-r from-yellow-500 to-orange-500 text-black hover:from-yellow-400 hover:to-orange-400 shadow-[0_0_20px_rgba(234,179,8,0.15)]'
           }`}
         >
           {collecting ? (
             <span className="flex items-center justify-center gap-2">
-              <div className="w-5 h-5 border-2 border-gray-500 border-t-white rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
               Collecting...
             </span>
           ) : (
             <span className="flex items-center justify-center gap-2">
-              <Coins className="w-5 h-5" />
-              TAP TO COLLECT
+              <Coins size={14} /> Tap to Collect
             </span>
           )}
         </button>
       ) : (
-        <div className="text-green-400 font-bold flex items-center justify-center gap-2">
-          <Sparkles className="w-5 h-5" />
-          XP Collected!
+        <div className="text-emerald-400 font-[JetBrains_Mono,monospace] text-[11px] uppercase tracking-wider flex items-center justify-center gap-2">
+          <Sparkles size={14} /> XP Collected!
         </div>
       )}
 
-      {/* Skip/Close */}
       {!collected && (
-        <button
-          onClick={onClose}
-          className="text-slate-500 hover:text-slate-300 text-sm transition-colors"
-        >
+        <button onClick={onClose} className="text-white/20 hover:text-white/40 text-[11px] transition-colors">
           Skip for now
         </button>
       )}

@@ -12,6 +12,10 @@ export const main = style({
   paddingTop: '64px',
 });
 
+export const mainFullBleed = style({
+  paddingTop: 0,
+});
+
 export const fab = style({
   position: 'fixed',
   bottom: vars.space.lg,
