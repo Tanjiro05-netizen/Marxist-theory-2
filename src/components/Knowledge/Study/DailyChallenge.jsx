@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Flame, Clock, Zap, Trophy, ChevronRight } from 'lucide-react';
 import { studyApiService } from '../api/study';
 
@@ -70,99 +70,101 @@ const DailyChallenge = ({ userId }) => {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/50 border border-gray-700/50 rounded-lg p-4 animate-pulse">
-        <div className="h-4 bg-gray-700 rounded w-1/2 mb-3"></div>
-        <div className="h-3 bg-gray-700 rounded w-3/4 mb-4"></div>
-        <div className="h-8 bg-gray-700 rounded"></div>
+      <div className="bg-[#10131b] border border-white/[0.06] rounded-none p-4 animate-pulse">
+        <div className="h-3 bg-white/[0.06] rounded w-1/2 mb-3"></div>
+        <div className="h-3 bg-white/[0.06] rounded w-3/4 mb-4"></div>
+        <div className="h-8 bg-white/[0.06] rounded"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-red-900/20 to-gray-900/80 border border-red-500/30 rounded-lg overflow-hidden">
+    <div className="bg-[#10131b] border border-[rgba(179, 18, 46,0.22)] rounded-none overflow-hidden">
       {/* Header */}
-      <div className="bg-red-600/20 border-b border-red-500/30 px-4 py-2 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Zap className="w-4 h-4 text-red-400" />
-          <span className="text-xs font-bold text-red-400 uppercase tracking-wider">Daily Dialectic</span>
+      <div className="bg-[rgba(179, 18, 46,0.1)] border-b border-[rgba(179, 18, 46,0.18)] px-3 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <Zap className="w-3.5 h-3.5 text-[#b3122e]" />
+          <span className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-[0.12em] text-[#b3122e]">
+            Daily Dialectic
+          </span>
         </div>
         {progress?.current_streak > 0 && (
           <div className="flex items-center gap-1 text-orange-400">
-            <Flame className="w-3.5 h-3.5" />
-            <span className="text-xs font-bold">{progress.current_streak}</span>
+            <Flame className="w-3 h-3" />
+            <span className="font-[JetBrains_Mono,monospace] text-[10px] font-bold">{progress.current_streak}</span>
           </div>
         )}
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-3">
+      <div className="p-3 space-y-3">
         {/* Topic */}
         <div>
-          <div className="text-[10px] text-slate-500 uppercase font-medium mb-1">{getDayName()}</div>
-          <div className="text-sm font-semibold text-white">
+          <div className="font-[JetBrains_Mono,monospace] text-[8px] uppercase tracking-[0.12em] text-white/25 mb-1">
+            {getDayName()}
+          </div>
+          <div className="font-[Outfit,sans-serif] text-[13px] font-semibold text-white/85 leading-snug">
             {challenge?.title || 'No challenge today'}
           </div>
           {challenge?.description && (
-            <p className="text-xs text-slate-400 mt-1 line-clamp-2">{challenge.description}</p>
+            <p className="font-[Outfit,sans-serif] text-[11px] text-white/35 mt-1 line-clamp-2 leading-relaxed">
+              {challenge.description}
+            </p>
           )}
         </div>
 
         {/* Stats Row */}
-        <div className="flex items-center justify-between text-xs">
-          {/* Time Remaining */}
-          <div className="flex items-center gap-1.5 text-slate-400">
-            <Clock className="w-3.5 h-3.5" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 text-white/30 font-[JetBrains_Mono,monospace] text-[10px]">
+            <Clock className="w-3 h-3" />
             <span>{timeRemaining}</span>
           </div>
-
-          {/* Streak Multiplier */}
           {streakMultiplier > 1 && (
-            <div className="flex items-center gap-1 bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded text-[10px] font-bold">
-              <span>{streakMultiplier}x</span>
+            <div className="flex items-center gap-1 bg-orange-900/20 text-orange-400 px-2 py-0.5 rounded-full border border-orange-800/30 font-[JetBrains_Mono,monospace] text-[9px] font-bold">
+              {streakMultiplier}x
             </div>
           )}
         </div>
 
-        {/* XP Progress Bar */}
+        {/* XP Progress */}
         <div className="space-y-1">
-          <div className="flex items-center justify-between text-[10px]">
-            <span className="text-slate-500">Daily XP</span>
-            <span className="text-slate-400 font-medium">{dailyXp}/{dailyCap}</span>
+          <div className="flex items-center justify-between font-[JetBrains_Mono,monospace] text-[8px] text-white/25">
+            <span>Daily XP</span>
+            <span>{dailyXp}/{dailyCap}</span>
           </div>
-          <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-red-500 to-orange-500 transition-all duration-500"
+          <div className="h-1 bg-white/[0.06] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#10131b] from-[#b3122e] to-orange-500 transition-all duration-500"
               style={{ width: `${xpPercentage}%` }}
             />
           </div>
         </div>
 
-        {/* Action Button */}
+        {/* CTA */}
         {completed ? (
-          <div className="flex items-center justify-center gap-2 bg-green-500/20 text-green-400 py-2 rounded text-xs font-medium">
-            <Trophy className="w-4 h-4" />
-            <span>Completed Today!</span>
+          <div className="flex items-center justify-center gap-2 bg-emerald-900/20 text-emerald-400 border border-emerald-800/30 py-2 rounded-none font-[JetBrains_Mono,monospace] text-[10px] uppercase tracking-wider">
+            <Trophy className="w-3.5 h-3.5" />
+            Completed Today
           </div>
         ) : (
-          <Link 
-            to="/knowledge/study"
-            className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 text-white py-2.5 rounded text-xs font-bold transition-all hover:shadow-lg hover:shadow-red-600/30 group"
+          <Link href="/knowledge/study"
+            className="flex items-center justify-center gap-2 bg-[#b3122e] hover:bg-[#d41f3d] text-white py-2.5 rounded-none font-[JetBrains_Mono,monospace] text-[10px] uppercase tracking-[0.08em] transition-all hover:shadow-[0_0_20px_rgba(179, 18, 46,0.3)] group"
           >
-            <Zap className="w-4 h-4" />
-            <span>Start Challenge</span>
-            <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            <Zap className="w-3.5 h-3.5" />
+            Start Challenge
+            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         )}
       </div>
 
-      {/* Rank Preview (if logged in) */}
+      {/* Rank footer */}
       {progress && (
-        <div className="bg-gray-900/50 border-t border-gray-700/50 px-4 py-2 flex items-center justify-between">
+        <div className="bg-white/[0.02] border-t border-white/[0.06] px-3 py-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-sm">{studyApiService.getRankInfo(progress.current_rank).icon}</span>
-            <span className="text-xs text-slate-400 capitalize">{progress.current_rank}</span>
+            <span className="font-[Outfit,sans-serif] text-[11px] text-white/35 capitalize">{progress.current_rank}</span>
           </div>
-          <span className="text-xs text-slate-500">{progress.total_xp} XP</span>
+          <span className="font-[JetBrains_Mono,monospace] text-[9px] text-white/20">{progress.total_xp} XP</span>
         </div>
       )}
     </div>

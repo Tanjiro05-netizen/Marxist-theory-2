@@ -1,41 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import React from 'react';
+import RedirectTo from './RedirectTo.jsx';
 import { useAuth } from '../context/AuthContext';
 
+/**
+ * Route gate for member pages. Auth and invite access are already enforced
+ * server-side by the middleware (which redirects to /login and
+ * /pending-access), so the client renders content as soon as the session is
+ * known. The invite check below still runs in the background — once the
+ * profile settles it redirects anyone who slipped through a stale
+ * middleware profile cache.
+ */
 const ProtectedRoute = ({ children }) => {
-    const { user, profile, loading, isAdmin } = useAuth();
-    const [timedOut, setTimedOut] = useState(false);
-
-    // If auth hangs, stop blocking after 3 seconds
-    useEffect(() => {
-        if (!loading) return;
-        const id = setTimeout(() => setTimedOut(true), 3000);
-        return () => clearTimeout(id);
-    }, [loading]);
-
-    if (loading && !timedOut) {
-        return (
-            <div className="min-h-screen bg-[#12131A] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-3">
-                    <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-                    <span className="text-gray-400 text-sm">Loading...</span>
-                </div>
-            </div>
-        );
-    }
+    const { user, profile, loading, profileReady, isAdmin } = useAuth();
 
     if (!user) {
-        return <Navigate to="/" replace />;
+        if (loading) {
+            return (
+                <div className="min-h-screen bg-[#0b0d12] flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-3">
+                        <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                        <span className="text-gray-400 text-sm">Loading...</span>
+                    </div>
+                </div>
+            );
+        }
+        return <RedirectTo href="/login" replace />;
     }
 
-    // Admins always have access
-    if (isAdmin()) {
-        return children;
-    }
-
-    // Check invite access
-    if (!profile?.has_invite_access) {
-        return <Navigate to="/pending-access" replace />;
+    // Background invite guard (profile may still be in flight — content is
+    // already visible; the middleware is the primary enforcement).
+    if (profileReady && !isAdmin() && !profile?.has_invite_access) {
+        return <RedirectTo href="/pending-access" replace />;
     }
 
     return children;

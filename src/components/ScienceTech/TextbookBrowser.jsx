@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { supabase } from '../../supabaseClient';
 import { Book, Download, Search, FileText, User } from 'lucide-react';
 
@@ -68,7 +68,7 @@ const TextbookBrowser = () => {
             placeholder="Search textbooks..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-black/50 border border-red-900/30 text-white rounded-lg pl-9 pr-4 py-2 text-sm focus:border-red-500 transition-colors"
+            className="w-full bg-black/50 border border-red-900/30 text-white rounded-none pl-9 pr-4 py-2 text-sm focus:border-red-500 transition-colors"
           />
         </div>
       </div>
@@ -77,7 +77,7 @@ const TextbookBrowser = () => {
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => setSelectedSubject(null)}
-          className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
+          className={`px-3 py-1.5 rounded-none text-sm transition-colors ${
             !selectedSubject 
               ? 'bg-red-600 text-white' 
               : 'bg-black/30 text-gray-400 hover:bg-black/50'
@@ -89,7 +89,7 @@ const TextbookBrowser = () => {
           <button
             key={subject.id}
             onClick={() => setSelectedSubject(subject.id)}
-            className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
+            className={`px-3 py-1.5 rounded-none text-sm transition-colors ${
               selectedSubject === subject.id
                 ? 'bg-red-600 text-white'
                 : 'bg-black/30 text-gray-400 hover:bg-black/50'
@@ -114,11 +114,11 @@ const TextbookBrowser = () => {
           {filteredTextbooks.map((book) => (
             <Link
               key={book.id}
-              to={`/science-tech/textbooks/${book.id}`}
-              className="group bg-black/40 backdrop-blur-lg rounded-xl overflow-hidden border border-red-900/30 hover:border-red-500/50 transition-all duration-300"
+              href={`/science-tech/textbooks/${book.id}`}
+              className="group bg-black/40 backdrop-blur-lg rounded-none overflow-hidden border border-red-900/30 hover:border-red-500/50 transition-all duration-300"
             >
               {/* Cover */}
-              <div className="aspect-[3/4] bg-gradient-to-br from-gray-800 to-gray-900 relative">
+              <div className="aspect-[3/4] bg-[#10131b] from-gray-800 to-gray-900 relative">
                 {book.cover_url ? (
                   <img 
                     src={book.cover_url} 

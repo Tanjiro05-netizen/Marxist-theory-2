@@ -71,7 +71,7 @@ const TableOfContents = ({ contentRef, content }) => {
     }
 
     return (
-        <nav className="sticky top-24 p-4 bg-gray-800/50 rounded-lg border border-gray-700 max-h-[calc(100vh-6rem)] overflow-y-auto">
+        <nav className="sticky top-24 p-4 bg-gray-800/50 rounded-none border border-gray-700 max-h-[calc(100vh-6rem)] overflow-y-auto">
             <h3 className="text-lg font-bold text-white mb-3">On this page</h3>
             <ul>
                 {headings.map(heading => (

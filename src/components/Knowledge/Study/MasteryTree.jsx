@@ -126,117 +126,107 @@ const MasteryTree = ({ onConceptSelect }) => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-[Outfit,sans-serif]">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Star className="w-5 h-5 text-yellow-400" />
+          <h2 className="font-[Cormorant_Garamond,Georgia,serif] text-[22px] font-[500] text-white flex items-center gap-2">
+            <Star size={16} className="text-yellow-400/70" />
             Concept Mastery Tree
           </h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-[0.1em] text-white/25 mt-1">
             Master concepts to unlock advanced topics
           </p>
         </div>
         <div className="text-right">
-          <div className="text-2xl font-bold text-white">
+          <div className="font-[JetBrains_Mono,monospace] text-[24px] font-black text-white leading-none">
             {Object.values(userMastery).filter(m => m.mastery_level >= 3).length}
           </div>
-          <div className="text-xs text-gray-500">Concepts Mastered</div>
+          <div className="font-[JetBrains_Mono,monospace] text-[8px] uppercase tracking-wider text-white/20 mt-0.5">Mastered</div>
         </div>
       </div>
 
       {/* Category Branches */}
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {categories.map(category => {
           const categoryConcepts = getConceptsByCategory(category.id);
           const mastered = getTotalMastered(category.id);
           const isExpanded = expandedCategory === category.id;
           const colorClass = CATEGORY_COLORS[category.color] || CATEGORY_COLORS.red;
-          
+
           return (
-            <div key={category.id} className="bg-gray-900/50 border border-gray-700 rounded-xl overflow-hidden">
+            <div key={category.id} className="bg-[#10131b] border border-white/[0.06] rounded-none overflow-hidden">
               {/* Category Header */}
               <button
                 onClick={() => setExpandedCategory(isExpanded ? null : category.id)}
-                className="w-full flex items-center justify-between p-4 hover:bg-gray-800/50 transition-colors"
+                className="w-full flex items-center justify-between p-4 hover:bg-white/[0.02] transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${colorClass} flex items-center justify-center text-xl`}>
+                  <div className={`w-9 h-9 rounded-none bg-[#10131b] ${colorClass} flex items-center justify-center text-lg shrink-0`}>
                     {category.icon}
                   </div>
                   <div className="text-left">
-                    <h3 className="font-bold text-white">{category.name}</h3>
-                    <p className="text-xs text-gray-500">{category.description}</p>
+                    <h3 className="font-medium text-white/80 text-[13px]">{category.name}</h3>
+                    <p className="text-[11px] text-white/25">{category.description}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 shrink-0">
                   <div className="text-right">
-                    <span className="text-sm font-bold text-white">{mastered}/{categoryConcepts.length}</span>
-                    <span className="text-xs text-gray-500 ml-1">mastered</span>
+                    <span className="font-[JetBrains_Mono,monospace] text-[11px] font-bold text-white/60">{mastered}/{categoryConcepts.length}</span>
+                    <span className="font-[JetBrains_Mono,monospace] text-[9px] text-white/20 ml-1">mastered</span>
                   </div>
-                  <ChevronRight className={`w-5 h-5 text-gray-500 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                  <ChevronRight size={14} className={`text-white/20 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                 </div>
               </button>
 
               {/* Concepts Grid */}
               {isExpanded && (
-                <div className="px-4 pb-4 pt-2 border-t border-gray-700/50">
+                <div className="px-4 pb-4 pt-2 border-t border-white/[0.05]">
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {categoryConcepts.map(concept => {
                       const masteryLevel = getConceptMasteryLevel(concept.id);
                       const unlocked = isConceptUnlocked(concept);
                       const masteryInfo = MASTERY_LEVELS[masteryLevel];
                       const MasteryIcon = masteryInfo.icon;
-                      
+
+                      const nodeClass = unlocked
+                        ? masteryLevel >= 3
+                          ? 'bg-emerald-900/15 border-emerald-800/30 hover:border-emerald-700/50 shadow-[0_0_12px_rgba(16,185,129,0.08)]'
+                          : masteryLevel >= 1
+                            ? 'bg-blue-900/10 border-blue-800/25 hover:border-blue-700/40'
+                            : 'bg-white/[0.03] border-white/[0.07] hover:border-white/[0.14]'
+                        : 'bg-white/[0.015] border-white/[0.04] opacity-40 cursor-not-allowed';
+
+                      const masteryTextColor =
+                        masteryInfo.color === 'green' ? 'text-emerald-400' :
+                        masteryInfo.color === 'blue' ? 'text-blue-400' :
+                        masteryInfo.color === 'yellow' ? 'text-yellow-400' :
+                        'text-white/20';
+
                       return (
                         <button
                           key={concept.id}
                           onClick={() => handleConceptClick(concept)}
                           disabled={!unlocked}
-                          className={`relative p-3 rounded-lg text-left transition-all ${
-                            unlocked
-                              ? masteryLevel >= 3
-                                ? 'bg-green-900/30 border border-green-500/30 hover:border-green-500/50'
-                                : masteryLevel >= 1
-                                  ? 'bg-blue-900/30 border border-blue-500/30 hover:border-blue-500/50'
-                                  : 'bg-gray-800 border border-gray-700 hover:border-gray-600'
-                              : 'bg-gray-800/30 border border-gray-800 opacity-50 cursor-not-allowed'
-                          }`}
+                          className={`relative p-3 rounded-none text-left transition-all border ${nodeClass}`}
                         >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex-1 min-w-0">
-                              <p className={`text-sm font-medium truncate ${
-                                unlocked ? 'text-white' : 'text-gray-500'
-                              }`}>
-                                {concept.name}
-                              </p>
-                              <p className={`text-[10px] mt-0.5 ${
-                                masteryInfo.color === 'green' ? 'text-green-400' :
-                                masteryInfo.color === 'blue' ? 'text-blue-400' :
-                                masteryInfo.color === 'yellow' ? 'text-yellow-400' :
-                                'text-gray-500'
-                              }`}>
-                                {masteryInfo.label}
-                              </p>
-                            </div>
-                            <MasteryIcon className={`w-4 h-4 flex-shrink-0 ${
-                              masteryInfo.color === 'green' ? 'text-green-400' :
-                              masteryInfo.color === 'blue' ? 'text-blue-400' :
-                              masteryInfo.color === 'yellow' ? 'text-yellow-400' :
-                              'text-gray-600'
-                            }`} />
+                          <div className="flex items-start justify-between gap-1.5 mb-2">
+                            <p className={`text-[12px] font-medium truncate ${
+                              unlocked ? 'text-white/75' : 'text-white/25'
+                            }`}>
+                              {concept.name}
+                            </p>
+                            <MasteryIcon size={13} className={`shrink-0 ${masteryTextColor}`} />
                           </div>
-                          
-                          {/* Difficulty dots */}
-                          <div className="flex gap-0.5 mt-2">
+                          <p className={`font-[JetBrains_Mono,monospace] text-[8px] uppercase tracking-wider mb-1.5 ${masteryTextColor}`}>
+                            {masteryInfo.label}
+                          </p>
+                          <div className="flex gap-0.5">
                             {[1, 2, 3, 4, 5].map(i => (
                               <div
                                 key={i}
-                                className={`w-1.5 h-1.5 rounded-full ${
-                                  i <= concept.difficulty
-                                    ? 'bg-red-500'
-                                    : 'bg-gray-700'
+                                className={`w-1 h-1 rounded-full ${
+                                  i <= concept.difficulty ? 'bg-[#b3122e]/60' : 'bg-white/[0.07]'
                                 }`}
                               />
                             ))}
@@ -254,52 +244,47 @@ const MasteryTree = ({ onConceptSelect }) => {
 
       {/* Concept Detail Modal */}
       {selectedConcept && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-lg max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b border-gray-700">
+        <div className="fixed inset-0 bg-[#0b0d12]/90 backdrop-blur flex items-center justify-center z-50 p-4">
+          <div className="bg-[#10131b] border border-white/[0.08] rounded-none w-full max-w-lg max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b border-white/[0.06]">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${
+                <div className={`w-10 h-10 rounded-none bg-[#10131b] ${
                   CATEGORY_COLORS[selectedConcept.category?.color] || CATEGORY_COLORS.red
-                } flex items-center justify-center`}>
+                } flex items-center justify-center text-lg shrink-0`}>
                   {selectedConcept.icon || selectedConcept.category?.icon || '📖'}
                 </div>
                 <div>
-                  <h3 className="font-bold text-white">{selectedConcept.name}</h3>
-                  <p className="text-xs text-gray-500">{selectedConcept.category?.name}</p>
+                  <h3 className="font-[Cormorant_Garamond,Georgia,serif] text-[18px] font-[500] text-white">{selectedConcept.name}</h3>
+                  <p className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-wider text-white/25">{selectedConcept.category?.name}</p>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedConcept(null)}
-                className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                className="p-1.5 hover:bg-white/[0.06] rounded-none transition-colors"
               >
-                <X className="w-5 h-5 text-gray-400" />
+                <X size={15} className="text-white/30" />
               </button>
             </div>
 
-            <div className="p-4 space-y-4">
-              {/* Description */}
+            <div className="p-5 space-y-4">
               <div>
-                <h4 className="text-sm font-bold text-gray-400 mb-2">Overview</h4>
-                <p className="text-gray-300 text-sm">{selectedConcept.description}</p>
+                <p className="font-[JetBrains_Mono,monospace] text-[8px] uppercase tracking-[0.1em] text-white/25 mb-1.5">Overview</p>
+                <p className="text-white/55 text-[13px] leading-relaxed">{selectedConcept.description}</p>
               </div>
 
-              {/* Detailed Explanation */}
               {selectedConcept.detailed_explanation && (
                 <div>
-                  <h4 className="text-sm font-bold text-gray-400 mb-2">Detailed Explanation</h4>
-                  <p className="text-gray-300 text-sm whitespace-pre-wrap">
-                    {selectedConcept.detailed_explanation}
-                  </p>
+                  <p className="font-[JetBrains_Mono,monospace] text-[8px] uppercase tracking-[0.1em] text-white/25 mb-1.5">Detailed Explanation</p>
+                  <p className="text-white/50 text-[13px] whitespace-pre-wrap leading-relaxed">{selectedConcept.detailed_explanation}</p>
                 </div>
               )}
 
-              {/* Key Theorists */}
               {selectedConcept.key_theorists?.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-bold text-gray-400 mb-2">Key Theorists</h4>
-                  <div className="flex flex-wrap gap-2">
+                  <p className="font-[JetBrains_Mono,monospace] text-[8px] uppercase tracking-[0.1em] text-white/25 mb-1.5">Key Theorists</p>
+                  <div className="flex flex-wrap gap-1.5">
                     {selectedConcept.key_theorists.map((theorist, i) => (
-                      <span key={i} className="px-2 py-1 bg-gray-800 rounded text-xs text-gray-300">
+                      <span key={i} className="px-2 py-1 bg-white/[0.05] border border-white/[0.07] rounded-none text-[11px] text-white/60">
                         {theorist}
                       </span>
                     ))}
@@ -307,13 +292,12 @@ const MasteryTree = ({ onConceptSelect }) => {
                 </div>
               )}
 
-              {/* Key Works */}
               {selectedConcept.key_works?.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-bold text-gray-400 mb-2">Key Works</h4>
-                  <div className="flex flex-wrap gap-2">
+                  <p className="font-[JetBrains_Mono,monospace] text-[8px] uppercase tracking-[0.1em] text-white/25 mb-1.5">Key Works</p>
+                  <div className="flex flex-wrap gap-1.5">
                     {selectedConcept.key_works.map((work, i) => (
-                      <span key={i} className="px-2 py-1 bg-gray-800 rounded text-xs text-gray-300 italic">
+                      <span key={i} className="px-2 py-1 bg-white/[0.05] border border-white/[0.07] rounded-none text-[11px] text-white/50 italic">
                         {work}
                       </span>
                     ))}
@@ -321,24 +305,23 @@ const MasteryTree = ({ onConceptSelect }) => {
                 </div>
               )}
 
-              {/* Prerequisites */}
               {selectedConcept.prerequisite_ids?.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-bold text-gray-400 mb-2">Prerequisites</h4>
-                  <div className="flex flex-wrap gap-2">
+                  <p className="font-[JetBrains_Mono,monospace] text-[8px] uppercase tracking-[0.1em] text-white/25 mb-1.5">Prerequisites</p>
+                  <div className="flex flex-wrap gap-1.5">
                     {selectedConcept.prerequisite_ids.map(prereqId => {
                       const prereq = concepts.find(c => c.id === prereqId);
                       const prereqLevel = getConceptMasteryLevel(prereqId);
                       return prereq ? (
-                        <span 
-                          key={prereqId} 
-                          className={`px-2 py-1 rounded text-xs flex items-center gap-1 ${
-                            prereqLevel >= 1 
-                              ? 'bg-green-900/30 text-green-400' 
-                              : 'bg-gray-800 text-gray-400'
+                        <span
+                          key={prereqId}
+                          className={`px-2 py-1 rounded-none text-[11px] flex items-center gap-1 border ${
+                            prereqLevel >= 1
+                              ? 'bg-emerald-900/15 border-emerald-800/30 text-emerald-400'
+                              : 'bg-white/[0.04] border-white/[0.07] text-white/30'
                           }`}
                         >
-                          {prereqLevel >= 1 && <CheckCircle className="w-3 h-3" />}
+                          {prereqLevel >= 1 && <CheckCircle size={11} />}
                           {prereq.name}
                         </span>
                       ) : null;
@@ -347,27 +330,19 @@ const MasteryTree = ({ onConceptSelect }) => {
                 </div>
               )}
 
-              {/* XP Value */}
-              <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
-                <span className="text-sm text-gray-400">XP for Mastery</span>
-                <span className="font-bold text-orange-400">{selectedConcept.xp_value} XP</span>
+              <div className="flex items-center justify-between p-3 bg-white/[0.03] border border-white/[0.06] rounded-none">
+                <span className="text-[12px] text-white/30">XP for Mastery</span>
+                <span className="font-[JetBrains_Mono,monospace] text-[12px] font-bold text-orange-400/80">{selectedConcept.xp_value} XP</span>
               </div>
 
-              {/* Action Button */}
               <button
                 onClick={() => handleStartLearning(selectedConcept)}
-                className="w-full py-3 bg-red-600 hover:bg-red-500 rounded-lg font-bold transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 bg-[#b3122e] hover:bg-[#d41f3d] rounded-none font-[JetBrains_Mono,monospace] text-[11px] uppercase tracking-[0.08em] text-white transition-colors flex items-center justify-center gap-2"
               >
                 {getConceptMasteryLevel(selectedConcept.id) === 0 ? (
-                  <>
-                    <BookOpen className="w-5 h-5" />
-                    Start Learning
-                  </>
+                  <><BookOpen size={14} /> Start Learning</>
                 ) : (
-                  <>
-                    <Zap className="w-5 h-5" />
-                    Continue Learning
-                  </>
+                  <><Zap size={14} /> Continue Learning</>
                 )}
               </button>
             </div>
@@ -376,18 +351,18 @@ const MasteryTree = ({ onConceptSelect }) => {
       )}
 
       {/* Legend */}
-      <div className="flex items-center justify-center gap-4 pt-4 border-t border-gray-800">
+      <div className="flex items-center justify-center gap-5 pt-4 border-t border-white/[0.05]">
         {Object.entries(MASTERY_LEVELS).map(([level, info]) => {
           const Icon = info.icon;
+          const iconColor =
+            info.color === 'green' ? 'text-emerald-400' :
+            info.color === 'blue' ? 'text-blue-400' :
+            info.color === 'yellow' ? 'text-yellow-400' :
+            'text-white/20';
           return (
-            <div key={level} className="flex items-center gap-1.5 text-xs text-gray-500">
-              <Icon className={`w-3.5 h-3.5 ${
-                info.color === 'green' ? 'text-green-400' :
-                info.color === 'blue' ? 'text-blue-400' :
-                info.color === 'yellow' ? 'text-yellow-400' :
-                'text-gray-600'
-              }`} />
-              <span>{info.label}</span>
+            <div key={level} className="flex items-center gap-1.5">
+              <Icon size={12} className={iconColor} />
+              <span className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-wider text-white/25">{info.label}</span>
             </div>
           );
         })}

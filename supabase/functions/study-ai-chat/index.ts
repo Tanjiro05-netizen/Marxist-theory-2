@@ -1,4 +1,11 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import {
+  buildAiProviders,
+  buildStudySources,
+  completeWithAiProviders,
+  formatSourcesForPrompt,
+  selectCitedSources,
+} from '../_shared/aiProviders.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,7 +22,8 @@ Guidelines:
 - Use a comradely tone — supportive and intellectually rigorous.
 - If asked about non-Marxist topics, gently redirect to the study material.
 - You may respond in Chinese or English depending on the user's language.
-- When referencing study resources or milestones from the user's context, mention them by name.`
+- When referencing study resources or milestones from the user's context, mention them by name.
+- When the context includes citable archive sources, cite them inline using their bracket marker, like [S1]. Do not invent citations.`
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -32,6 +40,8 @@ serve(async (req) => {
       )
     }
 
+    const sources = buildStudySources(context)
+
     // Build context string from study data
     let contextBlock = ''
     if (context) {
@@ -45,9 +55,12 @@ serve(async (req) => {
       }
       if (context.resources?.length) {
         const resourceList = context.resources.slice(0, 15).map((r: any) =>
-          `- "${r.title}" (${r.type}${r.author ? ', by ' + r.author : ''})`
+          `- "${r.title}" (${r.type}${r.author ? ', by ' + r.author : ''}${r.category ? ', ' + r.category : ''})`
         ).join('\n')
         parts.push(`Available study resources:\n${resourceList}`)
+      }
+      if (sources.length) {
+        parts.push(`Citable archive sources:\n${formatSourcesForPrompt(sources)}`)
       }
       if (context.completedCount !== undefined && context.totalCount !== undefined) {
         parts.push(`Progress: ${context.completedCount}/${context.totalCount} milestones completed.`)
@@ -61,121 +74,78 @@ serve(async (req) => {
     }
 
     const systemMessage = {
-      role: 'system',
+      role: 'system' as const,
       content: SYSTEM_PROMPT + contextBlock,
     }
-
-    // Try providers in order: DeepSeek → Qwen → Kimi
-    const providers = [
-      {
-        name: 'DeepSeek',
-        keyEnv: 'DEEPSEEK_API_KEY',
-        url: 'https://api.deepseek.com/chat/completions',
-        model: 'deepseek-chat',
-      },
-      {
-        name: 'Qwen',
-        keyEnv: 'DASHSCOPE_API_KEY',
-        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-        model: 'qwen-turbo',
-      },
-      {
-        name: 'Kimi',
-        keyEnv: 'KIMI_API_KEY',
-        url: 'https://api.moonshot.cn/v1/chat/completions',
-        model: 'moonshot-v1-8k',
-      },
-    ]
 
     // Format messages for the API (OpenAI-compatible format)
     const apiMessages = [
       systemMessage,
       ...messages.map((m: any) => ({
-        role: m.type === 'user' ? 'user' : 'assistant',
+        role: (m.type === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
         content: m.content,
       })),
     ]
 
-    let lastError: string | null = null
+    try {
+      const completion = await completeWithAiProviders({
+        providers: buildAiProviders(Deno.env),
+        messages: apiMessages,
+        maxTokens: 1024,
+        temperature: 0.55,
+      })
+      const reply = completion.content
 
-    for (const provider of providers) {
-      const apiKey = Deno.env.get(provider.keyEnv)
-      if (!apiKey) {
-        lastError = `${provider.name}: API key not configured`
-        continue
-      }
+      return new Response(
+        JSON.stringify({
+          reply,
+          provider: completion.provider,
+          model: completion.model,
+          sources: selectCitedSources(reply, sources),
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      )
+    } catch (error) {
+      const details = error instanceof Error ? error.message : String(error)
+      const reply = getFallbackResponse(messages[messages.length - 1]?.content || '', sources)
 
-      try {
-        console.log(`Trying ${provider.name}...`)
-        const response = await fetch(provider.url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({
-            model: provider.model,
-            messages: apiMessages,
-            max_tokens: 1024,
-            temperature: 0.7,
-            stream: false,
-          }),
-        })
-
-        if (!response.ok) {
-          const errText = await response.text()
-          lastError = `${provider.name}: ${response.status} - ${errText}`
-          console.error(lastError)
-          continue
-        }
-
-        const data = await response.json()
-        const reply = data.choices?.[0]?.message?.content
-
-        if (!reply) {
-          lastError = `${provider.name}: empty response`
-          continue
-        }
-
-        return new Response(
-          JSON.stringify({ reply, provider: provider.name }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-        )
-      } catch (err) {
-        lastError = `${provider.name}: ${err.message}`
-        console.error(lastError)
-        continue
-      }
+      // All providers failed
+      return new Response(
+        JSON.stringify({
+          error: 'All AI providers failed',
+          details,
+          reply,
+          provider: 'fallback',
+          model: 'local-fallback',
+          sources: selectCitedSources(reply, sources),
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      )
     }
-
-    // All providers failed
-    return new Response(
-      JSON.stringify({
-        error: 'All AI providers failed',
-        details: lastError,
-        reply: getFallbackResponse(messages[messages.length - 1]?.content || ''),
-        provider: 'fallback',
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-    )
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     )
   }
 })
 
-function getFallbackResponse(input: string): string {
+function getFallbackResponse(input: string, sources: Array<{ marker: string; title: string; type: string }> = []): string {
   const lower = input.toLowerCase()
+  const firstTextSource = sources.find((source) => source.type === 'study_resource') || sources[0]
+  const citation = firstTextSource ? ` [${firstTextSource.marker}]` : ''
+
   if (lower.includes('path') || lower.includes('plan') || lower.includes('next')) {
-    return "I'd recommend following the milestones in order — start with the foundational texts before moving to more advanced theory. Check the Study Path tab for your personalized progression."
+    return `I'd recommend following the milestones in order - start with the foundational texts before moving to more advanced theory. Check the Study Path tab for your personalized progression.${citation}`
   }
   if (lower.includes('progress') || lower.includes('done') || lower.includes('completed')) {
     return "Check the Milestones section to see your progress. Each completed milestone brings you closer to a deeper understanding of Marxist theory."
   }
   if (lower.includes('book') || lower.includes('read') || lower.includes('text')) {
-    return "I recommend starting with the Communist Manifesto and then progressing to Capital Vol. 1. The Study Resources section has curated reading materials."
+    return firstTextSource
+      ? `I recommend starting with "${firstTextSource.title}" and using the Study Resources section to keep the reading line grounded.${citation}`
+      : "I recommend starting with the Communist Manifesto and then progressing to Capital Vol. 1. The Study Resources section has curated reading materials."
   }
   if (lower.includes('dialectic') || lower.includes('materialism')) {
     return "Dialectical materialism is the philosophical foundation of Marxism. Start with Engels' 'Anti-Dühring' and Lenin's 'Materialism and Empirio-criticism' for a thorough grounding."

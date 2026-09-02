@@ -17,14 +17,16 @@ serve(async (req) => {
   }
 
   try {
-    const { email, notify_invite_codes, notify_public_beta } = await req.json()
+    const { email: rawEmail, notify_invite_codes, notify_public_beta } = await req.json()
 
-    if (!email) {
+    if (!rawEmail || typeof rawEmail !== 'string') {
       return new Response(
         JSON.stringify({ error: 'Email is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
+
+    const email = rawEmail.trim().toLowerCase()
 
     // Insert into waitlist
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)
@@ -38,9 +40,10 @@ serve(async (req) => {
 
     if (dbError) {
       if (dbError.code === '23505') {
+        // Return 200 with a flag so supabase-js surfaces it in `data` reliably.
         return new Response(
-          JSON.stringify({ error: 'This email is already on the list' }),
-          { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          JSON.stringify({ alreadyExists: true, error: 'This email is already on the list' }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
       throw dbError
@@ -61,7 +64,7 @@ serve(async (req) => {
           'Authorization': `Bearer ${RESEND_API_KEY}`,
         },
         body: JSON.stringify({
-          from: 'Marxist.info <noreply@marxist.info>',
+          from: 'Marxist.info <onboarding@resend.dev>',
           to: [email],
           subject: 'Welcome to the Marxist.info Waitlist',
           html,

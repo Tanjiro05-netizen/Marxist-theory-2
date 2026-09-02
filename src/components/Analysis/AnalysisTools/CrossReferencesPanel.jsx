@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { supabase } from '../../../supabaseClient';
 import { useAuth } from '../../../context/AuthContext';
 import { Link2, ArrowRight, ArrowLeft, Plus, Trash2, Search, Loader2, ExternalLink } from 'lucide-react';
@@ -13,7 +13,7 @@ const CrossReferencesPanel = ({
     onDeleteReference,
     currentSectionId,
 }) => {
-    const navigate = useNavigate();
+    const router = useRouter();
     const { user } = useAuth();
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -108,7 +108,7 @@ const CrossReferencesPanel = ({
 
             {/* Create Form */}
             {showCreateForm && (
-                <div className="bg-gray-800/50 rounded-lg p-3 space-y-3">
+                <div className="bg-gray-800/50 rounded-none p-3 space-y-3">
                     <p className="text-xs text-gray-400">
                         Create reference from §{currentSectionId}
                     </p>
@@ -205,7 +205,7 @@ const CrossReferencesPanel = ({
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1 min-w-0">
                                                 <button
-                                                    onClick={() => navigate(`/analysis/text/${ref.target?.slug}`)}
+                                                    onClick={() => router.push(`/analysis/text/${ref.target?.slug}`)}
                                                     className="text-sm text-white hover:text-red-400 truncate block"
                                                 >
                                                     {getTitle(ref.target)}
@@ -249,7 +249,7 @@ const CrossReferencesPanel = ({
                                         className="bg-gray-800/50 rounded p-2"
                                     >
                                         <button
-                                            onClick={() => navigate(`/analysis/text/${ref.source?.slug}`)}
+                                            onClick={() => router.push(`/analysis/text/${ref.source?.slug}`)}
                                             className="text-sm text-white hover:text-red-400 truncate block"
                                         >
                                             {getTitle(ref.source)}

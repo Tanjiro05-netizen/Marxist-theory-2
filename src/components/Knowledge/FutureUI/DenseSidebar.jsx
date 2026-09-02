@@ -10,7 +10,7 @@ import {
   Edit3,
   Lock
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { knowledgeApiService } from '../api';
 
 const TOPIC_COLORS = {
@@ -66,59 +66,66 @@ const DenseSidebar = ({ activeItem = 'Feed', onNavigate, userId }) => {
 
   return (
     <>
-      <div className="bg-gray-900/50 border border-gray-800 rounded-sm p-1">
+      {/* Nav items */}
+      <div className="bg-[#10131b] border border-white/[0.06] rounded-none p-2 space-y-0.5">
         {menuItems.map((item, idx) => (
-          <div 
-            key={idx} 
+          <div
+            key={idx}
             onClick={() => !item.disabled && handleItemClick(item.key)}
-            className={`flex items-center justify-between px-3 py-2.5 rounded-sm text-xs font-medium transition-all ${
-              item.disabled 
-                ? 'text-slate-600 cursor-not-allowed' 
-                : 'cursor-pointer hover:bg-white/5'
+            className={`flex items-center justify-between px-3 py-2 rounded-none text-[11px] font-medium transition-all ${
+              item.disabled
+                ? 'text-white/20 cursor-not-allowed'
+                : 'cursor-pointer hover:bg-white/[0.05]'
             } ${
               activeItem === item.key && !item.disabled
-                ? 'text-red-500 bg-red-500/5' 
-                : item.disabled ? '' : 'text-slate-400'
+                ? 'text-[#b3122e] bg-[rgba(179, 18, 46,0.1)]'
+                : item.disabled ? '' : 'text-white/50'
             }`}
           >
-            <div className="flex items-center gap-2">
-              <item.icon className={`w-3.5 h-3.5 ${item.live && !item.disabled ? 'text-red-400 animate-pulse' : ''}`} />
-              {item.label}
-              {item.disabled && <Lock className="w-2.5 h-2.5 text-slate-600" />}
+            <div className="flex items-center gap-2.5">
+              <item.icon className={`w-3.5 h-3.5 ${
+                activeItem === item.key && !item.disabled ? 'text-[#b3122e]' :
+                item.live && !item.disabled ? 'text-[#b3122e] animate-pulse' : ''
+              }`} />
+              <span className="font-[Outfit,sans-serif]">{item.label}</span>
+              {item.disabled && <Lock className="w-2.5 h-2.5 text-white/15" />}
             </div>
             {item.count && (
-              <span className="text-[9px] bg-white/10 px-1 rounded text-slate-500">
+              <span className="font-[JetBrains_Mono,monospace] text-[9px] bg-white/[0.06] px-1.5 py-0.5 rounded-full text-white/30">
                 {item.count}
               </span>
             )}
           </div>
         ))}
       </div>
-      
-      <div className="bg-gray-900/50 border border-gray-800 rounded-sm p-3">
-        <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-800">
-          <span className="text-xs font-bold text-slate-400">My Shortcuts</span>
-          <Edit3 className="w-3 h-3 text-slate-600 cursor-pointer hover:text-white" />
+
+      {/* Shortcuts */}
+      <div className="bg-[#10131b] border border-white/[0.06] rounded-none p-3">
+        <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-white/[0.06]">
+          <span className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-[0.12em] text-white/30">
+            My Shortcuts
+          </span>
+          <Edit3 className="w-3 h-3 text-white/20 cursor-pointer hover:text-white/60 transition-colors" />
         </div>
         <div className="space-y-1.5">
           {followedTopics.length > 0 ? (
             followedTopics.map(topic => {
               const colors = getTopicColor(topic.name);
               return (
-                <Link 
-                  key={topic.id} 
-                  to={`/knowledge?topic=${topic.slug}`}
-                  className="flex items-center gap-2 text-xs text-slate-400 hover:text-white cursor-pointer group"
+                <Link
+                  key={topic.id}
+                  href={`/knowledge?topic=${topic.slug}`}
+                  className="flex items-center gap-2 text-[11px] text-white/40 hover:text-white transition-colors group"
                 >
-                  <div className={`w-4 h-4 ${colors.bg} rounded flex items-center justify-center text-[8px] ${colors.text} border ${colors.border} group-hover:border-opacity-50`}>
+                  <div className={`w-4 h-4 ${colors.bg} rounded flex items-center justify-center text-[8px] ${colors.text} border ${colors.border} shrink-0`}>
                     {topic.name.charAt(0).toUpperCase()}
                   </div>
-                  <span>{topic.name}</span>
+                  <span className="truncate">{topic.name}</span>
                 </Link>
               );
             })
           ) : (
-            <div className="text-[10px] text-slate-600 py-1">
+            <div className="text-[10px] text-white/20 py-1 font-[Outfit,sans-serif]">
               Follow topics to add shortcuts
             </div>
           )}

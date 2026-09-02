@@ -37,7 +37,7 @@ export const glow = style({
   width: '140px',
   height: '140px',
   borderRadius: '50%',
-  background: 'radial-gradient(circle, rgba(200,30,30,0.14) 0%, rgba(200,30,30,0.02) 72%)',
+  background: 'radial-gradient(circle, rgba(179, 18, 46,0.14) 0%, rgba(179, 18, 46,0.02) 72%)',
   filter: 'blur(12px)',
   pointerEvents: 'none',
 });

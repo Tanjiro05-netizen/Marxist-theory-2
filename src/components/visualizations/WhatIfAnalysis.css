@@ -33,7 +33,7 @@
     padding: 15px 20px;
     background: none;
     border: none;
-    color: #e0e0e0;
+    color: #c9c5b8;
     font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
@@ -58,7 +58,7 @@
 
 .analysis-header h3 {
     font-size: 0.9rem;
-    color: #a0a0a0;
+    color: #a5a194;
     font-weight: normal;
 }
 
@@ -68,7 +68,7 @@
     gap: 5px;
     background: none;
     border: none;
-    color: #a0a0a0;
+    color: #a5a194;
     font-size: 0.8rem;
     cursor: pointer;
     padding: 5px;
@@ -78,7 +78,7 @@
 
 .reset-button:hover {
     background-color: rgba(255, 255, 255, 0.05);
-    color: #e0e0e0;
+    color: #c9c5b8;
 }
 
 .variables-container {
@@ -123,12 +123,12 @@
 
 .variable-name {
     font-size: 0.85rem;
-    color: #e0e0e0;
+    color: #c9c5b8;
 }
 
 .variable-value {
     font-size: 0.85rem;
-    color: #a0a0a0;
+    color: #a5a194;
     font-variant-numeric: tabular-nums;
 }
 
@@ -148,7 +148,7 @@
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: #e0e0e0;
+    background: #c9c5b8;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -157,7 +157,7 @@
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: #e0e0e0;
+    background: #c9c5b8;
     cursor: pointer;
     border: none;
     transition: all 0.2s ease;
@@ -173,23 +173,23 @@
 
 /* Sentiment-specific styles */
 .variable-slider.positive::-webkit-slider-thumb {
-    background: #2ed573;
-    box-shadow: 0 0 5px rgba(46, 213, 115, 0.5);
+    background: #2d8a4e;
+    box-shadow: 0 0 5px rgba(45, 138, 78, 0.5);
 }
 
 .variable-slider.positive::-moz-range-thumb {
-    background: #2ed573;
-    box-shadow: 0 0 5px rgba(46, 213, 115, 0.5);
+    background: #2d8a4e;
+    box-shadow: 0 0 5px rgba(45, 138, 78, 0.5);
 }
 
 .variable-slider.negative::-webkit-slider-thumb {
-    background: #ff3b3b;
-    box-shadow: 0 0 5px rgba(255, 59, 59, 0.5);
+    background: #d41f3d;
+    box-shadow: 0 0 5px rgba(212, 31, 61, 0.5);
 }
 
 .variable-slider.negative::-moz-range-thumb {
-    background: #ff3b3b;
-    box-shadow: 0 0 5px rgba(255, 59, 59, 0.5);
+    background: #d41f3d;
+    box-shadow: 0 0 5px rgba(212, 31, 61, 0.5);
 }
 
 .analysis-footer {
@@ -209,30 +209,30 @@
 }
 
 .outcome-indicator.positive {
-    background-color: rgba(46, 213, 115, 0.1);
-    border: 1px solid rgba(46, 213, 115, 0.3);
+    background-color: rgba(45, 138, 78, 0.1);
+    border: 1px solid rgba(45, 138, 78, 0.3);
 }
 
 .outcome-indicator.negative {
-    background-color: rgba(255, 59, 59, 0.1);
-    border: 1px solid rgba(255, 59, 59, 0.3);
+    background-color: rgba(212, 31, 61, 0.1);
+    border: 1px solid rgba(212, 31, 61, 0.3);
 }
 
 .outcome-label {
     font-size: 0.85rem;
-    color: #a0a0a0;
+    color: #a5a194;
 }
 
 .outcome-value {
     font-size: 0.85rem;
     font-weight: 500;
-    color: #e0e0e0;
+    color: #c9c5b8;
 }
 
 .outcome-indicator.positive .outcome-value {
-    color: #2ed573;
+    color: #2d8a4e;
 }
 
 .outcome-indicator.negative .outcome-value {
-    color: #ff3b3b;
+    color: #d41f3d;
 }

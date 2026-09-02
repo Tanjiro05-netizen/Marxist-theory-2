@@ -41,7 +41,7 @@ const GlobalLaborMap = ({ strikes, movements }) => {
 
   return (
     <motion.div 
-      className="bg-gradient-to-r from-slate-900/80 via-gray-900/70 to-black/60 p-6 rounded-lg shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl border border-slate-800 hover:border-slate-700 relative"
+      className="bg-[#10131b] from-slate-900/80 via-gray-900/70 to-black/60 p-6 rounded-none shadow-none backdrop-blur-sm transition-all duration-300 hover:shadow-none border border-slate-800 hover:border-slate-700 relative"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -61,7 +61,7 @@ const GlobalLaborMap = ({ strikes, movements }) => {
         </div>
       </div>
       
-      <ComposableMap className="bg-slate-950 rounded-lg">
+      <ComposableMap className="bg-slate-950 rounded-none">
         <ZoomableGroup zoom={1.2} center={[0, 0]}>
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
@@ -76,15 +76,15 @@ const GlobalLaborMap = ({ strikes, movements }) => {
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    fill={hasEvents ? "#1a3658" : "#1f2937"}
-                    stroke="#374151"
+                    fill={hasEvents ? "#1a3658" : "#10131b"}
+                    stroke="#262a35"
                     strokeWidth={0.5}
                     onMouseEnter={() => handleGeographyHover(geo.properties)}
                     onMouseLeave={() => setTooltipContent(null)}
                     style={{
                       default: { outline: 'none' },
                       hover: { 
-                        fill: hasEvents ? "#234876" : "#374151", 
+                        fill: hasEvents ? "#234876" : "#262a35", 
                         outline: 'none',
                         transition: 'all 250ms' 
                       },
@@ -105,9 +105,9 @@ const GlobalLaborMap = ({ strikes, movements }) => {
               >
                 <motion.circle
                   r={strike.intensity * 3 + 4}
-                  fill="#ef4444"
+                  fill="#d41f3d"
                   fillOpacity={0.7}
-                  stroke="#ef4444"
+                  stroke="#d41f3d"
                   strokeWidth={1}
                   initial={{ scale: 0 }}
                   animate={{ 
@@ -133,9 +133,9 @@ const GlobalLaborMap = ({ strikes, movements }) => {
               >
                 <motion.circle
                   r={movement.size * 2 + 4}
-                  fill="#3b82f6"
+                  fill="#4a7fb5"
                   fillOpacity={0.7}
-                  stroke="#3b82f6"
+                  stroke="#4a7fb5"
                   strokeWidth={1}
                   initial={{ scale: 0 }}
                   animate={{ 
@@ -157,7 +157,7 @@ const GlobalLaborMap = ({ strikes, movements }) => {
       {/* Selected Event Information */}
       {selectedEvent && (
         <motion.div 
-          className="mt-4 p-4 bg-slate-800/70 rounded-lg border border-slate-700"
+          className="mt-4 p-4 bg-slate-800/70 rounded-none border border-slate-700"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
@@ -187,7 +187,7 @@ const GlobalLaborMap = ({ strikes, movements }) => {
       {/* Floating Tooltip */}
       {tooltipContent && !selectedEvent && (
         <div 
-          className="fixed bg-slate-900 p-3 rounded-md shadow-lg border border-slate-700 z-50 text-sm text-white pointer-events-none"
+          className="fixed bg-slate-900 p-3 rounded-none shadow-none border border-slate-700 z-50 text-sm text-white pointer-events-none"
           style={{
             left: tooltipPosition.x + 15,
             top: tooltipPosition.y - 40,

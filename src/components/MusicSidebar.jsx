@@ -10,7 +10,7 @@ const MusicSidebar = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed right-0 top-1/2 -translate-y-1/2 z-40 bg-green-600 hover:bg-green-700 text-white p-3 rounded-l-lg shadow-lg transition-all duration-300 hover:pr-5 group"
+          className="fixed right-0 top-1/2 -translate-y-1/2 z-40 bg-green-600 hover:bg-green-700 text-white p-3 rounded-l-lg shadow-none transition-all duration-300 hover:pr-5 group"
           title="Open Music Player"
         >
           <Music className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -24,7 +24,7 @@ const MusicSidebar = () => {
         }`}
         style={{ width: '320px' }}
       >
-        <div className="h-full bg-[#0d0e14] border-l border-gray-800 shadow-2xl flex flex-col">
+        <div className="h-full bg-[#0b0d12] border-l border-gray-800 shadow-none flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-800">
             <div className="flex items-center gap-2">
@@ -51,7 +51,7 @@ const MusicSidebar = () => {
               frameBorder="0"
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
               loading="lazy"
-              className="rounded-lg"
+              className="rounded-none"
               title="Spotify Player"
             />
 

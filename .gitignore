@@ -4,6 +4,7 @@ node_modules/
 .DS_Store
 build/
 .next/
+.next-dev/
 dist/
 npm-debug.log*
 yarn-debug.log*
@@ -12,7 +13,25 @@ yarn-error.log*
 # Cache files
 node_modules/.cache
 .eslintcache
+playwright-report/
+test-results/
 
 # Windsurf plans, workflows, and guides
 .windsurf/plans/
 docs/
+
+# Local Claude worktrees
+.claude/worktrees/
+
+# Agent/tool artifacts
+.zcode/
+next-env.d.ts
+HANDOFF.md
+HANDOFF-I18N.md
+
+# Bulk data migration kept local (already applied; 14MB of book text)
+supabase/migrations/20260828130000_ingest_pure_theory.sql
+supabase/migrations/20260828140000_remove_duplicate_capital_ingesets.sql
+
+# Supabase CLI local state
+supabase/.temp/

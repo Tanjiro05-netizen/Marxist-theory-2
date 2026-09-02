@@ -35,7 +35,7 @@ const SpotifyEmbed = () => {
     }, []);
 
     return (
-        <div className="w-full bg-gradient-to-r from-black to-black/95 backdrop-blur-md border border-red-500/20 rounded-lg overflow-hidden">
+        <div className="w-full bg-[#10131b] from-black to-black/95 backdrop-blur-md border border-red-500/20 rounded-none overflow-hidden">
             <div className="w-full">
                 <div 
                     id="embed-iframe" 

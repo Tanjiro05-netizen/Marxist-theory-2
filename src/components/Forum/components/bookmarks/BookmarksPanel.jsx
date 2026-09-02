@@ -29,7 +29,7 @@ function BookmarkItem({ bookmark, onView, onRemove }) {
     >
       <div style={{ flex: 1 }}>
         <h4 style={{
-          color: '#e5e5e5',
+          color: '#c9c5b8',
           fontSize: '14px',
           fontWeight: '500',
           marginBottom: '6px',
@@ -142,7 +142,7 @@ function BookmarksPanel({ apiService, userId, onViewThread, onClose }) {
         }}>
           <h3 style={{ 
             fontWeight: '500', 
-            color: '#e5e5e5',
+            color: '#c9c5b8',
             fontSize: '15px',
             letterSpacing: '-0.01em',
           }}>

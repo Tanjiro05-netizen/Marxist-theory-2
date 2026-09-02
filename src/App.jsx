@@ -1,13 +1,30 @@
 import React from 'react';
-import { Book, FileText, BookOpen,
-    Newspaper, GraduationCap, HelpCircle, BookMarked, FlaskConical, LineChart,
-    Users, Bot, Terminal, Lock } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { FileText, BookOpen, GraduationCap, Newspaper,
+    FlaskConical, LineChart, HelpCircle, Users, Radio,
+    Lock, ArrowUpRight, Book } from 'lucide-react';
+import Link from 'next/link';
 
 import { useAuth } from './context/AuthContext';
 import hammerAndSickleImage from './assets/hammerandsickle.png';
 import { Analytics } from '@vercel/analytics/react';
 import * as s from './App.css.ts';
+
+const hammerAndSickleImageUrl =
+    typeof hammerAndSickleImage === 'string' ? hammerAndSickleImage : hammerAndSickleImage.src;
+
+/* The platform table of contents — mirrors the navband order */
+const SECTIONS = [
+    { to: '/theory', icon: FileText, title: 'Theory', desc: 'Foundational texts and study guides with advanced reading tools.', guest: false },
+    { to: '/analysis', icon: BookOpen, title: 'Analysis', desc: 'Annotated papers, close reading, and companion analysis.', guest: false },
+    { to: '/digital-library', icon: Book, title: 'Digital Library', desc: 'An expanding collection of essential Marxist texts and analyses.', guest: true },
+    { to: '/study', icon: GraduationCap, title: 'Study Center', desc: 'Structured learning paths, curated reading lists, and progress tracking.', guest: false },
+    { to: '/science-tech', icon: FlaskConical, title: 'Science & Tech', desc: 'Courses and reference material across the natural sciences and mathematics.', guest: false },
+    { to: '/politics', icon: Newspaper, title: 'Politics', desc: 'News, analysis, and commentary on current events.', guest: false },
+    { to: '/visualizations', icon: LineChart, title: 'Data & Visualizations', desc: 'Interactive charts and dashboards covering economic and social indicators.', guest: false },
+    { to: '/knowledge', icon: HelpCircle, title: 'Knowledge Base', desc: 'A community Q&A and reference resource.', guest: false },
+    { to: '/directory', icon: Users, title: 'Directory', desc: 'Browse and connect with other members of the platform.', guest: false },
+    { to: '/feed', icon: Radio, title: 'Feed', desc: 'Activity and discussion from across the platform.', guest: true },
+];
 
 const App = () => {
     const { user } = useAuth();
@@ -18,119 +35,152 @@ const App = () => {
 
     const secondaryCta = user
         ? { to: '/submit', label: 'Submit Work' }
-        : { to: '/forum', label: 'Enter Forum' };
+        : { to: '/login', label: 'Register to Unlock' };
 
     return (
         <div className={s.page}>
             <Analytics />
-            <div className={s.hero}>
+
+            {/* ── Front page hero — original imagery, editorial composition ── */}
+            <section className={s.hero}>
                 <div className={s.heroGrid} />
                 <div className={s.heroImageWrap}>
-                    <img src={hammerAndSickleImage} alt="Background" className={s.heroImage} />
+                    <img src={hammerAndSickleImageUrl} alt="Background" className={s.heroImage} />
                 </div>
+
+                <span className={`${s.heroCorner} ${s.heroCornerLeft}`} aria-hidden="true">
+                    Marxists.Info
+                </span>
+                <span className={`${s.heroCorner} ${s.heroCornerRight}`} aria-hidden="true">
+                    Theory · Education · Analysis
+                </span>
 
                 <div className={s.heroContent}>
                     <div className={s.heroCopy}>
-                        <h1 className={s.heroTitle}>Advancing Revolutionary Theory</h1>
+                        <h1 className={s.heroTitle}>
+                            marxist<span className={s.heroDot}>.</span>info
+                        </h1>
+                        <div className={s.heroRule} aria-hidden="true" />
                         <p className={s.heroSubtitle}>
-                            A platform for the new generation of Marxist theorists and researchers.
+                            A platform for Marxist theory, education, and analysis.
                         </p>
                         <div className={s.heroCtas}>
-                            <Link to={primaryCta.to} className={s.ctaPrimary}>
+                            <Link href={primaryCta.to} className={s.ctaPrimary}>
                                 {primaryCta.label}
                             </Link>
-                            <Link to={secondaryCta.to} className={s.ctaSecondary}>
+                            <Link href={secondaryCta.to} className={s.ctaGhost}>
                                 {secondaryCta.label}
                             </Link>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* About Section */}
+                <div className={s.scrollCue} aria-hidden="true">
+                    <span className={s.scrollLabel}>Scroll</span>
+                    <span className={s.scrollLine} />
+                </div>
+            </section>
+
+            {/* ── Inside the Platform — shared-wall table of contents ── */}
+            <section className={s.sectionBlock}>
+                <div className={s.innerWrap}>
+                    {!user && (
+                        <div className={s.guestIntro}>
+                            <span className={s.guestBadge}>
+                                <Lock size={13} />
+                                Members Only
+                            </span>
+                            <p className={s.guestLead}>
+                                Register to unlock the full platform. Here&apos;s what awaits inside.
+                            </p>
+                        </div>
+                    )}
+
+                    <div className={s.sectionRow}>
+                        <span className={s.sectionLabel}>Inside the Platform</span>
+                        <span className={s.sectionIndex}>
+                            {String(SECTIONS.length).padStart(2, '0')} Sections
+                        </span>
+                    </div>
+
+                    <div className={s.grid}>
+                        {SECTIONS.map((section, i) => {
+                            const Icon = section.icon;
+                            const restricted = !user && !section.guest;
+                            const href = restricted ? '/login' : section.to;
+                            return (
+                                <Link key={section.to} href={href} className={s.cell}>
+                                    <span className={s.iconFrame}>
+                                        <Icon size={18} strokeWidth={1.6} />
+                                    </span>
+                                    <span className={s.cellBody}>
+                                        <span className={s.cellHeader}>
+                                            <span className={s.cellIndex}>{String(i + 1).padStart(2, '0')}</span>
+                                            <span className={s.cellTitle}>{section.title}</span>
+                                            {restricted && <span className={s.cellTag}>Members Only</span>}
+                                        </span>
+                                        <span className={s.cellDesc}>{section.desc}</span>
+                                    </span>
+                                    <span className={s.cellArrow}>
+                                        {restricted
+                                            ? <Lock size={14} strokeWidth={1.6} />
+                                            : <ArrowUpRight size={16} strokeWidth={1.6} />}
+                                    </span>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                </div>
+            </section>
+
+            {/* ── About — the original cards as an epigraph feature ── */}
             <section className={s.aboutSection}>
                 <div className={s.aboutInner}>
-                    <h2 className={s.aboutTitle}>About Our Collective</h2>
-                    <p className={s.aboutText}>
-                        We are a collective of researchers, theorists, and activists dedicated to advancing Marxist theory and practice in the contemporary world. Our platform serves as a hub for critical analysis, theoretical development, and revolutionary scholarship.
+                    <p className={s.aboutKicker}>About the Project</p>
+                    <p className={s.epigraph}>
+                        A platform for the study and discussion of Marxist theory, political economy,
+                        and history — a well-organised space for reading, research, and debate.
                     </p>
                     <div className={s.aboutGrid}>
-                        <div className={s.aboutCard}>
-                            <div className={s.aboutIconFrame}>
-                                <Book size={24} />
-                            </div>
+                        <div className={s.aboutCell}>
+                            <span className={s.aboutIconFrame}>
+                                <Book size={22} strokeWidth={1.6} />
+                            </span>
                             <div>
                                 <h3 className={s.aboutCardTitle}>Research Focus</h3>
-                                <p className={s.aboutCardText}>Conducting rigorous theoretical research and analysis of contemporary social, economic, and political phenomena through a Marxist lens.</p>
+                                <p className={s.aboutCardText}>
+                                    In-depth analysis of contemporary social, economic, and political
+                                    developments from a Marxist perspective.
+                                </p>
                             </div>
                         </div>
-                        <div className={s.aboutCard}>
-                            <div className={s.aboutIconFrame}>
-                                <FileText size={24} />
-                            </div>
+                        <div className={s.aboutCell}>
+                            <span className={s.aboutIconFrame}>
+                                <FileText size={22} strokeWidth={1.6} />
+                            </span>
                             <div>
                                 <h3 className={s.aboutCardTitle}>Publication Platform</h3>
-                                <p className={s.aboutCardText}>Providing a platform for revolutionary scholars to publish and share their research, analyses, and theoretical contributions.</p>
+                                <p className={s.aboutCardText}>
+                                    A space for writers and researchers to publish analysis, commentary,
+                                    and theoretical work.
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Coming Soon — Members-Only Features (guest view only) */}
+            {/* ── Closing CTA (guests) ── */}
             {!user && (
-                <section className={s.guestSection}>
-                    <div className={s.guestInner}>
-                        <div className={s.guestHeader}>
-                            <span className={s.guestBadge}>
-                                <Lock size={14} />
-                                Members Only
-                            </span>
-                            <h2 className={s.guestTitle}>Coming Soon for Members</h2>
-                            <p className={s.guestSubtitle}>
-                                Register to unlock the full platform. Here's what awaits inside.
-                            </p>
-                        </div>
-
-                        <div className={s.guestGrid}>
-                            {[
-                                { icon: Newspaper, title: 'Politics', desc: 'A newspaper-style feed of political dispatches, analysis, and commentary on current events through a Marxist lens.' },
-                                { icon: GraduationCap, title: 'Study Center', desc: 'Structured learning paths, curated reading lists, and milestone tracking for systematic Marxist education.' },
-                                { icon: BookMarked, title: 'Revolutionary Theory', desc: 'Browse and read in-depth theory articles with advanced analysis tools and reading modes.' },
-                                { icon: HelpCircle, title: 'Knowledge Q&A', desc: 'Ask questions, get answers, and build a collaborative knowledge base on Marxist theory and practice.' },
-                                { icon: BookOpen, title: 'Glossary', desc: 'A self-contained wiki of Marxist concepts, terms, and definitions — all interconnected and searchable.' },
-                                { icon: FlaskConical, title: 'Science & Tech', desc: 'Courses and textbooks spanning natural sciences, mathematics, and technology — because communists should know everything.' },
-                                { icon: LineChart, title: 'Data & Visualizations', desc: 'Track global economic developments and class-struggle metrics through interactive data visualizations.' },
-                                { icon: Users, title: 'Member Directory', desc: 'Connect with fellow researchers, theorists, and activists building revolutionary understanding together.' },
-                                { icon: Terminal, title: 'World Sim', desc: 'An immersive historical-materialist simulation where you organize, strategize, and shape revolutionary history.' },
-                                { icon: Bot, title: 'MarxBot', desc: 'An AI assistant trained on Marxist theory to help with research, analysis, and theoretical questions.' },
-                            ].map((feature, i) => {
-                                const Icon = feature.icon;
-                                return (
-                                    <div key={i} className={s.featureCard}>
-                                        <div className={s.featureRow}>
-                                            <div className={s.featureIconFrame}>
-                                                <Icon size={18} />
-                                            </div>
-                                            <div className={s.featureBody}>
-                                                <div className={s.featureHeader}>
-                                                    <h3 className={s.featureTitle}>{feature.title}</h3>
-                                                    <span className={s.featureTag}>Coming Soon</span>
-                                                </div>
-                                                <p className={s.featureDesc}>{feature.desc}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-
-                        <div className={s.guestCta}>
-                            <Link to="/login" className={s.ctaPrimary}>
-                                Register to Unlock
-                                <Lock size={16} />
-                            </Link>
-                        </div>
+                <section className={s.sectionBlock}>
+                    <div className={`${s.innerWrap} ${s.ctaBand}`}>
+                        <Link href="/login" className={s.ctaPrimary}>
+                            Register to Unlock
+                            <Lock size={14} />
+                        </Link>
+                        <Link href="/digital-library" className={s.ctaGhost}>
+                            Browse the Library
+                        </Link>
                     </div>
                 </section>
             )}

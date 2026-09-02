@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Loader2, BarChart3, Search, Hash, TrendingUp, Quote, X } from 'lucide-react';
+import { sanitizeRichHtml } from '../../../lib/sanitize-html.js';
 
 const TextAnalysisPanel = ({ text, currentLanguage, selectedText = '' }) => {
     const [keywords, setKeywords] = useState([]);
@@ -137,7 +138,7 @@ const TextAnalysisPanel = ({ text, currentLanguage, selectedText = '' }) => {
     return (
         <div className="space-y-4">
             {/* Tab Navigation */}
-            <div className="flex gap-1 bg-gray-800/50 rounded-lg p-1">
+            <div className="flex gap-1 bg-gray-800/50 rounded-none p-1">
                 {selectionAnalysis && (
                     <button
                         onClick={() => setActiveTab('selection')}
@@ -179,7 +180,7 @@ const TextAnalysisPanel = ({ text, currentLanguage, selectedText = '' }) => {
                         </button>
                     </div>
 
-                    <div className="p-3 bg-gray-800/50 rounded-lg max-h-24 overflow-y-auto">
+                    <div className="p-3 bg-gray-800/50 rounded-none max-h-24 overflow-y-auto">
                         <p className="text-sm text-gray-300 italic">
                             "{selectionAnalysis.text.length > 200 
                                 ? selectionAnalysis.text.slice(0, 200) + '...' 
@@ -188,15 +189,15 @@ const TextAnalysisPanel = ({ text, currentLanguage, selectedText = '' }) => {
                     </div>
 
                     <div className="grid grid-cols-3 gap-2">
-                        <div className="bg-gray-800/50 rounded-lg p-2 text-center">
+                        <div className="bg-gray-800/50 rounded-none p-2 text-center">
                             <div className="text-lg font-bold text-white">{selectionAnalysis.wordCount}</div>
                             <div className="text-xs text-gray-500">Words</div>
                         </div>
-                        <div className="bg-gray-800/50 rounded-lg p-2 text-center">
+                        <div className="bg-gray-800/50 rounded-none p-2 text-center">
                             <div className="text-lg font-bold text-white">{selectionAnalysis.charCount}</div>
                             <div className="text-xs text-gray-500">Characters</div>
                         </div>
-                        <div className="bg-gray-800/50 rounded-lg p-2 text-center">
+                        <div className="bg-gray-800/50 rounded-none p-2 text-center">
                             <div className="text-lg font-bold text-white">{selectionAnalysis.sentenceCount}</div>
                             <div className="text-xs text-gray-500">Sentences</div>
                         </div>
@@ -239,7 +240,7 @@ const TextAnalysisPanel = ({ text, currentLanguage, selectedText = '' }) => {
                                 <button
                                     key={word}
                                     onClick={() => generateConcordance(word)}
-                                    className={`w-full flex items-center gap-2 p-2 rounded-lg transition-colors text-left
+                                    className={`w-full flex items-center gap-2 p-2 rounded-none transition-colors text-left
                                         ${selectedWord === word 
                                             ? 'bg-red-600/20 border border-red-500/30' 
                                             : 'bg-gray-800/50 hover:bg-gray-800'}`}
@@ -276,7 +277,7 @@ const TextAnalysisPanel = ({ text, currentLanguage, selectedText = '' }) => {
                                         <p 
                                             key={i}
                                             className="text-xs text-gray-400 p-2 bg-gray-800/30 rounded"
-                                            dangerouslySetInnerHTML={{ __html: `...${sentence}...` }}
+                                            dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(`...${sentence}...`) }}
                                         />
                                     ))}
                                 </div>
@@ -294,26 +295,26 @@ const TextAnalysisPanel = ({ text, currentLanguage, selectedText = '' }) => {
                     </h4>
 
                     <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-gray-800/50 rounded-lg p-3">
+                        <div className="bg-gray-800/50 rounded-none p-3">
                             <div className="text-2xl font-bold text-white">{stats.words.toLocaleString()}</div>
                             <div className="text-xs text-gray-500">Total Words</div>
                         </div>
-                        <div className="bg-gray-800/50 rounded-lg p-3">
+                        <div className="bg-gray-800/50 rounded-none p-3">
                             <div className="text-2xl font-bold text-white">{stats.sentences.toLocaleString()}</div>
                             <div className="text-xs text-gray-500">Sentences</div>
                         </div>
-                        <div className="bg-gray-800/50 rounded-lg p-3">
+                        <div className="bg-gray-800/50 rounded-none p-3">
                             <div className="text-2xl font-bold text-white">{stats.uniqueWords.toLocaleString()}</div>
                             <div className="text-xs text-gray-500">Unique Words</div>
                         </div>
-                        <div className="bg-gray-800/50 rounded-lg p-3">
+                        <div className="bg-gray-800/50 rounded-none p-3">
                             <div className="text-2xl font-bold text-white">{stats.avgWordLength}</div>
                             <div className="text-xs text-gray-500">Avg Word Length</div>
                         </div>
                     </div>
 
                     {/* Vocabulary Richness */}
-                    <div className="bg-gray-800/50 rounded-lg p-3">
+                    <div className="bg-gray-800/50 rounded-none p-3">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-xs text-gray-400">Vocabulary Richness</span>
                             <span className="text-xs text-white font-medium">
@@ -322,7 +323,7 @@ const TextAnalysisPanel = ({ text, currentLanguage, selectedText = '' }) => {
                         </div>
                         <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
                             <div 
-                                className="h-full bg-gradient-to-r from-red-600 to-red-400 rounded-full"
+                                className="h-full bg-[#10131b] from-red-600 to-red-400 rounded-full"
                                 style={{ width: `${stats.words > 0 ? (stats.uniqueWords / stats.words) * 100 : 0}%` }}
                             />
                         </div>

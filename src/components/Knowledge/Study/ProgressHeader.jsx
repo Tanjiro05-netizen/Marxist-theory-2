@@ -24,57 +24,47 @@ const ProgressHeader = ({ progress, userCell }) => {
     ? Math.min((xpInCurrentRank / xpNeededForNext) * 100, 100) 
     : 100;
 
+  const rankBarColor = {
+    gray: 'bg-white/20',
+    green: 'bg-emerald-500',
+    blue: 'bg-blue-500',
+    purple: 'bg-purple-500',
+    red: 'bg-[#b3122e]',
+    gold: 'bg-yellow-500',
+  }[rankInfo.color] || 'bg-[#b3122e]';
+
+  const rankTextColor = {
+    gray: 'text-white/40',
+    green: 'text-emerald-400',
+    blue: 'text-blue-400',
+    purple: 'text-purple-400',
+    red: 'text-[#b3122e]',
+    gold: 'text-yellow-400',
+  }[rankInfo.color] || 'text-white/60';
+
   return (
-    <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border border-gray-700 rounded-xl p-4 md:p-6">
+    <div className="bg-[#10131b] border border-white/[0.06] rounded-none p-4 md:p-5 font-[Outfit,sans-serif]">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         {/* Rank & XP */}
         <div className="flex items-center gap-4">
-          {/* Rank Badge */}
-          <div className={`w-16 h-16 rounded-xl flex items-center justify-center text-3xl
-            ${rankInfo.color === 'gray' ? 'bg-gray-700/50' : ''}
-            ${rankInfo.color === 'green' ? 'bg-green-500/20' : ''}
-            ${rankInfo.color === 'blue' ? 'bg-blue-500/20' : ''}
-            ${rankInfo.color === 'purple' ? 'bg-purple-500/20' : ''}
-            ${rankInfo.color === 'red' ? 'bg-red-500/20' : ''}
-            ${rankInfo.color === 'gold' ? 'bg-yellow-500/20' : ''}
-          `}>
+          <div className="w-14 h-14 rounded-none bg-white/[0.04] flex items-center justify-center text-2xl shrink-0">
             {rankInfo.icon}
           </div>
-          
-          {/* Rank Info */}
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <span className={`text-lg font-bold uppercase tracking-wider
-                ${rankInfo.color === 'gray' ? 'text-gray-400' : ''}
-                ${rankInfo.color === 'green' ? 'text-green-400' : ''}
-                ${rankInfo.color === 'blue' ? 'text-blue-400' : ''}
-                ${rankInfo.color === 'purple' ? 'text-purple-400' : ''}
-                ${rankInfo.color === 'red' ? 'text-red-400' : ''}
-                ${rankInfo.color === 'gold' ? 'text-yellow-400' : ''}
-              `}>
-                {rankInfo.label}
-              </span>
-            </div>
-            
-            {/* XP Progress Bar */}
+          <div className="flex-1 min-w-0">
+            <span className={`font-[JetBrains_Mono,monospace] text-[11px] uppercase tracking-[0.12em] font-bold ${rankTextColor}`}>
+              {rankInfo.label}
+            </span>
             <div className="mt-2 space-y-1">
-              <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full transition-all duration-500
-                    ${rankInfo.color === 'gray' ? 'bg-gray-500' : ''}
-                    ${rankInfo.color === 'green' ? 'bg-green-500' : ''}
-                    ${rankInfo.color === 'blue' ? 'bg-blue-500' : ''}
-                    ${rankInfo.color === 'purple' ? 'bg-purple-500' : ''}
-                    ${rankInfo.color === 'red' ? 'bg-red-500' : ''}
-                    ${rankInfo.color === 'gold' ? 'bg-yellow-500' : ''}
-                  `}
+              <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${rankBarColor}`}
                   style={{ width: `${progressPercentage}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400">{currentXp.toLocaleString()} XP</span>
+              <div className="flex items-center justify-between">
+                <span className="font-[JetBrains_Mono,monospace] text-[9px] text-white/30">{currentXp.toLocaleString()} XP</span>
                 {nextRankXp && (
-                  <span className="text-slate-500">
+                  <span className="font-[JetBrains_Mono,monospace] text-[9px] text-white/20">
                     {(nextRankXp - currentXp).toLocaleString()} to next rank
                   </span>
                 )}
@@ -84,48 +74,40 @@ const ProgressHeader = ({ progress, userCell }) => {
         </div>
 
         {/* Stats */}
-        <div className="flex items-center gap-6">
-          {/* Streak */}
+        <div className="flex items-center gap-5 md:gap-6">
           <div className="text-center">
-            <div className="flex items-center justify-center gap-1.5">
-              <Flame className={`w-5 h-5 ${
-                (progress?.current_streak || 0) >= 7 ? 'text-orange-400' : 'text-slate-500'
-              }`} />
-              <span className="text-xl font-bold text-white">
-                {progress?.current_streak || 0}
-              </span>
+            <div className="flex items-center justify-center gap-1">
+              <Flame className={`w-4 h-4 ${(progress?.current_streak || 0) >= 7 ? 'text-orange-400' : 'text-white/20'}`} />
+              <span className="text-[18px] font-bold text-white leading-none">{progress?.current_streak || 0}</span>
             </div>
-            <div className="text-[10px] text-slate-500 uppercase mt-0.5">Day Streak</div>
+            <div className="font-[JetBrains_Mono,monospace] text-[8px] text-white/20 uppercase tracking-wider mt-1">Streak</div>
             {streakMultiplier > 1 && (
-              <div className="text-[10px] text-orange-400 font-bold mt-0.5">
-                {streakMultiplier}x Bonus
-              </div>
+              <div className="font-[JetBrains_Mono,monospace] text-[8px] text-orange-400 font-bold mt-0.5">{streakMultiplier}×</div>
             )}
           </div>
 
-          {/* Daily XP */}
+          <div className="w-px h-8 bg-white/[0.06]" />
+
           <div className="text-center">
-            <div className="flex items-center justify-center gap-1.5">
-              <TrendingUp className="w-5 h-5 text-green-400" />
-              <span className="text-xl font-bold text-white">
-                {progress?.daily_xp_earned || 0}
-              </span>
-              <span className="text-sm text-slate-500">/100</span>
+            <div className="flex items-center justify-center gap-1">
+              <TrendingUp className="w-4 h-4 text-emerald-400/60" />
+              <span className="text-[18px] font-bold text-white leading-none">{progress?.daily_xp_earned || 0}</span>
+              <span className="text-[11px] text-white/20">/100</span>
             </div>
-            <div className="text-[10px] text-slate-500 uppercase mt-0.5">Today's XP</div>
+            <div className="font-[JetBrains_Mono,monospace] text-[8px] text-white/20 uppercase tracking-wider mt-1">Today</div>
           </div>
 
-          {/* Cell */}
           {userCell && (
-            <div className="text-center hidden md:block">
-              <div className="flex items-center justify-center gap-1.5">
-                <Users className="w-5 h-5 text-blue-400" />
-                <span className="text-sm font-bold text-white truncate max-w-[100px]">
-                  {userCell.name}
-                </span>
+            <>
+              <div className="w-px h-8 bg-white/[0.06] hidden md:block" />
+              <div className="text-center hidden md:block">
+                <div className="flex items-center justify-center gap-1">
+                  <Users className="w-4 h-4 text-white/20" />
+                  <span className="text-[12px] font-medium text-white/60 truncate max-w-[90px]">{userCell.name}</span>
+                </div>
+                <div className="font-[JetBrains_Mono,monospace] text-[8px] text-white/20 uppercase tracking-wider mt-1">Cell</div>
               </div>
-              <div className="text-[10px] text-slate-500 uppercase mt-0.5">Your Cell</div>
-            </div>
+            </>
           )}
         </div>
       </div>

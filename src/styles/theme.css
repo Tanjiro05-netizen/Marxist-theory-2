@@ -1,48 +1,137 @@
-/* Theme variables */
+/* Font indirection: next/font variables set on <html> (see app/layout.jsx),
+   falling back to the original families if unavailable. */
 :root {
-  /* Dark theme (default) */
-  --bg-primary: #12131A;
+  --ff-display: var(--font-cormorant, 'Cormorant Garamond');
+  --ff-body: var(--font-newsreader, 'Newsreader');
+  --ff-label: var(--font-outfit, 'Outfit');
+  --ff-mono: var(--font-jetbrains, 'JetBrains Mono');
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   theme.css — global tokens & base
+   Ink page, warm paper text, crimson accent, hairline rules, paper navband.
+   Flat colour fields only — no gradients, no glow, no texture but the grain.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Ink ladder */
+  --ink: #0b0d12;
+  --ink-2: #10131b;
+  --ink-3: #151924;
+
+  /* Hairlines */
+  --line: #262a35;
+  --line-soft: #1c202b;
+
+  /* Warm paper text ramp */
+  --paper: #ece9e0;
+  --paper-dim: #a5a194;
+  --paper-faint: #6f6c61;
+
+  /* Crimson */
+  --red: #b3122e;
+  --red-bright: #d41f3d;
+
+  /* Paper band (the inverted navband) & sand accent */
+  --paper-band: #f4f2ec;
+  --band-ink: #14161d;
+  --sand: #d8c79f;
+
+  /* Legacy aliases — kept so older references resolve to the new palette */
+  --bg-primary: var(--ink);
   --bg-secondary: rgba(0, 0, 0, 0.3);
-  --text-primary: #ffffff;
-  --text-secondary: #d1d5db; /* gray-300 */
-  --text-tertiary: #9ca3af; /* gray-400 */
-  --accent-primary: #dc2626; /* red-600 */
-  --accent-secondary: rgba(220, 38, 38, 0.2); /* red-600 with opacity */
-  --border-color: rgba(185, 28, 28, 0.3); /* red-900 with opacity */
+  --text-primary: var(--paper);
+  --text-secondary: var(--paper-dim);
+  --text-tertiary: var(--paper-faint);
+  --accent-primary: var(--red);
+  --accent-secondary: rgba(179, 18, 46, 0.2);
+  --border-color: rgba(179, 18, 46, 0.3);
 }
 
-/* Apply theme to common elements */
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
 body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0;
+  background-color: var(--ink);
+  color: var(--paper);
+  font-family: var(--ff-body), Georgia, 'Times New Roman', serif;
+  font-weight: 300;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Additional utility classes */
-.bg-theme-primary {
-  background-color: var(--bg-primary);
+/* Fixed grain overlay — the one permitted texture */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.bg-theme-secondary {
-  background-color: var(--bg-secondary);
+::selection {
+  background: var(--red);
+  color: #fff;
 }
 
-.text-theme-primary {
-  color: var(--text-primary);
+/* Reader drop cap — a crimson serif initial on the first paragraph */
+.reader-dropcap > p:first-of-type::first-letter,
+.reader-dropcap > p:first-child::first-letter {
+  font-family: var(--ff-display), Georgia, serif;
+  font-weight: 600;
+  font-size: 3.4em;
+  float: left;
+  line-height: 0.8;
+  padding-right: 0.14em;
+  padding-top: 0.06em;
+  color: var(--red-bright);
 }
 
-.text-theme-secondary {
-  color: var(--text-secondary);
+:focus-visible {
+  outline: 2px solid var(--red-bright);
+  outline-offset: 2px;
 }
 
-.text-theme-tertiary {
-  color: var(--text-tertiary);
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ink);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--red);
 }
 
-.accent-theme-primary {
-  color: var(--accent-primary);
+.tnum {
+  font-variant-numeric: tabular-nums;
 }
 
-.border-theme {
-  border-color: var(--border-color);
+/* Legacy utility aliases (unused, kept harmless) */
+.bg-theme-primary { background-color: var(--bg-primary); }
+.bg-theme-secondary { background-color: var(--bg-secondary); }
+.text-theme-primary { color: var(--text-primary); }
+.text-theme-secondary { color: var(--text-secondary); }
+.text-theme-tertiary { color: var(--text-tertiary); }
+.accent-theme-primary { color: var(--accent-primary); }
+.border-theme { border-color: var(--border-color); }
+
+/* In-article search highlighting */
+.search-highlight {
+  background-color: rgba(212, 31, 61, 0.35);
+  border-radius: 0;
+}
+.current-search-highlight {
+  background-color: rgba(212, 31, 61, 0.55);
+  border: 1px solid var(--red-bright);
 }

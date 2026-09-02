@@ -75,7 +75,7 @@ const CommentItem = ({ comment, onReply, onDelete, onUpdate, currentUserId, isAd
                             <textarea
                                 value={editContent}
                                 onChange={(e) => setEditContent(e.target.value)}
-                                className="w-full bg-gray-800 border border-gray-600 rounded-lg p-2 text-sm text-white resize-none"
+                                className="w-full bg-gray-800 border border-gray-600 rounded-none p-2 text-sm text-white resize-none"
                                 rows={3}
                             />
                             <div className="flex gap-2">
@@ -140,12 +140,12 @@ const CommentItem = ({ comment, onReply, onDelete, onUpdate, currentUserId, isAd
                                     value={replyContent}
                                     onChange={(e) => setReplyContent(e.target.value)}
                                     placeholder="Write a reply..."
-                                    className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500"
+                                    className="flex-1 bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-sm text-white placeholder-gray-500"
                                 />
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || !replyContent.trim()}
-                                    className="px-3 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-700 rounded-lg"
+                                    className="px-3 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-700 rounded-none"
                                 >
                                     <Send size={14} />
                                 </button>
@@ -224,20 +224,20 @@ const SectionComments = ({
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                         placeholder="Share your thoughts..."
-                        className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-sm text-white placeholder-gray-500 resize-none focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none"
+                        className="w-full bg-gray-800 border border-gray-700 rounded-none p-3 text-sm text-white placeholder-gray-500 resize-none focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none"
                         rows={3}
                     />
                     <button
                         type="submit"
                         disabled={isSubmitting || !newComment.trim()}
-                        className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                        className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-none text-sm font-medium transition-colors flex items-center gap-2"
                     >
                         <Send size={14} />
                         {isSubmitting ? 'Posting...' : 'Post Comment'}
                     </button>
                 </form>
             ) : (
-                <p className="text-gray-500 text-sm py-4 text-center bg-gray-800/30 rounded-lg">
+                <p className="text-gray-500 text-sm py-4 text-center bg-gray-800/30 rounded-none">
                     Log in to join the discussion
                 </p>
             )}

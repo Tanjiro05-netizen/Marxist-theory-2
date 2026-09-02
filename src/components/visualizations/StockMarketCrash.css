@@ -14,8 +14,8 @@
     position: absolute;
     width: 3px;
     height: 100%;
-    background: linear-gradient(to bottom, transparent, rgba(255, 59, 59, 0.9));
-    box-shadow: 0 0 12px rgba(255, 59, 59, 0.6);
+    background: linear-gradient(to bottom, transparent, rgba(212, 31, 61, 0.9));
+    box-shadow: 0 0 12px rgba(212, 31, 61, 0.6);
 }
 
 .chart-line::before {
@@ -23,11 +23,11 @@
     position: absolute;
     font-family: monospace;
     font-size: 12px;
-    color: #ff3b3b;
+    color: #d41f3d;
     top: 50%;
     left: calc(100% + 8px);
     transform: translateY(-50%);
-    text-shadow: 0 0 8px rgba(255, 59, 59, 0.6);
+    text-shadow: 0 0 8px rgba(212, 31, 61, 0.6);
 }
 
 .chart-line::after {
@@ -35,27 +35,27 @@
     position: absolute;
     width: 6px;
     height: 6px;
-    background: #ff3b3b;
+    background: #d41f3d;
     border-radius: 50%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: 0 0 8px #ff3b3b;
+    box-shadow: 0 0 8px #d41f3d;
 }
 
 .chart-line:nth-child(4n) {
-    background: linear-gradient(to bottom, transparent, rgba(46, 213, 115, 0.9));
-    box-shadow: 0 0 12px rgba(46, 213, 115, 0.6);
+    background: linear-gradient(to bottom, transparent, rgba(45, 138, 78, 0.9));
+    box-shadow: 0 0 12px rgba(45, 138, 78, 0.6);
 }
 
 .chart-line:nth-child(4n)::before {
-    color: #2ed573;
-    text-shadow: 0 0 8px rgba(46, 213, 115, 0.6);
+    color: #2d8a4e;
+    text-shadow: 0 0 8px rgba(45, 138, 78, 0.6);
 }
 
 .chart-line:nth-child(4n)::after {
-    background: #2ed573;
-    box-shadow: 0 0 8px #2ed573;
+    background: #2d8a4e;
+    box-shadow: 0 0 8px #2d8a4e;
 }
 
 /* Animation variations */

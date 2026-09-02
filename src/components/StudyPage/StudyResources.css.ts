@@ -57,9 +57,9 @@ export const iconFrame = styleVariants({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: 'rgba(200,30,30,0.12)',
+    background: 'rgba(179, 18, 46,0.12)',
     color: vars.color.accent,
-    border: `1px solid rgba(200,30,30,0.22)`,
+    border: `1px solid rgba(179, 18, 46,0.22)`,
   },
   video: {
     width: '56px',
@@ -91,7 +91,7 @@ export const iconFrame = styleVariants({
     alignItems: 'center',
     justifyContent: 'center',
     background: 'rgba(133,90,214,0.16)',
-    color: '#a78bfa',
+    color: '#8a84b8',
     border: `1px solid rgba(133,90,214,0.22)`,
   },
 });
@@ -158,7 +158,7 @@ export const footer = style({
 
 export const meta = style({
   margin: 0,
-  fontFamily: vars.font.mono,
+  fontFamily: vars.font.label,
   fontSize: '10px',
   textTransform: 'uppercase',
   letterSpacing: '0.12em',

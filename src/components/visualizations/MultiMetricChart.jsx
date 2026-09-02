@@ -12,11 +12,11 @@ import {
 } from 'recharts';
 
 const METRICS = [
-  { id: 'GINI', name: 'GINI Index', description: 'Measures wealth inequality (0-100)', color: '#ef4444' },
-  { id: 'GDP_PER_CAPITA', name: 'GDP Per Capita', description: 'Average economic output per person', color: '#3b82f6' },
-  { id: 'LABOR_SHARE', name: 'Labor Share of GDP', description: 'Percentage of GDP going to workers', color: '#10b981' },
-  { id: 'UNEMPLOYMENT', name: 'Unemployment Rate', description: 'Percentage of workforce without jobs', color: '#f59e0b' },
-  { id: 'TOP10_INCOME', name: 'Top 10% Income Share', description: 'Income captured by the richest 10%', color: '#8b5cf6' },
+  { id: 'GINI', name: 'GINI Index', description: 'Measures wealth inequality (0-100)', color: '#d41f3d' },
+  { id: 'GDP_PER_CAPITA', name: 'GDP Per Capita', description: 'Average economic output per person', color: '#4a7fb5' },
+  { id: 'LABOR_SHARE', name: 'Labor Share of GDP', description: 'Percentage of GDP going to workers', color: '#2d8a4e' },
+  { id: 'UNEMPLOYMENT', name: 'Unemployment Rate', description: 'Percentage of workforce without jobs', color: '#c8860a' },
+  { id: 'TOP10_INCOME', name: 'Top 10% Income Share', description: 'Income captured by the richest 10%', color: '#6f6a9e' },
 ];
 
 // Economic crisis periods for reference highlighting
@@ -95,7 +95,7 @@ const MultiMetricChart = ({
     if (!active || !payload || payload.length === 0) return null;
     
     return (
-      <div className="bg-gray-900 border border-gray-700 p-3 rounded shadow-lg">
+      <div className="bg-gray-900 border border-gray-700 p-3 rounded shadow-none">
         <p className="text-white font-medium">{label}</p>
         <div className="mt-2 space-y-1">
           {payload.map((entry, index) => (
@@ -114,7 +114,7 @@ const MultiMetricChart = ({
   };
   
   return (
-    <div className="bg-black/30 p-6 rounded-lg">
+    <div className="bg-black/30 p-6 rounded-none">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
         <h3 className="text-xl font-bold text-white mb-2 md:mb-0">{metric.name}</h3>
         
@@ -160,19 +160,19 @@ const MultiMetricChart = ({
             onMouseUp={handleMouseUp}
             margin={{ top: 10, right: 30, left: 30, bottom: 30 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#262a35" />
             <XAxis 
               dataKey="year" 
-              stroke="#6b7280"
+              stroke="#7d7a6e"
               domain={zoomedDomain || ['auto', 'auto']}
             />
             <YAxis 
-              stroke="#6b7280"
+              stroke="#7d7a6e"
               tickFormatter={formatValue}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend 
-              formatter={(value) => <span style={{ color: '#e5e7eb' }}>{value}</span>}
+              formatter={(value) => <span style={{ color: '#ece9e0' }}>{value}</span>}
             />
             
             {/* Crisis period reference areas */}
@@ -196,7 +196,7 @@ const MultiMetricChart = ({
                 type="monotone"
                 dataKey={country}
                 name={country}
-                stroke={countryColors[country] || '#cccccc'}
+                stroke={countryColors[country] || '#c9c5b8'}
                 strokeWidth={2}
                 dot={false}
                 activeDot={{ r: 6 }}

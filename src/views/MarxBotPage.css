@@ -1,0 +1,331 @@
+/* ===== MarxBot — editorial teaser (ink band, crimson, hairlines) ===== */
+
+/* Root */
+.marxbot-root {
+    position: relative;
+    min-height: 100vh;
+    background: #0b0d12;
+    color: #ece9e0;
+    overflow: hidden;
+    cursor: crosshair;
+    font-family: var(--ff-body), Georgia, serif;
+}
+
+/* Scanline overlay — retired */
+.marxbot-scanlines {
+    display: none;
+}
+
+/* Grid overlay — retired (flat colour fields only) */
+.marxbot-grid {
+    display: none;
+}
+
+/* Radial reveal spotlight — retired */
+.marxbot-spotlight {
+    display: none;
+}
+
+/* Floating particle field */
+.marxbot-particles {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.marxbot-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgba(179, 18, 46, 0.4);
+    border-radius: 50%;
+    animation: marxbot-float linear infinite;
+}
+
+@keyframes marxbot-float {
+    0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-20vh) translateX(var(--drift, 30px));
+        opacity: 0;
+    }
+}
+
+/* Central content */
+.marxbot-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+/* Masthead-scale title — engraved plate, no glitch */
+.marxbot-title {
+    font-family: var(--ff-display), Georgia, serif;
+    font-size: clamp(3rem, 10vw, 7rem);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-align: center;
+    position: relative;
+    user-select: none;
+}
+
+.marxbot-title-main {
+    color: #ece9e0;
+}
+
+.marxbot-title-glitch {
+    display: none;
+}
+
+/* TM badge */
+.marxbot-tm {
+    font-family: var(--ff-label), system-ui, sans-serif;
+    font-size: 0.18em;
+    vertical-align: super;
+    color: #d41f3d;
+    letter-spacing: 0.1em;
+    font-weight: 400;
+}
+
+/* Cryptic subtitle lines */
+.marxbot-subtitle {
+    text-align: center;
+    margin-top: 2rem;
+    font-family: var(--ff-label), system-ui, sans-serif;
+    color: #a5a194;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    line-height: 2.2;
+}
+
+.marxbot-subtitle span {
+    display: block;
+    opacity: 0;
+    animation: marxbot-lineReveal 0.8s ease forwards;
+}
+
+@keyframes marxbot-lineReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Blinking cursor */
+.marxbot-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1.1em;
+    background: #d41f3d;
+    margin-left: 4px;
+    vertical-align: middle;
+    animation: marxbot-blink 1s step-end infinite;
+}
+
+@keyframes marxbot-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Hairline orbit rings */
+.marxbot-orbit {
+    position: absolute;
+    width: 520px;
+    height: 520px;
+    border: 1px solid rgba(179, 18, 46, 0.12);
+    border-radius: 50%;
+    animation: marxbot-spin 60s linear infinite;
+    pointer-events: none;
+}
+
+.marxbot-orbit::before,
+.marxbot-orbit::after {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: #b3122e;
+    border-radius: 50%;
+}
+
+.marxbot-orbit::before {
+    top: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.marxbot-orbit::after {
+    bottom: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.marxbot-orbit-2 {
+    width: 380px;
+    height: 380px;
+    border-color: rgba(179, 18, 46, 0.08);
+    animation-duration: 45s;
+    animation-direction: reverse;
+}
+
+@keyframes marxbot-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Status bar at bottom */
+.marxbot-status {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--ff-label), system-ui, sans-serif;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #6f6c61;
+    border-top: 1px solid #1c202b;
+    background: rgba(11, 13, 18, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.marxbot-status-dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #d41f3d;
+    margin-right: 6px;
+    animation: marxbot-statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes marxbot-statusPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* Back link */
+.marxbot-back {
+    position: fixed;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 20;
+    color: #6f6c61;
+    font-size: 0.68rem;
+    font-weight: 500;
+    font-family: var(--ff-label), system-ui, sans-serif;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.marxbot-back:hover {
+    color: #d41f3d;
+}
+
+/* Neural network SVG background */
+.marxbot-neural {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.03;
+}
+
+.marxbot-neural line {
+    stroke: rgba(179, 18, 46, 0.5);
+    stroke-width: 0.5;
+}
+
+.marxbot-neural circle {
+    fill: rgba(179, 18, 46, 0.6);
+}
+
+/* Typewriter console block */
+.marxbot-console {
+    margin-top: 3rem;
+    padding: 1.5rem 2rem;
+    border: 1px solid #262a35;
+    border-radius: 0;
+    background: #10131b;
+    font-family: var(--ff-mono), 'Courier New', monospace;
+    font-size: 0.7rem;
+    color: #a5a194;
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+    max-width: 500px;
+    text-align: left;
+}
+
+.marxbot-console-line {
+    opacity: 0;
+    animation: marxbot-consoleLine 0.4s ease forwards;
+}
+
+@keyframes marxbot-consoleLine {
+    from { opacity: 0; transform: translateX(-6px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.marxbot-console-prompt {
+    color: #d41f3d;
+}
+
+.marxbot-console-dim {
+    color: #6f6c61;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .marxbot-orbit,
+    .marxbot-orbit-2 {
+        display: none;
+    }
+
+    .marxbot-console {
+        max-width: 100%;
+        padding: 1rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .marxbot-particle,
+    .marxbot-orbit,
+    .marxbot-orbit-2,
+    .marxbot-status-dot {
+        animation: none;
+    }
+}

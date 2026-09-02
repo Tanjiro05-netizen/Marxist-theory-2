@@ -1,46 +1,46 @@
 export const colors = {
   bg: {
-    primary: '#000000',
-    elevated: '#0a0a0a',
-    input: '#111111',
-    hover: '#1a1a1a',
+    primary: '#0b0d12',
+    elevated: '#10131b',
+    input: '#10131b',
+    hover: '#151924',
   },
-  
+
   border: {
-    primary: '#333333',
-    secondary: '#222222',
-    subtle: '#1a1a1a',
+    primary: '#262a35',
+    secondary: '#1c202b',
+    subtle: '#1c202b',
   },
-  
+
   text: {
-    primary: '#ffffff',
-    secondary: '#cccccc',
-    tertiary: '#888888',
-    muted: '#666666',
-    faded: '#444444',
+    primary: '#ece9e0',
+    secondary: '#c9c5b8',
+    tertiary: '#a5a194',
+    muted: '#7d7a6e',
+    faded: '#6f6c61',
   },
-  
+
   accent: {
-    green: '#88ff88',
-    greenHover: '#aaffaa',
-    red: '#ff6b6b',
-    redBright: '#ff4444',
-    sovietRed: '#cc0000',
-    yellow: '#ffcc00',
-    orange: '#ff8800',
+    green: '#d41f3d',
+    greenHover: '#e8354f',
+    red: '#e8354f',
+    redBright: '#d41f3d',
+    sovietRed: '#b3122e',
+    yellow: '#c8860a',
+    orange: '#c8860a',
   },
-  
+
   state: {
-    success: '#88ff88',
-    error: '#ff4444',
-    warning: '#ffcc00',
+    success: '#2d8a4e',
+    error: '#d41f3d',
+    warning: '#c8860a',
   }
 }
 
 export const typography = {
-  fontFamily: "Arial, Helvetica, sans-serif",
-  fontFamilyMono: "'Courier New', Courier, monospace",
-  
+  fontFamily: "Newsreader, Georgia, 'Times New Roman', serif",
+  fontFamilyMono: "'JetBrains Mono', 'Courier New', monospace",
+
   fontSize: {
     xs: '11px',
     sm: '12px',
@@ -49,12 +49,12 @@ export const typography = {
     lg: '18px',
     xl: '28px',
   },
-  
+
   fontWeight: {
     normal: 400,
     bold: 700,
   },
-  
+
   lineHeight: {
     tight: 1.2,
     normal: 1.5,
@@ -89,13 +89,13 @@ export const commonStyles = {
     maxWidth: '100%',
     boxSizing: 'border-box',
   },
-  
+
   card: {
     border: `1px solid ${colors.border.primary}`,
     backgroundColor: colors.bg.elevated,
     padding: spacing.lg,
   },
-  
+
   input: {
     width: '100%',
     padding: spacing.sm,
@@ -106,13 +106,13 @@ export const commonStyles = {
     fontSize: typography.fontSize.base,
     boxSizing: 'border-box',
   },
-  
+
   link: {
     color: colors.accent.green,
     textDecoration: 'underline',
     cursor: 'pointer',
   },
-  
+
   buttonPrimary: {
     padding: `6px ${spacing.lg}`,
     backgroundColor: 'transparent',
@@ -122,7 +122,7 @@ export const commonStyles = {
     fontFamily: typography.fontFamily,
     fontSize: typography.fontSize.base,
   },
-  
+
   buttonSecondary: {
     padding: `6px ${spacing.lg}`,
     backgroundColor: 'transparent',
@@ -132,7 +132,7 @@ export const commonStyles = {
     fontFamily: typography.fontFamily,
     fontSize: typography.fontSize.base,
   },
-  
+
   buttonDanger: {
     padding: `6px ${spacing.lg}`,
     backgroundColor: 'transparent',

@@ -29,6 +29,7 @@ export const vars = createThemeContract({
     display: '',
     body: '',
     mono: '',
+    label: '',
   },
   space: {
     xxs: '',
@@ -68,32 +69,33 @@ export const vars = createThemeContract({
 
 export const studyThemeClass = createTheme(vars, {
   color: {
-    background: '#090909',
-    surface: '#0f0f0f',
-    surfaceRaised: '#141414',
-    surfaceSoft: '#1a1a1a',
-    overlay: '#1f1f1f',
-    border: 'rgba(255,255,255,0.06)',
-    borderStrong: 'rgba(255,255,255,0.12)',
-    borderAccent: 'rgba(200,30,30,0.28)',
-    accent: '#c81e1e',
-    accentHover: '#e02424',
-    accentSoft: 'rgba(200,30,30,0.16)',
-    accentWash: 'rgba(200,30,30,0.08)',
-    accentGlow: 'rgba(200,30,30,0.22)',
-    spotlight: 'rgba(255,255,255,0.05)',
-    text: '#ffffff',
-    textSoft: 'rgba(255,255,255,0.72)',
-    textMuted: 'rgba(255,255,255,0.48)',
-    textFaint: 'rgba(255,255,255,0.28)',
+    background: '#0b0d12',
+    surface: '#10131b',
+    surfaceRaised: '#151924',
+    surfaceSoft: '#1a1f2b',
+    overlay: '#151924',
+    border: 'rgba(236, 233, 224, 0.08)',
+    borderStrong: '#262a35',
+    borderAccent: 'rgba(179, 18, 46, 0.45)',
+    accent: '#b3122e',
+    accentHover: '#d41f3d',
+    accentSoft: 'rgba(179, 18, 46, 0.16)',
+    accentWash: 'rgba(179, 18, 46, 0.08)',
+    accentGlow: 'rgba(179, 18, 46, 0.28)',
+    spotlight: 'rgba(236, 233, 224, 0.04)',
+    text: '#ece9e0',
+    textSoft: '#c9c5b8',
+    textMuted: '#a5a194',
+    textFaint: '#6f6c61',
     success: '#2d8a4e',
     warning: '#c8860a',
     info: '#4a7fb5',
   },
   font: {
-    display: 'Cormorant Garamond, Georgia, serif',
-    body: 'Hanken Grotesk, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif',
-    mono: 'JetBrains Mono, Fira Code, SFMono-Regular, Menlo, monospace',
+    display: 'var(--font-cormorant, \'Cormorant Garamond\'), Georgia, "Times New Roman", serif',
+    body: 'var(--font-newsreader, \'Newsreader\'), Georgia, "Times New Roman", serif',
+    mono: 'var(--font-jetbrains, \'JetBrains Mono\'), \'Fira Code\', SFMono-Regular, Menlo, monospace',
+    label: 'var(--font-outfit, \'Outfit\'), system-ui, -apple-system, sans-serif',
   },
   space: {
     xxs: '4px',
@@ -108,33 +110,27 @@ export const studyThemeClass = createTheme(vars, {
     gutter: '24px',
   },
   radius: {
-    tiny: '2px',
-    sm: '6px',
-    md: '12px',
-    lg: '18px',
-    xl: '28px',
+    tiny: '0px',
+    sm: '0px',
+    md: '0px',
+    lg: '2px',
+    xl: '2px',
     pill: '999px',
   },
   shadow: {
-    soft: '0 1px 3px rgba(0,0,0,0.45)',
-    panel: '0 18px 40px rgba(0,0,0,0.42)',
-    glow: '0 0 26px rgba(200,30,30,0.14)',
+    soft: '0 1px 2px rgba(0, 0, 0, 0.4)',
+    panel: '0 14px 36px rgba(0, 0, 0, 0.5)',
+    glow: 'none',
   },
   layout: {
     maxWidth: '1380px',
     rail: '360px',
   },
   border: {
-    subtle: '1px solid rgba(255,255,255,0.06)',
-    strong: '1px solid rgba(255,255,255,0.12)',
-    accent: '1px solid rgba(200,30,30,0.28)',
+    subtle: '1px solid #1c202b',
+    strong: '1px solid #262a35',
+    accent: '1px solid rgba(179, 18, 46, 0.45)',
   },
-});
-
-const rotateGlow = keyframes({
-  '0%': { transform: 'translate3d(0, 0, 0) scale(1)' },
-  '50%': { transform: 'translate3d(0, 12px, 0) scale(1.04)' },
-  '100%': { transform: 'translate3d(0, 0, 0) scale(1)' },
 });
 
 const spin = keyframes({
@@ -162,8 +158,13 @@ globalStyle(`${studyThemeClass} *`, {
 });
 
 globalStyle(`${studyThemeClass} a`, {
-  color: 'inherit',
   textDecoration: 'none',
+});
+
+/* Only classless anchors inherit — this must never out-rank a component's
+   own color class (e.g. the ink links on the paper navband). */
+globalStyle(`${studyThemeClass} a:not([class])`, {
+  color: 'inherit',
 });
 
 globalStyle(`${studyThemeClass} button`, {
@@ -179,32 +180,26 @@ globalStyle(`${studyThemeClass} input::placeholder`, {
 });
 
 globalStyle(`${studyThemeClass} ::selection`, {
-  background: vars.color.accentSoft,
-  color: vars.color.text,
+  background: vars.color.accent,
+  color: '#ffffff',
 });
 
+/* Ambient glow blobs are retired with this theme — neutralized, not deleted. */
 export const ambientOrb = style({
-  position: 'absolute',
-  borderRadius: '50%',
-  filter: 'blur(36px)',
-  opacity: 0.5,
-  pointerEvents: 'none',
-  animation: `${rotateGlow} 10s ease-in-out infinite`,
+  display: 'none',
 });
 
 export const panelBase = style({
   position: 'relative',
-  background: `linear-gradient(180deg, ${vars.color.surfaceRaised} 0%, ${vars.color.surface} 100%)`,
+  background: vars.color.surface,
   border: vars.border.subtle,
-  borderRadius: vars.radius.xl,
-  boxShadow: vars.shadow.panel,
-  overflow: 'hidden',
+  borderRadius: vars.radius.tiny,
 });
 
 export const panelInset = style({
-  background: vars.color.surfaceSoft,
+  background: vars.color.surfaceRaised,
   border: vars.border.subtle,
-  borderRadius: vars.radius.lg,
+  borderRadius: vars.radius.tiny,
 });
 
 export const sectionHeader = style({
@@ -230,21 +225,34 @@ export const sectionHeaderStack = style({
 
 export const sectionEyebrow = style({
   margin: 0,
-  fontFamily: vars.font.mono,
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '10px',
+  fontFamily: vars.font.label,
   fontSize: '10px',
+  fontWeight: 500,
   textTransform: 'uppercase',
-  letterSpacing: '0.16em',
-  color: vars.color.accent,
-  opacity: 0.72,
+  letterSpacing: '0.28em',
+  color: vars.color.accentHover,
+  selectors: {
+    '&::before': {
+      content: '""',
+      display: 'inline-block',
+      width: '18px',
+      height: '1px',
+      background: vars.color.accentHover,
+      flexShrink: 0,
+    },
+  },
 });
 
 export const sectionTitle = style({
   margin: 0,
   fontFamily: vars.font.display,
   fontSize: '40px',
-  lineHeight: 1,
+  lineHeight: 1.05,
   fontWeight: 500,
-  letterSpacing: '-0.03em',
+  letterSpacing: '0.01em',
   color: vars.color.text,
   '@media': {
     'screen and (max-width: 640px)': {
@@ -257,34 +265,36 @@ export const panelTitle = style({
   margin: 0,
   fontFamily: vars.font.display,
   fontSize: '30px',
-  lineHeight: 1,
+  lineHeight: 1.1,
   fontWeight: 500,
-  letterSpacing: '-0.03em',
+  letterSpacing: '0.01em',
   color: vars.color.text,
 });
 
 export const sectionDescription = style({
   margin: 0,
   maxWidth: '700px',
-  fontSize: '14px',
+  fontSize: '15px',
   lineHeight: 1.8,
-  fontWeight: 300,
+  fontFamily: vars.font.body,
   color: vars.color.textMuted,
 });
 
 export const panelDescription = style({
   margin: 0,
-  fontSize: '13px',
+  fontSize: '14px',
   lineHeight: 1.75,
-  fontWeight: 300,
+  fontFamily: vars.font.body,
   color: vars.color.textMuted,
 });
 
 export const monoMeta = style({
-  fontFamily: vars.font.mono,
-  fontSize: '11px',
-  letterSpacing: '0.08em',
+  fontFamily: vars.font.label,
+  fontSize: '10px',
+  fontWeight: 500,
+  letterSpacing: '0.22em',
   textTransform: 'uppercase',
+  fontVariantNumeric: 'tabular-nums',
   color: vars.color.textFaint,
 });
 
@@ -294,55 +304,87 @@ export const iconFrame = style({
   justifyContent: 'center',
   width: '42px',
   height: '42px',
-  borderRadius: vars.radius.md,
+  borderRadius: vars.radius.tiny,
   background: vars.color.accentWash,
   border: vars.border.accent,
-  color: vars.color.accent,
+  color: vars.color.accentHover,
   flexShrink: 0,
-  boxShadow: vars.shadow.glow,
 });
 
 export const divider = style({
   width: '100%',
   height: '1px',
-  background: vars.color.border,
+  background: vars.color.borderStrong,
 });
 
 export const textLink = style({
   display: 'inline-flex',
   alignItems: 'center',
   gap: vars.space.xs,
-  color: vars.color.accent,
-  fontFamily: vars.font.mono,
+  color: vars.color.accentHover,
+  fontFamily: vars.font.label,
   fontSize: '11px',
-  letterSpacing: '0.08em',
+  fontWeight: 500,
+  letterSpacing: '0.18em',
   textTransform: 'uppercase',
+  paddingBottom: '3px',
+  backgroundImage: `linear-gradient(${vars.color.accentHover}, ${vars.color.accentHover})`,
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'left bottom',
+  backgroundSize: '0% 1px',
+  transition: 'background-size 240ms ease, color 240ms ease',
   selectors: {
     '&:hover': {
       color: vars.color.text,
+      backgroundSize: '100% 1px',
+    },
+  },
+});
+
+/* A crimson rule that wipes in behind a row when the row is hovered.
+   Layer onto any position:relative row. */
+export const ruleWipe = style({
+  selectors: {
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      height: '1px',
+      background: vars.color.accent,
+      transform: 'scaleX(0)',
+      transformOrigin: 'left center',
+      transition: 'transform 260ms cubic-bezier(0.22, 1, 0.36, 1)',
+      pointerEvents: 'none',
+    },
+    '&:hover::after': {
+      transform: 'scaleX(1)',
     },
   },
 });
 
 export const actionButton = recipe({
   base: {
+    position: 'relative',
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: vars.space.xs,
-    borderRadius: vars.radius.pill,
+    borderRadius: vars.radius.tiny,
     border: 'none',
     cursor: 'pointer',
-    transition: 'all 180ms ease',
-    fontFamily: vars.font.mono,
+    overflow: 'hidden',
+    transition: 'background-size 240ms cubic-bezier(0.22, 1, 0.36, 1), color 200ms ease, border-color 200ms ease, background-color 200ms ease',
+    fontFamily: vars.font.label,
     fontSize: '11px',
-    fontWeight: 400,
-    letterSpacing: '0.08em',
+    fontWeight: 500,
+    letterSpacing: '0.2em',
     textTransform: 'uppercase',
     whiteSpace: 'nowrap',
     selectors: {
       '&:focus-visible': {
-        outline: `2px solid ${vars.color.accentGlow}`,
+        outline: `2px solid ${vars.color.accentHover}`,
         outlineOffset: '2px',
       },
       '&:disabled': {
@@ -355,8 +397,7 @@ export const actionButton = recipe({
     tone: {
       accent: {
         background: vars.color.accent,
-        color: vars.color.text,
-        boxShadow: vars.shadow.glow,
+        color: '#ffffff',
         selectors: {
           '&:hover:not(:disabled)': {
             background: vars.color.accentHover,
@@ -365,25 +406,24 @@ export const actionButton = recipe({
       },
       ghost: {
         background: 'transparent',
-        color: vars.color.textSoft,
-        border: vars.border.subtle,
+        color: vars.color.text,
+        border: vars.border.strong,
         selectors: {
           '&:hover:not(:disabled)': {
-            background: vars.color.surfaceSoft,
-            borderColor: vars.color.borderStrong,
-            color: vars.color.text,
+            color: vars.color.accentHover,
+            borderColor: vars.color.accentHover,
           },
         },
       },
       subtle: {
-        background: vars.color.surfaceSoft,
+        background: 'transparent',
         color: vars.color.textMuted,
         border: vars.border.subtle,
         selectors: {
           '&:hover:not(:disabled)': {
             color: vars.color.text,
-            borderColor: vars.color.borderAccent,
-            background: vars.color.accentWash,
+            borderColor: vars.color.accentHover,
+            backgroundColor: vars.color.accentWash,
           },
         },
       },
@@ -407,30 +447,45 @@ export const actionButton = recipe({
 
 export const filterPill = recipe({
   base: {
+    position: 'relative',
     display: 'inline-flex',
     alignItems: 'center',
     gap: vars.space.xs,
     minHeight: '36px',
-    padding: `0 ${vars.space.md}`,
-    borderRadius: vars.radius.pill,
-    border: vars.border.subtle,
+    padding: `0 2px ${vars.space.sm}`,
+    borderRadius: vars.radius.tiny,
+    border: 'none',
     background: 'transparent',
     color: vars.color.textMuted,
-    fontFamily: vars.font.mono,
+    fontFamily: vars.font.label,
     fontSize: '11px',
-    letterSpacing: '0.08em',
+    fontWeight: 500,
+    letterSpacing: '0.2em',
     textTransform: 'uppercase',
-    transition: 'all 180ms ease',
+    transition: 'color 200ms ease',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
     selectors: {
+      '&::after': {
+        content: '""',
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 4,
+        height: '1px',
+        background: vars.color.accentHover,
+        transform: 'scaleX(0)',
+        transformOrigin: 'left center',
+        transition: 'transform 240ms cubic-bezier(0.22, 1, 0.36, 1)',
+      },
       '&:hover': {
         color: vars.color.text,
-        borderColor: vars.color.borderStrong,
-        background: vars.color.surfaceSoft,
+      },
+      '&:hover::after': {
+        transform: 'scaleX(1)',
       },
       '&:focus-visible': {
-        outline: `2px solid ${vars.color.accentGlow}`,
+        outline: `2px solid ${vars.color.accentHover}`,
         outlineOffset: '2px',
       },
     },
@@ -438,10 +493,12 @@ export const filterPill = recipe({
   variants: {
     active: {
       true: {
-        background: vars.color.accentSoft,
-        borderColor: vars.color.borderAccent,
-        color: vars.color.text,
-        boxShadow: vars.shadow.glow,
+        color: vars.color.accentHover,
+        selectors: {
+          '&::after': {
+            transform: 'scaleX(1)',
+          },
+        },
       },
       false: {},
     },
@@ -456,38 +513,38 @@ export const badge = recipe({
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: '22px',
-    padding: '0 10px',
-    borderRadius: vars.radius.pill,
-    fontFamily: vars.font.mono,
+    minHeight: '20px',
+    padding: '0 9px',
+    borderRadius: vars.radius.tiny,
+    fontFamily: vars.font.label,
     fontSize: '10px',
     fontWeight: 500,
-    letterSpacing: '0.08em',
+    letterSpacing: '0.18em',
     textTransform: 'uppercase',
-    border: vars.border.subtle,
+    border: vars.border.strong,
+    background: 'transparent',
+    fontVariantNumeric: 'tabular-nums',
   },
   variants: {
     tone: {
       default: {
-        background: vars.color.surfaceSoft,
         color: vars.color.textMuted,
       },
       accent: {
-        background: vars.color.accentSoft,
+        color: vars.color.accentHover,
         borderColor: vars.color.borderAccent,
-        color: vars.color.accent,
       },
       success: {
-        background: 'rgba(45,138,78,0.16)',
         color: vars.color.success,
+        borderColor: 'rgba(45, 138, 78, 0.45)',
       },
       warning: {
-        background: 'rgba(200,134,10,0.16)',
         color: vars.color.warning,
+        borderColor: 'rgba(200, 134, 10, 0.45)',
       },
       info: {
-        background: 'rgba(74,127,181,0.16)',
         color: vars.color.info,
+        borderColor: 'rgba(74, 127, 181, 0.45)',
       },
     },
   },
@@ -503,7 +560,7 @@ export const emptyState = style({
   fontSize: '14px',
   lineHeight: 1.7,
   border: vars.border.subtle,
-  borderRadius: vars.radius.lg,
+  borderRadius: vars.radius.tiny,
   background: vars.color.surface,
 });
 
@@ -519,6 +576,94 @@ export const loadingSpinner = style({
   height: '26px',
   borderRadius: '50%',
   border: `2px solid ${vars.color.borderStrong}`,
-  borderTopColor: vars.color.accent,
+  borderTopColor: vars.color.accentHover,
   animation: `${spin} 800ms linear infinite`,
+});
+
+/* ── Centered page header — the publication masthead pattern for every page ── */
+
+export const pageHeader = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  textAlign: 'center',
+  gap: vars.space.md,
+  paddingTop: vars.space.xxxl,
+  paddingBottom: vars.space.xxl,
+  paddingLeft: vars.space.md,
+  paddingRight: vars.space.md,
+});
+
+export const pageKicker = style({
+  margin: 0,
+  fontFamily: vars.font.label,
+  fontSize: '10px',
+  fontWeight: 500,
+  textTransform: 'uppercase',
+  letterSpacing: '0.32em',
+  color: vars.color.accentHover,
+});
+
+export const pageTitle = style({
+  margin: 0,
+  fontFamily: vars.font.display,
+  fontSize: 'clamp(40px, 6vw, 64px)',
+  fontWeight: 500,
+  letterSpacing: '0.01em',
+  lineHeight: 1.02,
+  color: vars.color.text,
+});
+
+export const pageRule = style({
+  width: '44px',
+  height: '2px',
+  background: vars.color.accent,
+});
+
+export const pageNote = style({
+  margin: 0,
+  maxWidth: '620px',
+  fontSize: '15px',
+  lineHeight: 1.85,
+  fontFamily: vars.font.body,
+  color: vars.color.textMuted,
+});
+
+export const pageActions = style({
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  gap: vars.space.sm,
+  marginTop: vars.space.xs,
+});
+
+/* ── Hairline grid — cards share walls through 1px gaps, no free-floating boxes ── */
+
+export const hairlineGrid = style({
+  display: 'grid',
+  gap: '1px',
+  background: vars.color.borderStrong,
+  border: vars.border.subtle,
+});
+
+export const hairlineCell = style({
+  position: 'relative',
+  background: vars.color.surface,
+});
+
+/* ── Reading prose with a crimson serif drop cap ── */
+
+export const dropCap = style({
+  selectors: {
+    '&::first-letter': {
+      fontFamily: vars.font.display,
+      fontWeight: 600,
+      fontSize: '3.4em',
+      float: 'left',
+      lineHeight: 0.8,
+      paddingRight: '0.14em',
+      paddingTop: '0.06em',
+      color: vars.color.accentHover,
+    },
+  },
 });

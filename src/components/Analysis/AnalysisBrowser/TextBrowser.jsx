@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { supabase } from '../../../supabaseClient';
 import { useAuth } from '../../../context/AuthContext';
 import { 
@@ -10,7 +11,7 @@ import {
 import TextCard from './TextCard';
 
 const TextBrowser = () => {
-    const navigate = useNavigate();
+    const router = useRouter();
     const { user, isAdmin } = useAuth();
     const [texts, setTexts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -184,9 +185,8 @@ const TextBrowser = () => {
                             Read, annotate, and deeply analyze revolutionary texts
                         </p>
                     </div>
-                    <Link
-                        to="/theory"
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg text-sm font-medium transition-colors"
+                    <Link href="/theory"
+                        className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-none text-sm font-medium transition-colors"
                     >
                         <BookOpen size={16} />
                         Browse Theory
@@ -201,7 +201,7 @@ const TextBrowser = () => {
                         { icon: Link2, label: 'Cross-References', desc: 'Link related texts' },
                         { icon: BarChart3, label: 'Text Analysis', desc: 'AI-powered insights' },
                     ].map(({ icon: Icon, label, desc }) => (
-                        <div key={label} className="bg-gray-900/50 border border-gray-800 rounded-lg p-3 flex items-start gap-3">
+                        <div key={label} className="bg-gray-900/50 border border-gray-800 rounded-none p-3 flex items-start gap-3">
                             <Icon size={18} className="text-red-500 mt-0.5 shrink-0" />
                             <div>
                                 <span className="text-xs font-medium text-white">{label}</span>
@@ -215,7 +215,7 @@ const TextBrowser = () => {
                 <div className="flex items-center gap-2 mb-4">
                     <button
                         onClick={() => setBrowseMode('all')}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        className={`px-4 py-2 rounded-none text-sm font-medium transition-colors ${
                             browseMode === 'all'
                                 ? 'bg-red-600 text-white'
                                 : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
@@ -226,7 +226,7 @@ const TextBrowser = () => {
                     {user && user.id !== 'dev-admin' && (
                         <button
                             onClick={() => setBrowseMode('library')}
-                            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            className={`flex items-center gap-1.5 px-4 py-2 rounded-none text-sm font-medium transition-colors ${
                                 browseMode === 'library'
                                     ? 'bg-red-600 text-white'
                                     : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
@@ -239,7 +239,7 @@ const TextBrowser = () => {
                 </div>
 
                 {/* Search & Filters */}
-                <div className="bg-gray-900/50 rounded-xl p-4 mb-6">
+                <div className="bg-gray-900/50 rounded-none p-4 mb-6">
                     <div className="flex flex-col md:flex-row gap-4">
                         {/* Search */}
                         <div className="flex-1 relative">
@@ -249,14 +249,14 @@ const TextBrowser = () => {
                                 placeholder="Search by title, author, or tag..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none"
+                                className="w-full pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-700 rounded-none text-white placeholder-gray-500 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none"
                             />
                         </div>
 
                         {/* Filter Toggle (Mobile) */}
                         <button
                             onClick={() => setShowFilters(!showFilters)}
-                            className="md:hidden flex items-center gap-2 px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg"
+                            className="md:hidden flex items-center gap-2 px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-none"
                         >
                             <Filter size={18} />
                             Filters
@@ -268,7 +268,7 @@ const TextBrowser = () => {
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
-                                className="px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white cursor-pointer"
+                                className="px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-none text-white cursor-pointer"
                             >
                                 <option value="newest">Newest First</option>
                                 <option value="oldest">Oldest First</option>
@@ -276,7 +276,7 @@ const TextBrowser = () => {
                                 <option value="year">Year</option>
                             </select>
 
-                            <div className="flex border border-gray-700 rounded-lg overflow-hidden">
+                            <div className="flex border border-gray-700 rounded-none overflow-hidden">
                                 <button
                                     onClick={() => setViewMode('grid')}
                                     className={`p-2.5 ${viewMode === 'grid' ? 'bg-red-600' : 'bg-gray-800 hover:bg-gray-700'}`}
@@ -301,7 +301,7 @@ const TextBrowser = () => {
                             <select
                                 value={selectedCategory}
                                 onChange={(e) => setSelectedCategory(e.target.value)}
-                                className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white cursor-pointer"
+                                className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-none text-sm text-white cursor-pointer"
                             >
                                 {categories.map(cat => (
                                     <option key={cat} value={cat}>
@@ -317,7 +317,7 @@ const TextBrowser = () => {
                             <select
                                 value={selectedLanguage}
                                 onChange={(e) => setSelectedLanguage(e.target.value)}
-                                className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white cursor-pointer"
+                                className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-none text-sm text-white cursor-pointer"
                             >
                                 {languages.map(lang => (
                                     <option key={lang} value={lang}>
@@ -332,7 +332,7 @@ const TextBrowser = () => {
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
-                                className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white cursor-pointer"
+                                className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-none text-sm text-white cursor-pointer"
                             >
                                 <option value="newest">Newest</option>
                                 <option value="oldest">Oldest</option>
@@ -369,7 +369,7 @@ const TextBrowser = () => {
                                 <p className="text-gray-500 text-sm mt-2">Save texts from the Revolutionary Theory page or browse all texts above</p>
                                 <button
                                     onClick={() => setBrowseMode('all')}
-                                    className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium transition-colors"
+                                    className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-none text-sm font-medium transition-colors"
                                 >
                                     Browse All Texts
                                 </button>

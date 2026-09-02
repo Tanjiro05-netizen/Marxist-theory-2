@@ -29,13 +29,13 @@
 }
 
 .gradient-overlay.positive {
-    background: radial-gradient(circle at center, rgba(46, 213, 115, 0.1) 0%, rgba(18, 19, 26, 0.8) 70%);
+    background: radial-gradient(circle at center, rgba(45, 138, 78, 0.1) 0%, rgba(11, 13, 18, 0.8) 70%);
 }
 
 .gradient-overlay.negative {
-    background: radial-gradient(circle at center, rgba(255, 59, 59, 0.1) 0%, rgba(18, 19, 26, 0.8) 70%);
+    background: radial-gradient(circle at center, rgba(212, 31, 61, 0.1) 0%, rgba(11, 13, 18, 0.8) 70%);
 }
 
 .gradient-overlay.neutral {
-    background: radial-gradient(circle at center, rgba(59, 130, 255, 0.1) 0%, rgba(18, 19, 26, 0.8) 70%);
+    background: radial-gradient(circle at center, rgba(74, 127, 181, 0.1) 0%, rgba(11, 13, 18, 0.8) 70%);
 }

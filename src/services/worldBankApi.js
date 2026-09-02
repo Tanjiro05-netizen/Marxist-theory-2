@@ -43,7 +43,7 @@ export const INDICATORS = {
   POPULATION_GROWTH: { id: 'SP.POP.GROW', name: 'Population growth (annual %)', format: 'percent', unit: '%' },
 };
 
-// Country code mapping for World Bank API (uses ISO 3166-1 alpha-2 but some exceptions)
+// Country code mapping for World Bank API (ISO 3166-1 alpha-2 → alpha-3)
 const COUNTRY_CODE_MAP = {
   'US': 'USA',
   'GB': 'GBR',
@@ -55,24 +55,38 @@ const COUNTRY_CODE_MAP = {
   'IN': 'IND',
   'BR': 'BRA',
   'KR': 'KOR',
+  'CA': 'CAN',
+  'AU': 'AUS',
+  'IT': 'ITA',
+  'ES': 'ESP',
+  'MX': 'MEX',
+  'ID': 'IDN',
+  'NL': 'NLD',
+  'SA': 'SAU',
+  'TR': 'TUR',
+  'CH': 'CHE',
+  'PL': 'POL',
+  'SE': 'SWE',
+  'ZA': 'ZAF',
+  'NG': 'NGA',
   'WORLD': 'WLD',
 };
 
 // All available countries for comparison with assigned colors
 export const COMPARISON_COUNTRIES = [
-  { code: 'US', name: 'United States', color: '#3b82f6' },
-  { code: 'CN', name: 'China', color: '#ef4444' },
-  { code: 'JP', name: 'Japan', color: '#22c55e' },
-  { code: 'DE', name: 'Germany', color: '#f59e0b' },
-  { code: 'GB', name: 'United Kingdom', color: '#8b5cf6' },
-  { code: 'IN', name: 'India', color: '#06b6d4' },
-  { code: 'FR', name: 'France', color: '#ec4899' },
+  { code: 'US', name: 'United States', color: '#4a7fb5' },
+  { code: 'CN', name: 'China', color: '#d41f3d' },
+  { code: 'JP', name: 'Japan', color: '#2d8a4e' },
+  { code: 'DE', name: 'Germany', color: '#c8860a' },
+  { code: 'GB', name: 'United Kingdom', color: '#8a84b8' },
+  { code: 'IN', name: 'India', color: '#4a7fb5' },
+  { code: 'FR', name: 'France', color: '#d41f3d' },
   { code: 'BR', name: 'Brazil', color: '#14b8a6' },
-  { code: 'RU', name: 'Russia', color: '#f97316' },
-  { code: 'CA', name: 'Canada', color: '#a855f7' },
+  { code: 'RU', name: 'Russia', color: '#c8860a' },
+  { code: 'CA', name: 'Canada', color: '#8a84b8' },
   { code: 'AU', name: 'Australia', color: '#eab308' },
   { code: 'KR', name: 'South Korea', color: '#64748b' },
-  { code: 'IT', name: 'Italy', color: '#10b981' },
+  { code: 'IT', name: 'Italy', color: '#2d8a4e' },
   { code: 'ES', name: 'Spain', color: '#f43f5e' },
   { code: 'MX', name: 'Mexico', color: '#0ea5e9' },
   { code: 'ID', name: 'Indonesia', color: '#84cc16' },

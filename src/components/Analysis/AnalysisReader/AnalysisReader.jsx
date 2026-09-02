@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { usePathname, useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Loader2, ArrowLeft, Users, MessageSquare, Bookmark, Highlighter, Link2, BarChart3, Trash2, BookOpen } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { supabase } from '../../../supabaseClient';
@@ -19,8 +19,9 @@ import useCrossReferences from '../hooks/useCrossReferences';
 
 const AnalysisReader = () => {
     const { slug } = useParams();
-    const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const { isAdmin } = useAuth();
     const [viewMode, setViewMode] = useState(searchParams.get('mode') === 'read' ? 'reading' : 'analysis');
     const isReadingMode = viewMode === 'reading';
@@ -28,8 +29,10 @@ const AnalysisReader = () => {
     const toggleViewMode = useCallback(() => {
         const newMode = isReadingMode ? 'analysis' : 'reading';
         setViewMode(newMode);
-        setSearchParams(newMode === 'reading' ? { mode: 'read' } : {}, { replace: true });
-    }, [isReadingMode, setSearchParams]);
+        const next = new URLSearchParams();
+        if (newMode === 'reading') next.set('mode', 'read');
+        router.replace(next.toString() ? `${pathname}?${next.toString()}` : pathname);
+    }, [isReadingMode, pathname, router]);
     const {
         text,
         loading,
@@ -169,7 +172,7 @@ const AnalysisReader = () => {
                 .eq('id', text.id);
             
             if (deleteError) throw deleteError;
-            navigate('/analysis');
+            router.push('/analysis');
         } catch (err) {
             console.error('Error deleting text:', err);
             alert('Failed to delete text: ' + err.message);
@@ -190,8 +193,8 @@ const AnalysisReader = () => {
                 <h2 className="text-2xl font-bold mb-4">Text Not Found</h2>
                 <p className="text-gray-400 mb-6">{error || 'The requested text could not be loaded.'}</p>
                 <button
-                    onClick={() => navigate('/analysis')}
-                    className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+                    onClick={() => router.push('/analysis')}
+                    className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded-none transition-colors"
                 >
                     Back to Analysis
                 </button>
@@ -214,8 +217,8 @@ const AnalysisReader = () => {
             {/* Back button and admin delete */}
             <div className="fixed top-20 left-4 z-30 flex gap-2">
                 <button
-                    onClick={() => navigate('/analysis')}
-                    className="p-2 bg-gray-800/80 hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-2 text-sm"
+                    onClick={() => router.push('/analysis')}
+                    className="p-2 bg-gray-800/80 hover:bg-gray-700 rounded-none transition-colors flex items-center gap-2 text-sm"
                 >
                     <ArrowLeft size={18} />
                     <span className="hidden md:inline">Back</span>
@@ -223,7 +226,7 @@ const AnalysisReader = () => {
                 {isAdmin && isAdmin() && (
                     <button
                         onClick={handleDeleteText}
-                        className="p-2 bg-gray-800/80 hover:bg-red-600 rounded-lg transition-colors flex items-center gap-2 text-sm text-gray-400 hover:text-white"
+                        className="p-2 bg-gray-800/80 hover:bg-red-600 rounded-none transition-colors flex items-center gap-2 text-sm text-gray-400 hover:text-white"
                         title="Delete this text"
                     >
                         <Trash2 size={18} />
@@ -235,7 +238,7 @@ const AnalysisReader = () => {
             {/* Main 3-column layout */}
             <div className="container mx-auto px-4 pt-24 pb-16">
                 {/* Mode indicator banner */}
-                <div className={`flex items-center justify-between mb-4 px-4 py-2.5 rounded-xl ${
+                <div className={`flex items-center justify-between mb-4 px-4 py-2.5 rounded-none ${
                     isReadingMode
                         ? 'bg-emerald-900/30 border border-emerald-700/40'
                         : 'bg-red-900/25 border border-red-700/30'
@@ -257,7 +260,7 @@ const AnalysisReader = () => {
                     </div>
                     <button
                         onClick={toggleViewMode}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-700/60 text-gray-300 hover:bg-gray-600 hover:text-white transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-none bg-gray-700/60 text-gray-300 hover:bg-gray-600 hover:text-white transition-colors"
                     >
                         {isReadingMode ? <><BarChart3 size={14} /> Switch to Analysis</> : <><BookOpen size={14} /> Switch to Reading</>}
                     </button>
@@ -274,7 +277,7 @@ const AnalysisReader = () => {
                             />
 
                             {/* Active viewers - analysis mode only */}
-                            {!isReadingMode && <div className="mt-4 p-4 bg-gray-900/50 rounded-xl">
+                            {!isReadingMode && <div className="mt-4 p-4 bg-gray-900/50 rounded-none">
                                 <h4 className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
                                     <Users size={14} />
                                     Active Readers ({activeUsers.length + 1})
@@ -314,7 +317,7 @@ const AnalysisReader = () => {
                         />
 
                         {/* Sections */}
-                        <div ref={contentRef} className="bg-gray-900/30 rounded-2xl p-6 md:p-8 relative">
+                        <div ref={contentRef} className="bg-gray-900/30 rounded-none p-6 md:p-8 relative">
                             <TextSelectionPopup
                                 containerRef={contentRef}
                                 onHighlight={handleSelectionHighlight}
@@ -346,12 +349,12 @@ const AnalysisReader = () => {
                     {!isReadingMode && <aside className="hidden lg:block lg:col-span-3">
                         <div className="sticky top-24">
                             {/* Tab Navigation */}
-                            <div className="flex flex-wrap gap-1 mb-4 bg-gray-900/50 rounded-xl p-2">
+                            <div className="flex flex-wrap gap-1 mb-4 bg-gray-900/50 rounded-none p-2">
                                 {tabs.map((tab) => (
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
-                                        className={`flex-1 min-w-[60px] p-2 rounded-lg text-xs font-medium transition-colors flex flex-col items-center gap-1
+                                        className={`flex-1 min-w-[60px] p-2 rounded-none text-xs font-medium transition-colors flex flex-col items-center gap-1
                                             ${activeTab === tab.id
                                                 ? 'bg-red-600 text-white'
                                                 : 'text-gray-400 hover:text-white hover:bg-gray-800'
@@ -364,7 +367,7 @@ const AnalysisReader = () => {
                             </div>
 
                             {/* Tab Content */}
-                            <div className="bg-gray-900/50 rounded-xl p-4 min-h-[400px] max-h-[calc(100vh-280px)] overflow-y-auto">
+                            <div className="bg-gray-900/50 rounded-none p-4 min-h-[400px] max-h-[calc(100vh-280px)] overflow-y-auto">
                                 {activeTab === 'comments' && (
                                     <div>
                                         {filterSection && (
@@ -408,7 +411,7 @@ const AnalysisReader = () => {
                                                     <button
                                                         key={bookmark.id}
                                                         onClick={() => scrollToSection(bookmark.section_id)}
-                                                        className="w-full text-left p-3 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-colors"
+                                                        className="w-full text-left p-3 bg-gray-800/50 hover:bg-gray-800 rounded-none transition-colors"
                                                     >
                                                         <div className="text-sm text-white">§{bookmark.section_id}</div>
                                                         {bookmark.note && (
@@ -437,8 +440,8 @@ const AnalysisReader = () => {
                                                 {highlights.map(highlight => (
                                                     <div
                                                         key={highlight.id}
-                                                        className="p-3 bg-gray-800/50 rounded-lg border-l-4"
-                                                        style={{ borderColor: highlight.color === 'yellow' ? '#facc15' : highlight.color === 'green' ? '#22c55e' : highlight.color === 'blue' ? '#3b82f6' : highlight.color === 'pink' ? '#ec4899' : '#f97316' }}
+                                                        className="p-3 bg-gray-800/50 rounded-none border-l-4"
+                                                        style={{ borderColor: highlight.color === 'yellow' ? '#facc15' : highlight.color === 'green' ? '#2d8a4e' : highlight.color === 'blue' ? '#4a7fb5' : highlight.color === 'pink' ? '#d41f3d' : '#c8860a' }}
                                                     >
                                                         <p className="text-sm text-gray-300 italic">"{highlight.selected_text}"</p>
                                                         <div className="flex items-center justify-between mt-2">
@@ -490,7 +493,7 @@ const AnalysisReader = () => {
                                 setActiveTab(tab.id);
                                 setSidebarOpen(true);
                             }}
-                            className={`p-3 rounded-lg transition-colors
+                            className={`p-3 rounded-none transition-colors
                                 ${activeTab === tab.id ? 'text-red-500' : 'text-gray-400'}`}
                         >
                             <tab.icon size={20} />

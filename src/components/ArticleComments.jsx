@@ -47,7 +47,7 @@ const Comment = ({ comment, onReply, userRole }) => {
 
     return (
         <>
-            <div className="flex flex-col space-y-2 p-4 bg-black/20 rounded-lg">
+            <div className="flex flex-col space-y-2 p-4 bg-black/20 rounded-none">
                 <div className="flex items-center space-x-3">
                     <img src={comment.author_avatar || `https://api.dicebear.com/8.x/identicon/svg?seed=${comment.user_id}`} alt="avatar" className="w-8 h-8 rounded-full bg-gray-700" />
                     <div className="flex flex-col">
@@ -145,7 +145,7 @@ const CommentForm = ({ articleId, parentId = null, onCommentPosted }) => {
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     placeholder={parentId ? "Write a reply..." : "Join the discussion..."}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 pr-28 text-white focus:ring-2 focus:ring-red-500 focus:outline-none resize-y min-h-[80px]"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-none p-3 pr-28 text-white focus:ring-2 focus:ring-red-500 focus:outline-none resize-y min-h-[80px]"
                     rows="3"
                     required
                 />

@@ -1,6 +1,6 @@
 import { supabase } from '../../../supabaseClient';
 
-const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || '';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
 
 // Dev mode UUID for 'dev-admin' user
 const DEV_ADMIN_UUID = '00000000-0000-0000-0000-000000000001';

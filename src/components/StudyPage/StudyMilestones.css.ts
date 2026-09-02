@@ -24,7 +24,7 @@ export const summaryHeader = style({
 
 export const summaryLabel = style({
   margin: 0,
-  fontFamily: vars.font.mono,
+  fontFamily: vars.font.label,
   fontSize: '10px',
   textTransform: 'uppercase',
   letterSpacing: '0.14em',
@@ -48,7 +48,7 @@ export const summaryMeta = style({
 });
 
 export const summaryValue = style({
-  fontFamily: vars.font.mono,
+  fontFamily: vars.font.label,
   fontSize: '12px',
   letterSpacing: '0.08em',
   textTransform: 'uppercase',
@@ -208,7 +208,7 @@ export const milestoneSubtitle = style({
 
 export const milestoneMeta = style({
   marginTop: vars.space.xxs,
-  fontFamily: vars.font.mono,
+  fontFamily: vars.font.label,
   fontSize: '10px',
   textTransform: 'uppercase',
   letterSpacing: '0.1em',

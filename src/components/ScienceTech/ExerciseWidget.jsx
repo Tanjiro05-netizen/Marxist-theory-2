@@ -62,7 +62,7 @@ const ExerciseWidget = ({ exercise, index }) => {
                   key={idx}
                   onClick={() => !isSubmitted && setSelectedAnswer(option)}
                   disabled={isSubmitted}
-                  className={`w-full text-left p-3 rounded-lg border transition-colors flex items-center gap-3 ${bgClass}`}
+                  className={`w-full text-left p-3 rounded-none border transition-colors flex items-center gap-3 ${bgClass}`}
                 >
                   <span className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs ${
                     isSelected ? 'border-red-500 bg-red-500 text-white' : 'border-gray-600 text-gray-500'
@@ -87,7 +87,7 @@ const ExerciseWidget = ({ exercise, index }) => {
               onChange={(e) => setNumericAnswer(e.target.value)}
               disabled={isSubmitted}
               placeholder="Enter your answer..."
-              className={`flex-1 px-4 py-3 rounded-lg border bg-black/30 text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${
+              className={`flex-1 px-4 py-3 rounded-none border bg-black/30 text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${
                 isSubmitted 
                   ? isCorrect() 
                     ? 'border-green-500 focus:ring-green-500' 
@@ -96,7 +96,7 @@ const ExerciseWidget = ({ exercise, index }) => {
               }`}
             />
             {isSubmitted && (
-              <div className={`px-4 py-3 rounded-lg flex items-center gap-2 ${
+              <div className={`px-4 py-3 rounded-none flex items-center gap-2 ${
                 isCorrect() ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
               }`}>
                 {isCorrect() ? <Check className="w-5 h-5" /> : <X className="w-5 h-5" />}
@@ -115,7 +115,7 @@ const ExerciseWidget = ({ exercise, index }) => {
               onChange={(e) => setFillAnswer(e.target.value)}
               disabled={isSubmitted}
               placeholder="Fill in the blank..."
-              className={`flex-1 px-4 py-3 rounded-lg border bg-black/30 text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${
+              className={`flex-1 px-4 py-3 rounded-none border bg-black/30 text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${
                 isSubmitted 
                   ? isCorrect() 
                     ? 'border-green-500 focus:ring-green-500' 
@@ -124,7 +124,7 @@ const ExerciseWidget = ({ exercise, index }) => {
               }`}
             />
             {isSubmitted && !isCorrect() && (
-              <div className="px-4 py-3 rounded-lg bg-green-900/30 text-green-400 flex items-center">
+              <div className="px-4 py-3 rounded-none bg-green-900/30 text-green-400 flex items-center">
                 {exercise.correct_answer}
               </div>
             )}
@@ -150,7 +150,7 @@ const ExerciseWidget = ({ exercise, index }) => {
   };
 
   return (
-    <div className="bg-black/20 rounded-lg p-4 border border-gray-800">
+    <div className="bg-black/20 rounded-none p-4 border border-gray-800">
       {/* Question */}
       <div className="mb-4">
         <span className="text-xs text-gray-500 uppercase tracking-wide">
@@ -174,14 +174,14 @@ const ExerciseWidget = ({ exercise, index }) => {
         </button>
       )}
       {showHint && (
-        <div className="mt-2 p-3 rounded-lg bg-yellow-900/20 border border-yellow-900/30 text-yellow-200 text-sm">
+        <div className="mt-2 p-3 rounded-none bg-yellow-900/20 border border-yellow-900/30 text-yellow-200 text-sm">
           {exercise.hint}
         </div>
       )}
 
       {/* Explanation */}
       {isSubmitted && exercise.explanation && (
-        <div className="mt-4 p-3 rounded-lg bg-blue-900/20 border border-blue-900/30">
+        <div className="mt-4 p-3 rounded-none bg-blue-900/20 border border-blue-900/30">
           <p className="text-blue-300 text-sm font-medium mb-1">Explanation:</p>
           <p className="text-gray-300 text-sm">{exercise.explanation}</p>
         </div>
@@ -193,7 +193,7 @@ const ExerciseWidget = ({ exercise, index }) => {
           <button
             onClick={checkAnswer}
             disabled={!canSubmit()}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Check Answer
           </button>

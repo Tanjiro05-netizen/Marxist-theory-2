@@ -13,7 +13,7 @@ const ResearchSynthesis = () => {
     };
 
     return (
-        <div className="bg-black/30 backdrop-blur-sm p-6 rounded-lg">
+        <div className="bg-black/30 backdrop-blur-sm p-6 rounded-none">
             <h2 className="text-2xl text-white mb-4">Research Synthesis Engine</h2>
             <textarea
                 value={query}

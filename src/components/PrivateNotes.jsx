@@ -116,13 +116,13 @@ const PrivateNotes = ({ articleId }) => {
     }
 
     return (
-        <div className="bg-black/20 p-4 rounded-lg">
+        <div className="bg-black/20 p-4 rounded-none">
             <h3 className="text-lg font-semibold text-white mb-3">My Private Notes</h3>
             <textarea
                 value={note}
                 onChange={handleNoteChange}
                 placeholder="Type your private notes and analysis here. They will be saved automatically..."
-                className="w-full bg-gray-900/70 border border-gray-700 rounded-lg p-3 text-gray-300 text-sm focus:ring-2 focus:ring-red-500 focus:outline-none resize-none"
+                className="w-full bg-gray-900/70 border border-gray-700 rounded-none p-3 text-gray-300 text-sm focus:ring-2 focus:ring-red-500 focus:outline-none resize-none"
                 rows={12}
                 disabled={status === 'loading'}
             />

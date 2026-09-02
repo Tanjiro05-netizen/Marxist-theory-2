@@ -4,9 +4,9 @@ import { motion } from 'framer-motion';
 
 // Enhanced color palette with meaning
 const COLORS = {
-  labor: '#3b82f6',      // Blue for labor
-  capital: '#ef4444',    // Red for capital
-  other: '#8b5cf6'       // Purple for other categories
+  labor: '#4a7fb5',      // Blue for labor
+  capital: '#d41f3d',    // Red for capital
+  other: '#6f6a9e'       // Purple for other categories
 };
 
 const LaborCapitalDistribution = ({ data }) => {
@@ -17,7 +17,7 @@ const LaborCapitalDistribution = ({ data }) => {
     if (active && payload && payload.length) {
       const { name, value, payload: fullPayload } = payload[0];
       return (
-        <div className="custom-tooltip bg-slate-900 border border-slate-700 p-4 rounded-lg shadow-lg">
+        <div className="custom-tooltip bg-slate-900 border border-slate-700 p-4 rounded-none shadow-none">
           <p className="text-white font-semibold mb-1">{name}</p>
           <p className="text-gray-300">
             <span className="font-medium">{value}%</span> of economic distribution
@@ -74,7 +74,7 @@ const LaborCapitalDistribution = ({ data }) => {
 
   return (
     <motion.div 
-      className="bg-gradient-to-r from-slate-900/80 via-gray-900/70 to-black/60 p-6 rounded-lg shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl border border-slate-800 hover:border-slate-700"
+      className="bg-[#10131b] from-slate-900/80 via-gray-900/70 to-black/60 p-6 rounded-none shadow-none backdrop-blur-sm transition-all duration-300 hover:shadow-none border border-slate-800 hover:border-slate-700"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -91,7 +91,7 @@ const LaborCapitalDistribution = ({ data }) => {
             cy="50%"
             labelLine={false}
             outerRadius={150}
-            fill="#8884d8"
+            fill="#8a84b8"
             dataKey="value"
             label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
             onMouseEnter={(_, index) => setActiveIndex(index)}
@@ -105,7 +105,7 @@ const LaborCapitalDistribution = ({ data }) => {
                 <Cell 
                   key={`cell-${index}`} 
                   fill={COLORS[colorKey] || COLORS.other} 
-                  stroke="#1f2937"
+                  stroke="#10131b"
                   strokeWidth={2}
                 />
               );
@@ -126,7 +126,7 @@ const LaborCapitalDistribution = ({ data }) => {
         {enhancedData.map((entry, index) => (
           <motion.div 
             key={`stat-${index}`}
-            className={`p-3 rounded-md text-center ${activeIndex === index ? 'bg-slate-800/80' : 'bg-slate-800/30'}`}
+            className={`p-3 rounded-none text-center ${activeIndex === index ? 'bg-slate-800/80' : 'bg-slate-800/30'}`}
             whileHover={{ y: -5 }}
             onHover={() => setActiveIndex(index)}
             onMouseLeave={() => setActiveIndex(null)}

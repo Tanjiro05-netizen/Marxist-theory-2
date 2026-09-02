@@ -1,19 +1,16 @@
 /* World Sim CRT Terminal Styling */
 
-/* Import monospace font */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
-
 /* CRT Terminal Container */
 .worldsim-terminal {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  background-color: #0a0a0a;
-  color: #00ff41;
+  font-family: var(--ff-mono), 'Fira Code', monospace;
+  background-color: #0b0d12;
+  color: #ece9e0;
   position: relative;
   overflow: hidden;
   border-radius: 8px;
   box-shadow: 
-    inset 0 0 100px rgba(0, 255, 65, 0.05),
-    0 0 20px rgba(0, 255, 65, 0.1);
+    inset 0 0 100px rgba(236, 233, 224, 0.05),
+    0 0 20px rgba(236, 233, 224, 0.1);
 }
 
 /* Scanline effect */
@@ -43,7 +40,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 255, 65, 0.02);
+  background: rgba(236, 233, 224, 0.02);
   opacity: 0;
   pointer-events: none;
   z-index: 11;
@@ -88,47 +85,47 @@
 }
 
 .worldsim-output::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: #0b0d12;
 }
 
 .worldsim-output::-webkit-scrollbar-thumb {
-  background: #00ff41;
+  background: #ece9e0;
   border-radius: 4px;
 }
 
 .worldsim-output::-webkit-scrollbar-thumb:hover {
-  background: #00cc33;
+  background: #2d8a4e;
 }
 
 /* Text colors */
 .text-phosphor {
-  color: #00ff41;
-  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+  color: #ece9e0;
+  text-shadow: 0 0 5px rgba(236, 233, 224, 0.5);
 }
 
 .text-phosphor-dim {
-  color: #00aa2b;
-  text-shadow: 0 0 3px rgba(0, 170, 43, 0.3);
+  color: #2d8a4e;
+  text-shadow: 0 0 3px rgba(45, 138, 78, 0.45);
 }
 
 .text-phosphor-bright {
-  color: #33ff66;
-  text-shadow: 0 0 10px rgba(51, 255, 102, 0.7);
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.85);
 }
 
 .text-warning {
-  color: #ffaa00;
-  text-shadow: 0 0 5px rgba(255, 170, 0, 0.5);
+  color: #d8c79f;
+  text-shadow: 0 0 5px rgba(216, 199, 159, 0.5);
 }
 
 .text-danger {
-  color: #ff4444;
-  text-shadow: 0 0 5px rgba(255, 68, 68, 0.5);
+  color: #d41f3d;
+  text-shadow: 0 0 5px rgba(212, 31, 61, 0.5);
 }
 
 .text-info {
-  color: #44aaff;
-  text-shadow: 0 0 5px rgba(68, 170, 255, 0.5);
+  color: #4a7fb5;
+  text-shadow: 0 0 5px rgba(74, 127, 181, 0.5);
 }
 
 /* Command input */
@@ -136,17 +133,17 @@
   display: flex;
   align-items: center;
   padding: 0.75rem 1rem;
-  border-top: 1px solid #00ff4133;
-  background: #050505;
+  border-top: 1px solid #ece9e033;
+  background: #08090d;
   position: relative;
   z-index: 1;
 }
 
 .worldsim-prompt {
-  color: #00ff41;
+  color: #ece9e0;
   font-weight: 500;
   margin-right: 0.5rem;
-  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+  text-shadow: 0 0 5px rgba(236, 233, 224, 0.5);
 }
 
 .worldsim-input {
@@ -154,14 +151,14 @@
   background: transparent;
   border: none;
   outline: none;
-  color: #00ff41;
-  font-family: 'JetBrains Mono', monospace;
+  color: #ece9e0;
+  font-family: var(--ff-mono), monospace;
   font-size: 0.875rem;
-  caret-color: #00ff41;
+  caret-color: #ece9e0;
 }
 
 .worldsim-input::placeholder {
-  color: #00ff4155;
+  color: #ece9e055;
 }
 
 /* Blinking cursor */
@@ -169,7 +166,7 @@
   display: inline-block;
   width: 8px;
   height: 16px;
-  background: #00ff41;
+  background: #ece9e0;
   animation: blink 1s step-end infinite;
   margin-left: 2px;
   vertical-align: middle;
@@ -184,7 +181,7 @@
 .worldsim-block {
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #00ff4122;
+  border-bottom: 1px solid #ece9e022;
 }
 
 .worldsim-block:last-child {
@@ -192,7 +189,7 @@
 }
 
 .worldsim-block-title {
-  color: #00ff41;
+  color: #ece9e0;
   font-weight: 700;
   font-size: 0.75rem;
   letter-spacing: 0.1em;
@@ -214,24 +211,24 @@
 }
 
 .worldsim-meter-label {
-  color: #00aa2b;
+  color: #2d8a4e;
 }
 
 .worldsim-meter-value {
-  color: #00ff41;
+  color: #ece9e0;
   font-weight: 500;
 }
 
 .worldsim-meter-value.danger {
-  color: #ff4444;
+  color: #d41f3d;
 }
 
 .worldsim-meter-value.warning {
-  color: #ffaa00;
+  color: #d8c79f;
 }
 
 .worldsim-meter-value.good {
-  color: #00ff41;
+  color: #ece9e0;
 }
 
 /* Options list */
@@ -248,27 +245,27 @@
 }
 
 .worldsim-option:hover {
-  color: #33ff66;
-  text-shadow: 0 0 10px rgba(51, 255, 102, 0.7);
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.85);
   padding-left: 0.5rem;
 }
 
 .worldsim-option-number {
-  color: #00aa2b;
+  color: #2d8a4e;
   margin-right: 0.5rem;
 }
 
 /* Theory prompt */
 .worldsim-theory {
-  background: #00ff4110;
-  border-left: 3px solid #00ff41;
+  background: #ece9e010;
+  border-left: 3px solid #ece9e0;
   padding: 0.75rem;
   margin-top: 0.5rem;
 }
 
 .worldsim-theory-question {
   font-style: italic;
-  color: #33ff66;
+  color: #ffffff;
 }
 
 /* Loading animation */
@@ -276,7 +273,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #00aa2b;
+  color: #2d8a4e;
 }
 
 .worldsim-loading-dots {
@@ -287,7 +284,7 @@
 .worldsim-loading-dot {
   width: 6px;
   height: 6px;
-  background: #00ff41;
+  background: #ece9e0;
   border-radius: 50%;
   animation: loadingPulse 1.4s ease-in-out infinite both;
 }
@@ -320,12 +317,12 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #00ff4133;
-  background: #050505;
+  border-bottom: 1px solid #ece9e033;
+  background: #08090d;
 }
 
 .worldsim-title {
-  color: #00ff41;
+  color: #ece9e0;
   font-weight: 700;
   font-size: 1rem;
   letter-spacing: 0.05em;
@@ -338,19 +335,19 @@
 
 .worldsim-btn {
   background: transparent;
-  border: 1px solid #00ff4155;
-  color: #00ff41;
+  border: 1px solid #ece9e055;
+  color: #ece9e0;
   padding: 0.375rem 0.75rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ff-mono), monospace;
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .worldsim-btn:hover {
-  background: #00ff4120;
-  border-color: #00ff41;
-  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+  background: #ece9e020;
+  border-color: #ece9e0;
+  text-shadow: 0 0 5px rgba(236, 233, 224, 0.5);
 }
 
 .worldsim-btn:disabled {
@@ -370,19 +367,19 @@
 }
 
 .worldsim-modal-content {
-  background: #0a0a0a;
-  border: 1px solid #00ff4155;
+  background: #0b0d12;
+  border: 1px solid #ece9e055;
   border-radius: 8px;
   max-width: 600px;
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 0 50px rgba(0, 255, 65, 0.2);
+  box-shadow: 0 0 50px rgba(236, 233, 224, 0.2);
 }
 
 .worldsim-modal-header {
   padding: 1rem;
-  border-bottom: 1px solid #00ff4133;
+  border-bottom: 1px solid #ece9e033;
 }
 
 .worldsim-modal-body {
@@ -390,8 +387,8 @@
 }
 
 .worldsim-scenario-card {
-  background: #0f0f0f;
-  border: 1px solid #00ff4133;
+  background: #10131b;
+  border: 1px solid #ece9e033;
   border-radius: 4px;
   padding: 1rem;
   margin-bottom: 0.75rem;
@@ -400,18 +397,18 @@
 }
 
 .worldsim-scenario-card:hover {
-  border-color: #00ff41;
-  background: #00ff4108;
+  border-color: #ece9e0;
+  background: #ece9e008;
 }
 
 .worldsim-scenario-title {
-  color: #00ff41;
+  color: #ece9e0;
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
 
 .worldsim-scenario-desc {
-  color: #00aa2b;
+  color: #2d8a4e;
   font-size: 0.875rem;
   line-height: 1.4;
 }
@@ -421,17 +418,17 @@
   position: absolute;
   top: 60px;
   right: 1rem;
-  background: #0a0a0a;
-  border: 1px solid #00ff4155;
+  background: #0b0d12;
+  border: 1px solid #ece9e055;
   border-radius: 4px;
   padding: 1rem;
   max-width: 300px;
   z-index: 50;
-  box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+  box-shadow: 0 0 20px rgba(236, 233, 224, 0.1);
 }
 
 .worldsim-help-title {
-  color: #00ff41;
+  color: #ece9e0;
   font-weight: 700;
   margin-bottom: 0.75rem;
   font-size: 0.875rem;
@@ -442,7 +439,7 @@
   justify-content: space-between;
   font-size: 0.75rem;
   padding: 0.25rem 0;
-  border-bottom: 1px solid #00ff4111;
+  border-bottom: 1px solid #ece9e011;
 }
 
 .worldsim-help-cmd:last-child {
@@ -450,21 +447,21 @@
 }
 
 .worldsim-help-cmd-name {
-  color: #00ff41;
+  color: #ece9e0;
 }
 
 .worldsim-help-cmd-desc {
-  color: #00aa2b;
+  color: #2d8a4e;
 }
 
 /* Custom Action Button */
 .worldsim-custom-btn {
   background: transparent;
-  border: 1px solid #00ff4155;
-  color: #00ff41;
+  border: 1px solid #ece9e055;
+  color: #ece9e0;
   padding: 0.25rem 0.75rem;
   margin-left: 0.75rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ff-mono), monospace;
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -473,9 +470,9 @@
 }
 
 .worldsim-custom-btn:hover {
-  background: #00ff4120;
-  border-color: #00ff41;
-  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+  background: #ece9e020;
+  border-color: #ece9e0;
+  text-shadow: 0 0 5px rgba(236, 233, 224, 0.5);
 }
 
 .worldsim-custom-btn:disabled {
@@ -496,29 +493,29 @@
 
 /* Custom Action Modal - CLI Style */
 .worldsim-custom-modal {
-  font-family: 'JetBrains Mono', monospace;
-  background: #0a0a0a;
-  border: 2px solid #00ff41;
+  font-family: var(--ff-mono), monospace;
+  background: #0b0d12;
+  border: 2px solid #ece9e0;
   box-shadow: 
-    0 0 0 1px #00ff4155,
-    0 0 30px rgba(0, 255, 65, 0.2),
-    inset 0 0 50px rgba(0, 255, 65, 0.03);
+    0 0 0 1px #ece9e055,
+    0 0 30px rgba(236, 233, 224, 0.2),
+    inset 0 0 50px rgba(236, 233, 224, 0.03);
   width: 90%;
   max-width: 500px;
 }
 
 .worldsim-custom-modal .worldsim-modal-header {
-  color: #00ff41;
+  color: #ece9e0;
   font-weight: 700;
   font-size: 0.875rem;
   padding: 0.75rem 1rem;
   border-bottom: none;
-  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+  text-shadow: 0 0 5px rgba(236, 233, 224, 0.5);
 }
 
 .worldsim-modal-divider {
   height: 2px;
-  background: linear-gradient(90deg, #00ff41, #00ff4155, #00ff41);
+  background: linear-gradient(90deg, #ece9e0, #ece9e055, #ece9e0);
 }
 
 .worldsim-custom-modal .worldsim-modal-body {
@@ -526,7 +523,7 @@
 }
 
 .worldsim-modal-hint {
-  color: #00aa2b;
+  color: #2d8a4e;
   font-size: 0.8rem;
   margin-bottom: 1rem;
   line-height: 1.5;
@@ -536,15 +533,15 @@
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  background: #050505;
-  border: 1px solid #00ff4133;
+  background: #08090d;
+  border: 1px solid #ece9e033;
   padding: 0.75rem;
 }
 
 .worldsim-modal-prompt {
-  color: #00ff41;
+  color: #ece9e0;
   font-weight: 500;
-  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+  text-shadow: 0 0 5px rgba(236, 233, 224, 0.5);
 }
 
 .worldsim-modal-textarea {
@@ -552,25 +549,25 @@
   background: transparent;
   border: none;
   outline: none;
-  color: #00ff41;
-  font-family: 'JetBrains Mono', monospace;
+  color: #ece9e0;
+  font-family: var(--ff-mono), monospace;
   font-size: 0.875rem;
   resize: none;
   line-height: 1.5;
 }
 
 .worldsim-modal-textarea::placeholder {
-  color: #00ff4144;
+  color: #ece9e044;
 }
 
 .worldsim-modal-footer {
   display: flex;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  border-top: 1px solid #00ff4133;
+  border-top: 1px solid #ece9e033;
 }
 
 .worldsim-modal-key {
-  color: #00aa2b;
+  color: #2d8a4e;
   font-size: 0.75rem;
 }

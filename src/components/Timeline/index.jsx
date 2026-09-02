@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { ChevronDown, ExternalLink, MapPin, X, Calendar, Tag, ArrowRight } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 import * as s from './Timeline.css.ts';
@@ -26,6 +26,10 @@ function formatDate(year, month, day) {
     if (day) parts.push(`${day},`);
     parts.push(String(year));
     return parts.join(' ');
+}
+
+function formatDayLabel(month, day) {
+    return [MONTHS[month], day].filter(Boolean).join(' ');
 }
 
 function extractWikiTitle(url) {
@@ -173,7 +177,7 @@ const Timeline = () => {
 
     return (
         <div className={s.root}>
-            {/* Category Filter */}
+            {/* Category Filter — underline text tabs */}
             <div className={s.filterBar}>
                 <div className={s.filterInner}>
                     {categories.map(cat => (
@@ -195,106 +199,109 @@ const Timeline = () => {
             <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 className={`${s.scrollBtn} ${isScrolled ? s.scrollBtnVisible : s.scrollBtnHidden}`}
+                aria-label="Scroll to top"
             >
-                <ChevronDown size={20} style={{ transform: 'rotate(180deg)' }} />
+                <ChevronDown size={18} style={{ transform: 'rotate(180deg)' }} />
             </button>
 
-            {/* Spine */}
-            <div className={s.spine}>
-                <div className={s.spinePulse} />
-            </div>
-
-            {/* Events */}
-            <div className={s.eventList}>
-                {filteredEvents.map((event, index) => {
-                    const isLeft = index % 2 === 0;
+            {/* Events — one spine, hairline rows */}
+            <div className={s.timeline}>
+                {filteredEvents.map(event => {
                     const isActive = activeEvent === event.id;
                     const isExpanded = expandedEvent === event.id;
+                    const isCritical = event.importance === 'critical';
+                    const thumb = thumbs[event.id] || event.image_url;
 
                     return (
-                        <div
+                        <article
                             key={event.id}
-                            className={`${s.eventRow} ${isLeft ? s.eventRowLeft : s.eventRowRight}`}
+                            className={s.event}
                         >
-                            <div className={`${s.cardWrap} ${isLeft ? s.cardWrapLeft : s.cardWrapRight}`}>
-                                <div
-                                    className={`${s.card} ${isActive ? s.cardActive : ''} ${event.importance === 'critical' ? s.importanceCritical : ''}`}
+                            <div className={s.when}>
+                                <span className={`${s.year} ${isCritical ? s.yearCritical : ''}`}>{event.year}</span>
+                                {formatDayLabel(event.month, event.day) && (
+                                    <span className={s.dateLabel}>{formatDayLabel(event.month, event.day)}</span>
+                                )}
+                                <span className={s.catLabel}>
+                                    {CATEGORY_LABELS[event.category] || event.category}
+                                </span>
+                            </div>
+
+                            <div className={s.node} aria-hidden="true">
+                                <span className={`${s.nodeDot} ${isActive ? s.nodeDotActive : ''}`} />
+                            </div>
+
+                            <div className={s.body}>
+                                <h3
+                                    className={s.title}
+                                    onClick={() => setExpandedEvent(isExpanded ? null : event.id)}
                                     onMouseEnter={() => setActiveEvent(event.id)}
                                     onMouseLeave={() => setActiveEvent(null)}
-                                    onClick={() => setExpandedEvent(isExpanded ? null : event.id)}
                                 >
-                                    <div className={s.cardCategory}>
-                                        {CATEGORY_LABELS[event.category] || event.category}
+                                    {event.title}
+                                    {event.detailed_description && (
+                                        <span
+                                            role="button"
+                                            tabIndex={0}
+                                            onClick={(e) => { e.stopPropagation(); setModalEvent(event); }}
+                                            onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); setModalEvent(event); } }}
+                                            style={{ cursor: 'pointer', display: 'inline-flex' }}
+                                        >
+                                            <ExternalLink size={13} className={s.titleIcon} />
+                                        </span>
+                                    )}
+                                </h3>
+
+                                <p className={s.desc}>{event.description}</p>
+
+                                {isExpanded && event.detailed_description && (
+                                    <p className={s.desc} style={{ color: vars_colorSoft }}>
+                                        {event.detailed_description}
+                                    </p>
+                                )}
+
+                                {thumb && (
+                                    <div className={s.eventImage}>
+                                        <img
+                                            src={thumb}
+                                            alt={event.title}
+                                            className={s.eventImg}
+                                            loading="lazy"
+                                            onError={(e) => { e.target.style.display = 'none'; }}
+                                        />
                                     </div>
-                                    <h3 className={s.cardTitle}>
-                                        {event.title}
-                                        {event.detailed_description && (
-                                            <span
-                                                role="button"
-                                                tabIndex={0}
-                                                onClick={(e) => { e.stopPropagation(); setModalEvent(event); }}
-                                                onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); setModalEvent(event); } }}
-                                                style={{ cursor: 'pointer', display: 'inline-flex' }}
-                                            >
-                                                <ExternalLink size={14} className={s.cardLinkIcon} />
+                                )}
+
+                                {(event.location || (event.related_people && event.related_people.length > 0)) && (
+                                    <div className={s.metaLine}>
+                                        {event.location && (
+                                            <span>
+                                                <MapPin size={11} style={{ verticalAlign: '-1px' }} /> {event.location}
                                             </span>
                                         )}
-                                    </h3>
-                                    <p className={s.cardDesc}>{event.description}</p>
+                                    </div>
+                                )}
 
-                                    {isExpanded && event.detailed_description && (
-                                        <p className={s.cardDesc} style={{ marginTop: '8px', opacity: 0.85 }}>
-                                            {event.detailed_description}
-                                        </p>
-                                    )}
-
-                                    {(thumbs[event.id] || event.image_url) && (
-                                        <div className={s.cardImage}>
-                                            <img
-                                                src={thumbs[event.id] || event.image_url}
-                                                alt={event.title}
-                                                className={s.cardImg}
-                                                loading="lazy"
-                                                onError={(e) => { e.target.style.display = 'none'; }}
-                                            />
-                                        </div>
-                                    )}
-
-                                    {event.location && (
-                                        <div className={s.cardLocation}>
-                                            <MapPin size={10} style={{ display: 'inline', marginRight: '4px' }} />
-                                            {event.location}
-                                        </div>
-                                    )}
-
-                                    {event.related_people && event.related_people.length > 0 && (
-                                        <div className={s.cardPeople}>
-                                            {event.related_people.map(person => (
-                                                <span key={person} className={s.personTag}>{person}</span>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
+                                {event.related_people && event.related_people.length > 0 && (
+                                    <div className={s.people}>
+                                        {event.related_people.map(person => (
+                                            <span key={person} className={s.personTag}>{person}</span>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-
-                            {/* Centre dot */}
-                            <div className={s.centrePoint}>
-                                <div className={s.dot}>
-                                    {isActive && <div className={s.dotPing} />}
-                                </div>
-                                <div className={s.yearLabel}>{formatDate(event.year, event.month, event.day)}</div>
-                            </div>
-                        </div>
+                        </article>
                     );
                 })}
             </div>
-            {/* Detail Modal */}
+
+            {/* Detail Modal — flat ink panel with drop cap */}
             {modalEvent && (
                 <>
                     <div className={s.modalOverlay} onClick={() => setModalEvent(null)} />
                     <div className={s.modalPanel}>
-                        <button className={s.modalClose} onClick={() => setModalEvent(null)}>
-                            <X size={20} />
+                        <button className={s.modalClose} onClick={() => setModalEvent(null)} aria-label="Close">
+                            <X size={18} />
                         </button>
 
                         {(thumbs[modalEvent.id] || modalEvent.image_url) && (
@@ -310,6 +317,7 @@ const Timeline = () => {
                             {CATEGORY_LABELS[modalEvent.category] || modalEvent.category}
                         </div>
                         <h2 className={s.modalTitle}>{modalEvent.title}</h2>
+                        <div className={s.modalRule} aria-hidden="true" />
 
                         <div className={s.modalMeta}>
                             <span className={s.modalMetaItem}>
@@ -339,7 +347,7 @@ const Timeline = () => {
                                 {modalEvent.related_people.map(person => (
                                     <Link
                                         key={person}
-                                        to={`/glossary/${encodeURIComponent(person)}`}
+                                        href={`/glossary/${encodeURIComponent(person)}`}
                                         className={s.personTag}
                                         onClick={() => setModalEvent(null)}
                                     >
@@ -359,8 +367,7 @@ const Timeline = () => {
                                             <span className={s.glossaryCardType}>{g.type}</span>
                                         </div>
                                         <p className={s.glossaryCardExcerpt}>{g.explanation}</p>
-                                        <Link
-                                            to={`/glossary/${encodeURIComponent(g.term)}`}
+                                        <Link href={`/glossary/${encodeURIComponent(g.term)}`}
                                             className={s.glossaryCardLink}
                                             onClick={() => setModalEvent(null)}
                                         >
@@ -376,5 +383,7 @@ const Timeline = () => {
         </div>
     );
 };
+
+const vars_colorSoft = '#c9c5b8';
 
 export default Timeline;

@@ -12,7 +12,7 @@ const PassageFinder = ({
   if (!isOpen) return null;
 
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 space-y-3 mb-4 no-pdf">
+    <div className="bg-gray-800 border border-gray-700 rounded-none p-3 space-y-3 mb-4 no-pdf">
       <div className="flex items-center gap-2">
         <Search size={16} className="text-red-400" />
         <input
@@ -42,7 +42,7 @@ const PassageFinder = ({
               <button
                 type="button"
                 onClick={() => onSelectResult(result)}
-                className="w-full text-left p-2 rounded-md bg-gray-900/70 hover:bg-gray-700/80 transition-colors"
+                className="w-full text-left p-2 rounded-none bg-gray-900/70 hover:bg-gray-700/80 transition-colors"
               >
                 <div className="flex justify-between items-center gap-2">
                   <span className="text-xs text-red-300 font-medium">{result.heading || 'Passage'}</span>

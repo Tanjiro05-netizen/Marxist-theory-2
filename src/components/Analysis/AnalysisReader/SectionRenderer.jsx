@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
 import { MessageSquare, Bookmark, Link2 } from 'lucide-react';
+import { sanitizeRichHtml } from '../../../lib/sanitize-html.js';
 
 const SectionRenderer = forwardRef(({ 
     section, 
@@ -31,14 +32,14 @@ const SectionRenderer = forwardRef(({
             ref={ref}
             id={`section-${id}`}
             className={`relative group py-6 border-b border-gray-800/50 last:border-b-0 transition-all duration-300
-                ${isActive ? 'bg-red-900/10 -mx-4 px-4 rounded-lg' : ''}
+                ${isActive ? 'bg-red-900/10 -mx-4 px-4 rounded-none' : ''}
             `}
         >
             {/* Section Actions - appear on hover (analysis mode only) */}
             {!readingMode && <div className="absolute right-0 top-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
                     onClick={() => onCommentClick?.(id)}
-                    className="p-2 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors flex items-center gap-1"
+                    className="p-2 rounded-none bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors flex items-center gap-1"
                     title="Comments"
                 >
                     <MessageSquare size={16} />
@@ -48,7 +49,7 @@ const SectionRenderer = forwardRef(({
                 </button>
                 <button
                     onClick={() => onBookmarkClick?.(id)}
-                    className={`p-2 rounded-lg transition-colors
+                    className={`p-2 rounded-none transition-colors
                         ${isBookmarked 
                             ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30' 
                             : 'bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white'
@@ -59,7 +60,7 @@ const SectionRenderer = forwardRef(({
                 </button>
                 <button
                     onClick={() => onCrossRefClick?.(id)}
-                    className="p-2 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
+                    className="p-2 rounded-none bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
                     title="Create Cross-Reference"
                 >
                     <Link2 size={16} />
@@ -92,7 +93,7 @@ const SectionRenderer = forwardRef(({
                     prose-a:text-red-400 prose-a:no-underline hover:prose-a:underline
                     selection:bg-red-500/30
                 "
-                dangerouslySetInnerHTML={{ __html: formatContent(content) }}
+                dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(formatContent(content)) }}
             />
 
             {/* Comment indicator badge (analysis mode only) */}

@@ -34,7 +34,7 @@ const NetworkAnimation = () => {
       circle.setAttribute('cx', node.x);
       circle.setAttribute('cy', node.y);
       circle.setAttribute('r', node.radius);
-      circle.setAttribute('fill', '#ff3333');
+      circle.setAttribute('fill', '#d41f3d');
       circle.setAttribute('opacity', '0.6');
       circle.setAttribute('filter', 'url(#glow)');
       circle.dataset.id = node.id;
@@ -59,7 +59,7 @@ const NetworkAnimation = () => {
           line.setAttribute('y1', source.y);
           line.setAttribute('x2', target.x);
           line.setAttribute('y2', target.y);
-          line.setAttribute('stroke', '#ff3333');
+          line.setAttribute('stroke', '#d41f3d');
           line.setAttribute('stroke-width', '0.5');
           line.setAttribute('opacity', (1 - distance / 100) * 0.2);
           line.dataset.source = source.id;

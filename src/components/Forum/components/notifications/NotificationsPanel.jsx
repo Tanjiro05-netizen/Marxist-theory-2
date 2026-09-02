@@ -55,7 +55,7 @@ function NotificationItem({ notification, onView, onMarkRead, onDelete }) {
       
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: '13px', marginBottom: spacing.xs }}>
-          <span style={{ color: '#e5e5e5', fontWeight: '500' }}>
+          <span style={{ color: '#c9c5b8', fontWeight: '500' }}>
             {source_user?.username || 'Someone'}
           </span>
           {' '}
@@ -92,7 +92,7 @@ function NotificationItem({ notification, onView, onMarkRead, onDelete }) {
             width: '6px',
             height: '6px',
             borderRadius: '50%',
-            backgroundColor: '#007AFF',
+            backgroundColor: '#4a7fb5',
             marginTop: '6px',
           }} />
         )}
@@ -224,7 +224,7 @@ function NotificationsPanel({
         }}>
           <h3 style={{ 
             fontWeight: '500', 
-            color: '#e5e5e5',
+            color: '#c9c5b8',
             fontSize: '15px',
             letterSpacing: '-0.01em',
           }}>
@@ -277,7 +277,7 @@ function NotificationsPanel({
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#007AFF',
+                  color: '#4a7fb5',
                   cursor: 'pointer',
                   padding: 0,
                   fontSize: '12px',

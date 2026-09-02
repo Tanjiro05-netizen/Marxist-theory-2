@@ -9,7 +9,7 @@ const TOCItem = ({ item, activeSection, onSectionClick, depth = 0 }) => {
         <li>
             <button
                 onClick={() => onSectionClick(item.id)}
-                className={`w-full text-left py-2 px-3 rounded-lg transition-all duration-200 flex items-center group
+                className={`w-full text-left py-2 px-3 rounded-none transition-all duration-200 flex items-center group
                     ${isActive 
                         ? 'bg-red-600/20 text-red-400 border-l-2 border-red-500' 
                         : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
@@ -47,7 +47,7 @@ const TableOfContents = ({ items, activeSection, onSectionClick, className = '' 
     }
 
     return (
-        <nav className={`bg-gray-900/50 rounded-xl p-4 ${className}`}>
+        <nav className={`bg-gray-900/50 rounded-none p-4 ${className}`}>
             <h3 className="text-lg font-bold text-white mb-4 flex items-center">
                 <BookOpen size={20} className="mr-2 text-red-500" />
                 Table of Contents

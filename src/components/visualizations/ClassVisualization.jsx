@@ -16,7 +16,7 @@ const ClassVisualization = () => {
     return (
         <div className="h-full flex flex-col">
             {/* Filter Controls */}
-            <div className="flex items-center gap-4 mb-6 p-4 bg-black/20 rounded-lg">
+            <div className="flex items-center gap-4 mb-6 p-4 bg-black/20 rounded-none">
                 <div className="flex items-center gap-2 text-gray-400">
                     <Filter className="w-4 h-4" />
                     <span className="text-sm">Filter:</span>
@@ -27,7 +27,7 @@ const ClassVisualization = () => {
                         <button
                             key={f.id}
                             onClick={() => setFilter(f.id)}
-                            className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                            className={`flex items-center gap-2 px-3 py-2 rounded-none transition-colors ${
                                 filter === f.id 
                                 ? 'bg-red-900/30 text-red-400 border border-red-500/30' 
                                 : 'text-gray-400 hover:bg-black/30'
@@ -42,7 +42,7 @@ const ClassVisualization = () => {
             
             {/* Chart Type Selector */}
             <div className="flex justify-end mb-4">
-                <div className="flex gap-2 p-2 bg-black/30 rounded-lg">
+                <div className="flex gap-2 p-2 bg-black/30 rounded-none">
                     <button
                         onClick={() => setChartType('pie')}
                         className={`px-3 py-1 rounded text-sm ${
@@ -64,7 +64,7 @@ const ClassVisualization = () => {
             
             {/* Data Display */}
             {hoveredData && (
-                <div className="mb-4 p-4 bg-black/30 rounded-lg border border-gray-800/50">
+                <div className="mb-4 p-4 bg-black/30 rounded-none border border-gray-800/50">
                     <h3 className="text-lg text-white mb-2">{hoveredData.label}</h3>
                     <p className="text-gray-400">Value: {hoveredData.value}</p>
                 </div>

@@ -11,7 +11,7 @@ const FEATURED_COUNTRIES = [
   { id: 'USA', name: 'United States', color: '#4363d8' },
   { id: 'GBR', name: 'United Kingdom', color: '#911eb4' },
   { id: 'FRA', name: 'France', color: '#f032e6' },
-  { id: 'BRA', name: 'Brazil', color: '#a9a9a9' },
+  { id: 'BRA', name: 'Brazil', color: '#a5a194' },
   { id: 'IND', name: 'India', color: '#800000' },
   { id: 'ZAF', name: 'South Africa', color: '#9A6324' },
   { id: 'MEX', name: 'Mexico', color: '#808000' },
@@ -59,11 +59,11 @@ const CountrySelector = ({ selectedCountries, onCountriesChange }) => {
   // Get color for a specific country
   const getCountryColor = (countryId) => {
     const country = FEATURED_COUNTRIES.find(c => c.id === countryId);
-    return country ? country.color : '#cccccc';
+    return country ? country.color : '#c9c5b8';
   };
   
   return (
-    <div className="bg-black/40 p-4 rounded-lg border border-gray-800 mb-6">
+    <div className="bg-black/40 p-4 rounded-none border border-gray-800 mb-6">
       <h3 className="text-white font-semibold mb-3">Select Countries</h3>
       
       <div className="flex flex-wrap gap-3 mb-4">
@@ -72,7 +72,7 @@ const CountrySelector = ({ selectedCountries, onCountriesChange }) => {
           <select
             value={selectedRegion}
             onChange={(e) => setSelectedRegion(e.target.value)}
-            className="w-full bg-black/50 border border-gray-700 text-white rounded-lg px-3 py-2"
+            className="w-full bg-black/50 border border-gray-700 text-white rounded-none px-3 py-2"
           >
             {REGIONS.map(region => (
               <option key={region.id} value={region.id}>{region.name}</option>
@@ -87,7 +87,7 @@ const CountrySelector = ({ selectedCountries, onCountriesChange }) => {
             placeholder="Search countries..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-black/50 border border-gray-700 text-white rounded-lg px-3 py-2"
+            className="w-full bg-black/50 border border-gray-700 text-white rounded-none px-3 py-2"
           />
         </div>
       </div>

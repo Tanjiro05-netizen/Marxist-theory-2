@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Cpu, TrendingUp, Loader2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Cpu, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
 import { knowledgeApiService } from '../api';
 
 // Level thresholds based on total engagement (views + likes*2 + follows*5)
@@ -74,111 +74,131 @@ export const Widgets = ({ userId }) => {
 
   return (
     <>
-      {/* Creator Center Mini */}
-      <div className="bg-gray-900/50 border border-red-600/30 rounded-sm p-3 shadow-lg relative overflow-hidden">
-         <div className="flex justify-between items-center mb-2">
-            <div className="flex items-center gap-1 text-xs font-bold text-white">
-              <Cpu className="w-3 h-3 text-red-500"/> 
-              Creator Lvl {levelInfo.level}
+      {/* ── Creator Panel ── */}
+      <div className="bg-[#10131b] border border-[rgba(179, 18, 46,0.22)] rounded-none p-4 relative overflow-hidden shadow-[0_0_26px_rgba(179, 18, 46,0.08)]">
+        <div className="flex justify-between items-center mb-3">
+          <div className="flex items-center gap-1.5">
+            <Cpu className="w-3.5 h-3.5 text-[#b3122e]" />
+            <span className="font-[JetBrains_Mono,monospace] text-[10px] uppercase tracking-[0.08em] text-white/70">
+              Creator · Lvl {levelInfo.level}
+            </span>
+          </div>
+          {userStats.growth !== 0 && (
+            <span className={`font-[JetBrains_Mono,monospace] text-[9px] px-1.5 py-0.5 rounded-full ${
+              userStats.growth > 0
+                ? 'text-emerald-400 bg-emerald-900/20 border border-emerald-900/30'
+                : 'text-[#b3122e] bg-[rgba(179, 18, 46,0.1)] border border-[rgba(179, 18, 46,0.2)]'
+            }`}>
+              {userStats.growth > 0 ? '+' : ''}{userStats.growth}%
+            </span>
+          )}
+        </div>
+
+        {levelInfo.nextLevel && (
+          <div className="mb-3">
+            <div className="flex justify-between font-[JetBrains_Mono,monospace] text-[8px] text-white/25 mb-1">
+              <span>{levelInfo.title}</span>
+              <span>{levelInfo.progress}% to Lvl {levelInfo.nextLevel.level}</span>
             </div>
-            {userStats.growth !== 0 && (
-              <div className={`text-[9px] px-1 rounded ${
-                userStats.growth > 0 
-                  ? 'text-green-400 bg-green-900/20' 
-                  : 'text-red-400 bg-red-900/20'
-              }`}>
-                Growth {userStats.growth > 0 ? '+' : ''}{userStats.growth}%
-              </div>
-            )}
-         </div>
-         
-         {/* Level progress bar */}
-         {levelInfo.nextLevel && (
-           <div className="mb-2">
-             <div className="flex justify-between text-[8px] text-slate-500 mb-0.5">
-               <span>{levelInfo.title}</span>
-               <span>{levelInfo.progress}% to Lvl {levelInfo.nextLevel.level}</span>
-             </div>
-             <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
-               <div 
-                 className="h-full bg-gradient-to-r from-red-600 to-red-400 transition-all duration-500"
-                 style={{ width: `${levelInfo.progress}%` }}
-               />
-             </div>
-           </div>
-         )}
-         
-         <div className="grid grid-cols-3 gap-1 mb-2">
-            <div className="bg-[#12131A] p-1 text-center rounded border border-gray-800">
-              <div className="text-[9px] text-slate-500">Views</div>
-              <div className="text-xs font-bold text-slate-200">{formatCount(userStats.views)}</div>
+            <div className="h-1 bg-white/[0.06] rounded-full overflow-hidden">
+              <div
+                className="h-full bg-[#10131b] from-[#b3122e] to-[#d41f3d] transition-all duration-500"
+                style={{ width: `${levelInfo.progress}%` }}
+              />
             </div>
-            <div className="bg-[#12131A] p-1 text-center rounded border border-gray-800">
-              <div className="text-[9px] text-slate-500">Likes</div>
-              <div className="text-xs font-bold text-slate-200">{formatCount(userStats.likes)}</div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-3 gap-1.5 mb-3">
+          {[
+            { label: 'Views',   val: userStats.views },
+            { label: 'Likes',   val: userStats.likes },
+            { label: 'Follows', val: userStats.follows },
+          ].map(({ label, val }) => (
+            <div key={label} className="bg-white/[0.03] border border-white/[0.06] p-1.5 text-center rounded-none">
+              <div className="font-[JetBrains_Mono,monospace] text-[8px] uppercase tracking-wider text-white/25">{label}</div>
+              <div className="font-[Outfit,sans-serif] text-[11px] font-semibold text-white/80 mt-0.5">{formatCount(val)}</div>
             </div>
-            <div className="bg-[#12131A] p-1 text-center rounded border border-gray-800">
-              <div className="text-[9px] text-slate-500">Follows</div>
-              <div className="text-xs font-bold text-slate-200">{formatCount(userStats.follows)}</div>
-            </div>
-         </div>
-         <Link 
-           to="/profile?tab=dashboard" 
-           className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-600/30 text-[10px] py-1.5 rounded transition-colors block text-center"
-         >
-           Go to Dashboard
-         </Link>
+          ))}
+        </div>
+
+        <Link href="/profile?tab=dashboard"
+          className="w-full bg-[rgba(179, 18, 46,0.1)] hover:bg-[rgba(179, 18, 46,0.18)] text-[#b3122e] border border-[rgba(179, 18, 46,0.22)] font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-[0.08em] py-2 rounded-none transition-all block text-center"
+        >
+          Go to Dashboard
+        </Link>
       </div>
 
-      {/* Global Heatmap List */}
-      <div className="bg-gray-900/50 border border-gray-800 rounded-sm overflow-hidden">
-        <div className="px-3 py-2 border-b border-gray-800 flex items-center justify-between">
-          <h3 className="text-xs font-bold text-slate-200 flex items-center gap-1">
-            <TrendingUp className="w-3 h-3 text-red-400" /> Top Search
+      {/* ── Trending Questions ── */}
+      <div className="bg-[#10131b] border border-white/[0.06] rounded-none overflow-hidden">
+        <div className="px-3 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
+          <h3 className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-[0.12em] text-white/50 flex items-center gap-1.5">
+            <TrendingUp className="w-3 h-3 text-[#b3122e]" /> Trending
           </h3>
-          <span className="text-[9px] text-slate-500">Real-time</span>
+          <span className="font-[JetBrains_Mono,monospace] text-[8px] uppercase tracking-wider text-white/20">Real-time</span>
         </div>
-        <div className="divide-y divide-white/5">
+        <div className="divide-y divide-white/[0.04]">
           {loading ? (
-            <div className="py-4 flex justify-center">
-              <Loader2 className="w-4 h-4 animate-spin text-slate-500" />
+            <div className="py-5 flex justify-center">
+              <div className="w-4 h-4 rounded-full border-2 border-white/[0.08] border-t-[#b3122e] animate-spin" />
             </div>
           ) : trendingQuestions.length > 0 ? (
             trendingQuestions.map((question, index) => (
-              <Link key={question.id} to={`/knowledge/question/${question.id}`} className="px-3 py-2 hover:bg-white/5 cursor-pointer flex gap-2 group block">
-                 <div className={`text-xs font-bold font-mono w-4 shrink-0 ${index < 3 ? 'text-red-400' : 'text-slate-600'}`}>{index + 1}</div>
-                 <div className="flex-1 min-w-0">
-                    <div className="text-xs font-medium text-slate-300 truncate group-hover:text-red-400 transition-colors">{question.title}</div>
-                    <div className="text-[9px] text-slate-600 flex gap-2 mt-0.5">
-                      <span>{formatCount(question.view_count)} views</span>
-                      {question.topic?.name && <span className="text-slate-500 bg-white/5 px-1 rounded">{question.topic.name}</span>}
-                    </div>
-                 </div>
+              <Link
+                key={question.id}
+                href={`/knowledge/question/${question.id}`}
+                className="px-3 py-2.5 hover:bg-white/[0.03] flex gap-2.5 group block"
+              >
+                <div className={`font-[JetBrains_Mono,monospace] text-[10px] font-bold w-4 shrink-0 mt-0.5 ${
+                  index < 3 ? 'text-[#b3122e]' : 'text-white/20'
+                }`}>
+                  {index + 1}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[12px] font-medium text-white/60 truncate group-hover:text-[#b3122e] transition-colors font-[Outfit,sans-serif]">
+                    {question.title}
+                  </div>
+                  <div className="font-[JetBrains_Mono,monospace] text-[8px] text-white/20 flex gap-2 mt-0.5">
+                    <span>{formatCount(question.view_count)} views</span>
+                    {question.topic?.name && (
+                      <span className="text-white/25 bg-white/[0.04] px-1.5 rounded-full">{question.topic.name}</span>
+                    )}
+                  </div>
+                </div>
               </Link>
             ))
           ) : (
-            <div className="py-4 text-center text-[10px] text-slate-500">No trending questions yet</div>
+            <div className="py-5 text-center font-[Outfit,sans-serif] text-[11px] text-white/20">
+              No trending questions yet
+            </div>
           )}
         </div>
       </div>
 
-      {/* Quick Links / Footer Grid */}
-      <div className="bg-gray-900/50 border border-gray-800 rounded-sm p-3">
-         <h3 className="text-[10px] font-bold text-slate-500 uppercase mb-2">Discover</h3>
-         <div className="flex flex-wrap gap-1.5">
-            {['Tech', 'Science', 'Design', 'Space', 'AI', 'Ethics', 'Crypto', 'Bio-Hack'].map(tag => (
-              <span key={tag} className="text-[10px] bg-white/5 hover:bg-white/10 text-slate-400 px-2 py-1 rounded cursor-pointer border border-white/5 transition-colors">{tag}</span>
-            ))}
-         </div>
+      {/* ── Discover Tags ── */}
+      <div className="bg-[#10131b] border border-white/[0.06] rounded-none p-3">
+        <h3 className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-[0.12em] text-white/30 mb-2.5">
+          Discover
+        </h3>
+        <div className="flex flex-wrap gap-1.5">
+          {['Marxist Theory', 'Economics', 'History', 'Philosophy', 'Politics', 'Science', 'Technology', 'Ethics'].map(tag => (
+            <span
+              key={tag}
+              className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-wider bg-white/[0.04] hover:bg-[rgba(179, 18, 46,0.08)] hover:border-[rgba(179, 18, 46,0.2)] hover:text-[#b3122e] text-white/30 px-2.5 py-1 rounded-full cursor-pointer border border-white/[0.06] transition-all"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
       </div>
 
-       <div className="text-[9px] text-slate-600 px-2 leading-relaxed">
-         <a href="#" className="hover:text-slate-400 mr-2">KnowledgeBase</a>
-         <a href="#" className="hover:text-slate-400 mr-2">Guidelines</a>
-         <a href="#" className="hover:text-slate-400 mr-2">Privacy</a>
-         <a href="#" className="hover:text-slate-400 mr-2">Terms</a>
-         <br/>
-         <span>© 2026 Marxist Platform. All rights reserved.</span>
+      {/* ── Footer ── */}
+      <div className="font-[JetBrains_Mono,monospace] text-[8px] uppercase tracking-wider text-white/15 px-1 leading-loose">
+        <span className="mr-3">Guidelines</span>
+        <span className="mr-3">Privacy</span>
+        <span className="mr-3">Terms</span>
+        <br />
+        <span>© 2026 Marxist Platform</span>
       </div>
     </>
   );

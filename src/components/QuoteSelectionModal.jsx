@@ -38,7 +38,7 @@ const QuoteSelectionModal = ({ onClose, onSelectQuote }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-            <div className="bg-gray-900 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+            <div className="bg-gray-900 rounded-none shadow-none w-full max-w-2xl max-h-[80vh] flex flex-col">
                 <div className="flex justify-between items-center p-4 border-b border-gray-700">
                     <h2 className="text-xl font-bold text-white">Select a Quote to Cite</h2>
                     <button onClick={onClose} className="text-gray-400 hover:text-white">
@@ -55,7 +55,7 @@ const QuoteSelectionModal = ({ onClose, onSelectQuote }) => {
                                 <div 
                                     key={quote.id} 
                                     onClick={() => onSelectQuote(quote)}
-                                    className="bg-gray-800/80 p-3 rounded-lg cursor-pointer hover:bg-red-600/30 border border-transparent hover:border-red-500 transition-all"
+                                    className="bg-gray-800/80 p-3 rounded-none cursor-pointer hover:bg-red-600/30 border border-transparent hover:border-red-500 transition-all"
                                 >
                                     <blockquote className="border-l-2 border-red-500 pl-3 italic text-gray-300 text-sm">
                                         <p>"{quote.quote_text}"</p>

@@ -39,21 +39,25 @@ CREATE TRIGGER handle_audiobooks_updated_at
 -- =============================================
 ALTER TABLE public.audiobooks ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Audiobooks are publicly readable" ON public.audiobooks;
 CREATE POLICY "Audiobooks are publicly readable"
     ON public.audiobooks FOR SELECT
     TO public
     USING (true);
 
+DROP POLICY IF EXISTS "Teachers and admins can insert audiobooks" ON public.audiobooks;
 CREATE POLICY "Teachers and admins can insert audiobooks"
     ON public.audiobooks FOR INSERT
     TO authenticated
     WITH CHECK (public.can_manage_study());
 
+DROP POLICY IF EXISTS "Teachers and admins can update audiobooks" ON public.audiobooks;
 CREATE POLICY "Teachers and admins can update audiobooks"
     ON public.audiobooks FOR UPDATE
     TO authenticated
     USING (public.can_manage_study());
 
+DROP POLICY IF EXISTS "Teachers and admins can delete audiobooks" ON public.audiobooks;
 CREATE POLICY "Teachers and admins can delete audiobooks"
     ON public.audiobooks FOR DELETE
     TO authenticated
@@ -92,11 +96,13 @@ VALUES (
 -- =============================================
 -- STORAGE POLICIES
 -- =============================================
+DROP POLICY IF EXISTS "Audiobook files are publicly viewable" ON storage.objects;
 CREATE POLICY "Audiobook files are publicly viewable"
     ON storage.objects FOR SELECT
     TO public
     USING (bucket_id = 'audiobooks');
 
+DROP POLICY IF EXISTS "Teachers and admins can upload audiobook files" ON storage.objects;
 CREATE POLICY "Teachers and admins can upload audiobook files"
     ON storage.objects FOR INSERT
     TO authenticated
@@ -105,6 +111,7 @@ CREATE POLICY "Teachers and admins can upload audiobook files"
         AND public.can_manage_study()
     );
 
+DROP POLICY IF EXISTS "Teachers and admins can update audiobook files" ON storage.objects;
 CREATE POLICY "Teachers and admins can update audiobook files"
     ON storage.objects FOR UPDATE
     TO authenticated
@@ -117,6 +124,7 @@ CREATE POLICY "Teachers and admins can update audiobook files"
         AND public.can_manage_study()
     );
 
+DROP POLICY IF EXISTS "Teachers and admins can delete audiobook files" ON storage.objects;
 CREATE POLICY "Teachers and admins can delete audiobook files"
     ON storage.objects FOR DELETE
     TO authenticated

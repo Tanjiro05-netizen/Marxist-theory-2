@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { BookOpen, Video, Headphones, ArrowRight, Library } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from 'next/link';
 import { emptyState, loadingSpinner, loadingState } from "./studyTheme.css.ts";
 import * as styles from "./StudyResources.css.ts";
 
-const categories = ["All", "text", "video", "audio", "lecture"];
-const categoryLabels = { All: "All", text: "Text", video: "Video", audio: "Audio", lecture: "Lecture" };
+const categories = ["All", "text", "video", "lecture"];
+const categoryLabels = { All: "All", text: "Text", video: "Video", lecture: "Lecture" };
 
 const typeIconMap = {
   video: <Video size={18} />,
@@ -14,7 +14,7 @@ const typeIconMap = {
   text: <BookOpen size={18} />,
 };
 
-const StudyResources = ({ resources = [], loading = false }) => {
+const StudyResources = ({ resources = [], loading = false, hideFilter = false }) => {
   const [activeCategory, setActiveCategory] = useState("All");
 
   const filteredResources = activeCategory === "All"
@@ -23,19 +23,21 @@ const StudyResources = ({ resources = [], loading = false }) => {
 
   return (
     <section className={styles.root}>
-      <div className={styles.filterBar}>
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            type="button"
-            onClick={() => setActiveCategory(cat)}
-            aria-pressed={activeCategory === cat}
-            className={styles.filterButton({ active: activeCategory === cat })}
-          >
-            {categoryLabels[cat] || cat}
-          </button>
-        ))}
-      </div>
+      {!hideFilter && (
+        <div className={styles.filterBar}>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setActiveCategory(cat)}
+              aria-pressed={activeCategory === cat}
+              className={styles.filterButton({ active: activeCategory === cat })}
+            >
+              {categoryLabels[cat] || cat}
+            </button>
+          ))}
+        </div>
+      )}
 
       {loading ? (
         <div className={loadingState}>
@@ -103,8 +105,7 @@ const StudyResources = ({ resources = [], loading = false }) => {
                         Open <ArrowRight size={14} />
                       </a>
                     ) : (
-                      <Link
-                        to={href}
+                      <Link href={href}
                         className={styles.action}
                       >
                         Read <ArrowRight size={14} />
