@@ -1,12 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthContext';
-import { UploadIcon, Info, CheckCircle, AlertTriangle, Loader2 } from "lucide-react";
+import { UploadIcon, Info, CheckCircle, AlertTriangle, Loader2, FileText, X, ShieldCheck, CloudUpload } from "lucide-react";
 import SubmissionGuidelines from "../components/SubmissionGuidelines";
+import TurnstileWidget from '../components/TurnstileWidget';
 import Select from 'react-select';
 import * as s from './SubmitPage.css.ts';
+
+const MAX_FILE_SIZE = 50 * 1024 * 1024;
+const ALLOWED_FILE_TYPES = ['application/pdf'];
+
+const formatFileSize = (bytes) => {
+    if (!Number.isFinite(bytes)) return '';
+    if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+const readApiError = async (response, fallback) => {
+    const body = await response.json().catch(() => ({}));
+    return body.message || body.error || fallback;
+};
+
+const uploadToR2 = (uploadUrl, file, onProgress) => new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest();
+    request.open('PUT', uploadUrl);
+    request.setRequestHeader('Content-Type', file.type);
+    request.upload.addEventListener('progress', (event) => {
+        if (event.lengthComputable) onProgress(Math.round((event.loaded / event.total) * 100));
+    });
+    request.addEventListener('load', () => {
+        if (request.status >= 200 && request.status < 300) resolve();
+        else reject(new Error('The manuscript upload could not be completed.'));
+    });
+    request.addEventListener('error', () => reject(new Error('The manuscript upload was interrupted.')));
+    request.send(file);
+});
 
 const SubmitPage = () => {
 
@@ -24,11 +54,18 @@ const SubmitPage = () => {
     const [selectedTags, setSelectedTags] = useState([]);
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState('');
+    const [dragActive, setDragActive] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const fileInputRef = useRef(null);
 
     // Submission status
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [turnstileToken, setTurnstileToken] = useState(null);
+    const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+    const handleTurnstileToken = useCallback((token) => setTurnstileToken(token), []);
 
     // Data for dropdowns
     const [categories, setCategories] = useState([]);
@@ -166,18 +203,16 @@ const SubmitPage = () => {
         }
     };
     
-    const handleFileChange = (e) => {
-        const selectedFile = e.target.files[0];
+    const selectFile = (selectedFile) => {
         if (selectedFile) {
-            const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-            if (!allowedTypes.includes(selectedFile.type)) {
-                setError(t('submit.invalidFileType'));
+            if (!ALLOWED_FILE_TYPES.includes(selectedFile.type)) {
+                setError('Upload a PDF manuscript. Word documents are not accepted.');
                 setFile(null);
                 setFileName('');
                 return;
             }
-            if (selectedFile.size > 5 * 1024 * 1024) { // 5MB limit
-                setError(t('submit.fileTooLarge'));
+            if (selectedFile.size > MAX_FILE_SIZE) {
+                setError('The manuscript is too large. The maximum size is 50 MB.');
                 setFile(null);
                 setFileName('');
                 return;
@@ -188,69 +223,128 @@ const SubmitPage = () => {
         }
     };
 
+    const handleFileChange = (event) => selectFile(event.target.files?.[0]);
+
+    const handleDrop = (event) => {
+        event.preventDefault();
+        setDragActive(false);
+        selectFile(event.dataTransfer.files?.[0]);
+    };
+
+    const clearFile = () => {
+        setFile(null);
+        setFileName('');
+        setUploadProgress(0);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
         setSuccess(false);
-
-        if (!user) {
-            setError(t('submit.loginRequired'));
-            return;
-        }
+        setSuccessMessage('');
 
         if (!file || !title || !abstract || !category || selectedTags.length === 0) {
             setError(t('submit.missingFields'));
             return;
         }
 
+        if (!turnstileToken) {
+            setError('Complete the security check before submitting.');
+            return;
+        }
+
         setSubmitting(true);
+        setUploadProgress(0);
+
+        let uploadTarget = null;
 
         try {
-            // 1. Upload file to Supabase Storage
-            const fileExt = file.name.split('.').pop();
-            const newFileName = `${Date.now()}.${fileExt}`;
-            const filePath = `${user.id}/${newFileName}`;
+            // 1. Ask the server for a provider-specific, short-lived upload target.
+            const uploadResponse = await fetch('/api/submissions/upload-url', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fileName: file.name,
+                    fileSize: file.size,
+                    contentType: file.type,
+                    turnstileToken,
+                }),
+            });
 
-            const { error: uploadError } = await supabase.storage
-                .from('manuscripts')
-                .upload(filePath, file);
-
-            if (uploadError) {
-                throw uploadError;
+            if (!uploadResponse.ok) {
+                throw new Error(await readApiError(uploadResponse, 'Could not prepare the manuscript upload.'));
             }
 
-            // 2. Insert submission data into the database
-            const tagIds = selectedTags.map(t => t.value);
+            uploadTarget = await uploadResponse.json();
 
-            const { error: insertError } = await supabase
-                .from('article_submissions')
-                .insert({
-                    user_id: user.id,
+            if (uploadTarget.provider === 'r2') {
+                await uploadToR2(uploadTarget.uploadUrl, file, setUploadProgress);
+            } else {
+                setUploadProgress(25);
+                const { error: uploadError } = await supabase.storage
+                    .from(uploadTarget.bucket)
+                    .uploadToSignedUrl(uploadTarget.objectKey, uploadTarget.token, file, {
+                        contentType: file.type,
+                        upsert: false,
+                    });
+                if (uploadError) throw uploadError;
+                setUploadProgress(100);
+            }
+
+            // 2. Save metadata through the server so the authenticated session
+            // used for the upload and the database insert cannot diverge.
+            const submissionResponse = await fetch('/api/submissions', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
                     title,
                     abstract,
-                    category_id: category,
-                    tag_ids: tagIds,
-                    file_path: filePath,
-                    // keywords column is no longer used, but you might want to keep it for old data or remove it
-                });
+                    categoryId: category,
+                    tagIds: selectedTags.map(t => t.value),
+                    uploadSessionId: uploadTarget.uploadSessionId,
+                }),
+            });
+            if (!submissionResponse.ok) {
+                throw new Error(await readApiError(submissionResponse, 'Could not save the submission.'));
+            }
 
-            if (insertError) {
-                // If DB insert fails, try to delete the orphaned file from storage
-                await supabase.storage.from('manuscripts').remove([filePath]);
-                throw insertError;
+            const submissionResult = await submissionResponse.json();
+            uploadTarget.finalized = true;
+            setTurnstileToken(null);
+            setTurnstileResetKey((key) => key + 1);
+
+            if (submissionResult.scanStatus === 'infected') {
+                clearFile();
+                setError(submissionResult.message || 'The PDF was rejected by the safety scanner.');
+                return;
             }
 
             // 3. Handle success
             setSuccess(true);
+            setSuccessMessage(submissionResult.message || t('submit.success'));
             setTitle('');
             setAbstract('');
 
             setCategory('');
             setSelectedTags([]);
-            setFile(null);
-            setFileName('');
+            clearFile();
 
         } catch (error) {
+            if (uploadTarget?.uploadSessionId && !uploadTarget.finalized) {
+                await fetch('/api/submissions/file', {
+                    method: 'DELETE',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uploadSessionId: uploadTarget.uploadSessionId,
+                    }),
+                }).catch(() => {});
+            }
+            setTurnstileToken(null);
+            setTurnstileResetKey((key) => key + 1);
             setError(error.message);
             console.error('Submission error:', error);
         } finally {
@@ -275,7 +369,32 @@ const SubmitPage = () => {
             </header>
 
             <section className={s.formSection}>
-                <div className={s.formCard}>
+                <div className={s.workspace}>
+                    <aside className={s.contextPanel}>
+                        <p className={s.contextKicker}>Editorial intake</p>
+                        <h2 className={s.contextTitle}>Share work that advances collective understanding.</h2>
+                        <p className={s.contextText}>
+                            Submit as a guest or through your account. Your manuscript remains private while it is reviewed, and only authorized editors can preview it securely.
+                        </p>
+                        <div className={s.contextList}>
+                            <div className={s.contextItem}><span>01</span><p><strong>Describe</strong>Your title, abstract, category, and themes.</p></div>
+                            <div className={s.contextItem}><span>02</span><p><strong>Attach</strong>Upload the complete manuscript for editorial review.</p></div>
+                            <div className={s.contextItem}><span>03</span><p><strong>Submit</strong>The editorial queue records your work immediately.</p></div>
+                        </div>
+                        <div className={s.privacyNote}>
+                            <ShieldCheck size={17} />
+                            <span>Private storage · time-limited reviewer access</span>
+                        </div>
+                    </aside>
+
+                    <div className={s.formCard}>
+                        <div className={s.formHeader}>
+                            <div>
+                                <p className={s.formEyebrow}>New submission</p>
+                                <h2 className={s.formTitle}>Manuscript details</h2>
+                            </div>
+                            <span className={s.draftBadge}>Draft</span>
+                        </div>
                     <form onSubmit={handleSubmit} className={s.form}>
                         <div className={s.topActions}>
                             <button type="button" onClick={() => setShowGuidelinesModal(true)} className={s.guidelineBtn}>
@@ -289,8 +408,9 @@ const SubmitPage = () => {
                             )}
                         </div>
 
+                        <div className={s.fieldGrid}>
                         <div className={s.fieldBlock}>
-                            <label htmlFor="category" className={s.fieldLabel}>{t('submit.category')}</label>
+                            <label htmlFor="category" className={s.fieldLabel}><span>01</span>{t('submit.category')}</label>
                             <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} className={s.selectInput} required>
                                 <option value="" disabled>{t('submit.selectCategory')}</option>
                                 {categories.map(cat => (<option key={cat.id} value={cat.id}>{cat.name}</option>))}
@@ -298,17 +418,19 @@ const SubmitPage = () => {
                         </div>
 
                         <div className={s.fieldBlock}>
-                            <label htmlFor="title" className={s.fieldLabel}>{t('submit.workTitle')}</label>
+                            <label htmlFor="title" className={s.fieldLabel}><span>02</span>{t('submit.workTitle')}</label>
                             <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} className={s.textInput} placeholder={t('submit.titlePlaceholder')} required />
                         </div>
-
-                        <div className={s.fieldBlock}>
-                            <label htmlFor="abstract" className={s.fieldLabel}>{t('submit.abstract')}</label>
-                            <textarea id="abstract" rows="4" value={abstract} onChange={(e) => setAbstract(e.target.value)} className={s.textArea} placeholder={t('submit.abstractPlaceholder')} required />
                         </div>
 
                         <div className={s.fieldBlock}>
-                            <label htmlFor="tags" className={s.fieldLabel}>{t('submit.tags')}</label>
+                            <label htmlFor="abstract" className={s.fieldLabel}><span>03</span>{t('submit.abstract')}</label>
+                            <textarea id="abstract" rows="4" value={abstract} onChange={(e) => setAbstract(e.target.value)} className={s.textArea} placeholder={t('submit.abstractPlaceholder')} required />
+                            <div className={s.fieldMeta}><span>Give editors the argument and contribution in a few sentences.</span><span>{abstract.length} characters</span></div>
+                        </div>
+
+                        <div className={s.fieldBlock}>
+                            <label htmlFor="tags" className={s.fieldLabel}><span>04</span>{t('submit.tags')}</label>
                             <Select
                                 id="tags"
                                 isMulti
@@ -330,14 +452,46 @@ const SubmitPage = () => {
                         </div>
 
                         <div className={s.fieldBlock}>
-                            <label className={s.fieldLabel}>{t('submit.uploadManuscript')}</label>
-                            <label htmlFor="manuscript-upload" className={s.uploadLabel}>
-                                <UploadIcon size={18} style={{ marginRight: 12 }} />
-                                <span>{fileName || t('submit.chooseFile')}</span>
-                            </label>
-                            <input id="manuscript-upload" type="file" style={{ display: 'none' }} onChange={handleFileChange} accept=".pdf,.doc,.docx" />
-                            <p className={s.uploadHint}>{t('submit.fileHint')}</p>
+                            <label className={s.fieldLabel}><span>05</span>{t('submit.uploadManuscript')}</label>
+                            {!file ? (
+                                <div
+                                    className={`${s.uploadZone} ${dragActive ? s.uploadZoneActive : ''}`}
+                                    onDragEnter={(event) => { event.preventDefault(); setDragActive(true); }}
+                                    onDragOver={(event) => event.preventDefault()}
+                                    onDragLeave={() => setDragActive(false)}
+                                    onDrop={handleDrop}
+                                >
+                                    <CloudUpload size={30} strokeWidth={1.4} />
+                                    <strong>Drop your manuscript here</strong>
+                                    <span>or choose a file from your computer</span>
+                                    <button type="button" className={s.chooseFileBtn} onClick={() => fileInputRef.current?.click()}>
+                                        {t('submit.chooseFile')}
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className={s.fileCard}>
+                                    <div className={s.fileIcon}><FileText size={24} /></div>
+                                    <div className={s.fileInfo}>
+                                        <strong>{fileName}</strong>
+                                        <span>{formatFileSize(file.size)} · PDF document</span>
+                                        {submitting && (
+                                            <div className={s.progressTrack}><span style={{ width: `${uploadProgress}%` }} /></div>
+                                        )}
+                                    </div>
+                                    <button type="button" className={s.removeFileBtn} onClick={clearFile} disabled={submitting} aria-label="Remove manuscript">
+                                        <X size={17} />
+                                    </button>
+                                </div>
+                            )}
+                            <input ref={fileInputRef} id="manuscript-upload" type="file" className={s.hiddenInput} onChange={handleFileChange} accept=".pdf,application/pdf" />
+                            <p className={s.uploadHint}>PDF only · maximum 50 MB · private and locked until safety-checked</p>
                         </div>
+
+                        <TurnstileWidget
+                            onToken={handleTurnstileToken}
+                            resetKey={turnstileResetKey}
+                            className={s.turnstile}
+                        />
 
                         {error && (
                             <div className={s.errorBox}>
@@ -348,16 +502,21 @@ const SubmitPage = () => {
                         {success && (
                             <div className={s.successBox}>
                                 <CheckCircle size={18} style={{ flexShrink: 0 }} />
-                                <span>{t('submit.success')}</span>
+                                <span>{successMessage || t('submit.success')}</span>
                             </div>
                         )}
 
                         <div className={s.submitRow}>
-                            <button type="submit" disabled={submitting} className={s.submitBtn}>
-                                {submitting ? (<><Loader2 size={18} /> {t('submit.submitting')}</>) : (<><UploadIcon size={18} /> {t('submit.submitWork')}</>)}
+                            <div className={s.submitAssurance}>
+                                <ShieldCheck size={16} />
+                                <span>Only authorized editors can access the manuscript.</span>
+                            </div>
+                            <button type="submit" disabled={submitting || !turnstileToken} className={s.submitBtn}>
+                                {submitting ? (<><Loader2 className={s.spinner} size={18} /> Uploading {uploadProgress ? `${uploadProgress}%` : ''}</>) : (<><UploadIcon size={18} /> {t('submit.submitWork')}</>)}
                             </button>
                         </div>
                     </form>
+                    </div>
                 </div>
             </section>
 

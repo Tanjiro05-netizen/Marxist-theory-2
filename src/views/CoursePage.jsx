@@ -120,7 +120,7 @@ const CoursePage = () => {
     setIsEnrolling(true);
     setError('');
     try {
-      await enrollInScienceCourse(user.id, course.id);
+      await enrollInScienceCourse(course.id);
       setEnrolled(true);
     } catch (enrollError) {
       console.error('Error enrolling in Science v2 course:', enrollError);

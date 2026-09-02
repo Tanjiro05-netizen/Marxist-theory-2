@@ -3,6 +3,21 @@ import { scienceSlugify } from '../utils/scienceMarkdownImporter';
 
 const REQUEST_TIMEOUT_MS = 15000;
 
+const PUBLIC_SCIENCE_QUESTION_FIELDS = [
+  'id',
+  'bank_id',
+  'subject_id',
+  'question_type',
+  'prompt',
+  'options',
+  'hint',
+  'difficulty',
+  'tags',
+  'metadata',
+  'created_at',
+  'updated_at',
+].join(',');
+
 const demoSubject = {
   id: 'demo-physics-subject',
   name: 'Physics',
@@ -45,8 +60,6 @@ const demoQuestions = [
     question_type: 'multiple_choice',
     prompt: "Which equation states Newton's second law in its simplest introductory form?",
     options: ['E = mc^2', 'F = ma', 'p = mv', 'W = Fd'],
-    correct_answer: 'F = ma',
-    explanation: "Newton's second law connects net force, mass, and acceleration.",
     hint: 'Look for the equation containing force and acceleration.',
     difficulty: 'beginner',
     tags: ['mechanics', 'newton-laws', 'force'],
@@ -56,9 +69,6 @@ const demoQuestions = [
     subject_id: demoSubject.id,
     question_type: 'numeric',
     prompt: 'A 2 kg cart accelerates at 3 m/s^2. What is the net force in newtons?',
-    correct_answer: '6',
-    tolerance: 0,
-    explanation: 'Use F = ma, so F = 2 x 3 = 6 N.',
     hint: 'Multiply mass by acceleration.',
     difficulty: 'beginner',
     tags: ['mechanics', 'calculation', 'force'],
@@ -463,7 +473,8 @@ export const fetchScienceCourse = async (courseSlug) => {
         .select(`
           *,
           science_subjects(name, slug, color, icon_name),
-          science_tracks(title, slug)
+          science_tracks(title, slug),
+          science_enrollments(id, user_id, role, status, progress_percent, enrolled_at, completed_at)
         `)
         .eq('slug', courseSlug)
         .single(),
@@ -534,7 +545,7 @@ export const fetchScienceLesson = async ({ courseSlug, moduleSlug, lessonSlug })
     withScienceTimeout(
       supabase
         .from('science_quizzes')
-        .select('*, science_quiz_questions(points, order_index, science_questions(*))')
+        .select(`*, science_quiz_questions(points, order_index, science_questions(${PUBLIC_SCIENCE_QUESTION_FIELDS}))`)
         .eq('lesson_id', lessonShell.id)
         .eq('is_published', true)
     ).catch(() => ({ data: [] })),
@@ -549,7 +560,7 @@ export const fetchScienceLesson = async ({ courseSlug, moduleSlug, lessonSlug })
 
   const { data: exerciseQuestions } = exerciseQuestionIds.length > 0
     ? await withScienceTimeout(
-      supabase.from('science_questions').select('*').in('id', exerciseQuestionIds),
+      supabase.from('science_questions').select(PUBLIC_SCIENCE_QUESTION_FIELDS).in('id', exerciseQuestionIds),
       'Exercise questions loading timed out.'
     )
     : { data: [] };
@@ -587,7 +598,7 @@ export const fetchScienceCheckpoint = async ({ courseSlug, moduleSlug }) => {
     withScienceTimeout(
       supabase
         .from('science_quizzes')
-        .select('*, science_quiz_questions(id, points, order_index, science_questions(*))')
+        .select(`*, science_quiz_questions(id, points, order_index, science_questions(${PUBLIC_SCIENCE_QUESTION_FIELDS}))`)
         .eq('module_id', module.id)
         .eq('is_published', true)
         .order('created_at'),
@@ -597,7 +608,7 @@ export const fetchScienceCheckpoint = async ({ courseSlug, moduleSlug }) => {
       ? withScienceTimeout(
         supabase
           .from('science_quizzes')
-          .select('*, science_quiz_questions(id, points, order_index, science_questions(*))')
+          .select(`*, science_quiz_questions(id, points, order_index, science_questions(${PUBLIC_SCIENCE_QUESTION_FIELDS}))`)
           .in('lesson_id', lessonIds)
           .eq('is_published', true)
           .order('created_at'),
@@ -617,68 +628,42 @@ export const fetchScienceCheckpoint = async ({ courseSlug, moduleSlug }) => {
   return { course, module, modules, quizzes };
 };
 
-export const enrollInScienceCourse = async (userId, courseId) => {
+export const enrollInScienceCourse = async (courseId) => {
   const { data, error } = await withScienceTimeout(
-    supabase
-      .from('science_enrollments')
-      .upsert({ user_id: userId, course_id: courseId, status: 'active' }, { onConflict: 'user_id,course_id' })
-      .select()
-      .single(),
+    supabase.rpc('enroll_in_science_course', { p_course_id: courseId }),
     'Enrollment timed out.'
   );
   if (error) throw error;
   return data;
 };
 
-export const completeScienceLesson = async ({ userId, courseId, moduleId, lessonId, xpReward }) => {
-  const payload = {
-    user_id: userId,
-    course_id: courseId,
-    module_id: moduleId,
-    lesson_id: lessonId,
-    block_id: null,
-    state: 'completed',
-    progress_percent: 100,
-    xp_earned: xpReward || 10,
-    completed_at: new Date().toISOString(),
-  };
-
-  const { data: existing, error: lookupError } = await withScienceTimeout(
-    supabase
-      .from('science_activity_progress')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('lesson_id', lessonId)
-      .is('block_id', null)
-      .maybeSingle(),
-    'Lesson completion lookup timed out.'
+export const completeScienceLesson = async ({ lessonId }) => {
+  const { data, error } = await withScienceTimeout(
+    supabase.rpc('complete_science_lesson', { p_lesson_id: lessonId }),
+    'Lesson completion timed out.'
   );
-  if (lookupError) throw lookupError;
-
-  const request = existing?.id
-    ? supabase.from('science_activity_progress').update(payload).eq('id', existing.id)
-    : supabase.from('science_activity_progress').insert(payload);
-
-  const { error } = await withScienceTimeout(request, 'Lesson completion timed out.');
   if (error) throw error;
+  return data;
 };
 
-export const submitScienceQuizAttempt = async ({ userId, quiz, answers, results }) => {
+export const checkScienceQuestionAnswer = async ({ questionId, answer }) => {
   const { data, error } = await withScienceTimeout(
-    supabase
-      .from('science_quiz_attempts')
-      .insert({
-        user_id: userId,
-        quiz_id: quiz.id,
-        score: results.score,
-        total_points: results.totalPoints,
-        passed: results.passed,
-        answers: results.questionResults,
-        started_at: results.startedAt,
-        completed_at: new Date().toISOString(),
-      })
-      .select()
-      .single(),
+    supabase.rpc('check_science_question', {
+      p_question_id: questionId,
+      p_answer: `${answer ?? ''}`,
+    }),
+    'Answer check timed out.'
+  );
+  if (error) throw error;
+  return data;
+};
+
+export const submitScienceQuizAttempt = async ({ quizId, answers }) => {
+  const { data, error } = await withScienceTimeout(
+    supabase.rpc('submit_science_quiz_attempt', {
+      p_quiz_id: quizId,
+      p_answers: answers || {},
+    }),
     'Quiz attempt save timed out.'
   );
   if (error) throw error;
@@ -837,25 +822,28 @@ export const saveScienceQuestion = async (question) => {
     metadata: question.metadata || {},
     updated_at: new Date().toISOString(),
   };
-  const request = question.id
-    ? supabase.from('science_questions').update(payload).eq('id', question.id).select().single()
-    : supabase.from('science_questions').insert(payload).select().single();
-  const { data, error } = await withScienceTimeout(request, 'Question save timed out.');
+  const { data, error } = await withScienceTimeout(
+    supabase.rpc('save_science_question', {
+      p_question: {
+        ...payload,
+        id: question.id || null,
+      },
+    }),
+    'Question save timed out.'
+  );
   if (error) throw error;
   return data;
 };
 
 export const fetchScienceQuestions = async ({ subjectId, limit = 200 } = {}) => {
   await requireAdminSession();
-  let query = supabase
-    .from('science_questions')
-    .select('*, science_subjects(name, color)')
-    .order('updated_at', { ascending: false })
-    .limit(limit);
-
-  if (subjectId) query = query.eq('subject_id', subjectId);
-
-  const { data, error } = await withScienceTimeout(query, 'Questions loading timed out.');
+  const { data, error } = await withScienceTimeout(
+    supabase.rpc('list_science_questions', {
+      p_subject_id: subjectId || null,
+      p_limit: limit,
+    }),
+    'Questions loading timed out.'
+  );
   if (error) throw error;
   return data || [];
 };

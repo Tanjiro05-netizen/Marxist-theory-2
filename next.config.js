@@ -4,9 +4,44 @@ const withVanillaExtract = createVanillaExtractPlugin({
   identifiers: process.env.NODE_ENV === 'development' ? 'debug' : 'short',
 });
 
+const securityHeaders = [
+  { key: 'Content-Security-Policy', value: "base-uri 'self'; object-src 'none'; frame-ancestors 'none'" },
+  {
+    key: 'Content-Security-Policy-Report-Only',
+    value: [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "object-src 'none'",
+      "frame-ancestors 'none'",
+      "form-action 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob: https:",
+      "font-src 'self' data:",
+      "connect-src 'self' https: wss:",
+      "frame-src https://challenges.cloudflare.com",
+      "worker-src 'self' blob:",
+    ].join('; '),
+  },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'X-DNS-Prefetch-Control', value: 'off' },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()' },
+  { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
+  ...(process.env.NODE_ENV === 'production'
+    ? [{ key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' }]
+    : []),
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  poweredByHeader: false,
+  // Keep the live development compiler isolated from production builds.
+  // Otherwise `next build` can replace assets that an active dev server is serving.
+  distDir: process.env.NODE_ENV === 'development' ? '.next-dev' : '.next',
+  outputFileTracingRoot: __dirname,
   images: {
     remotePatterns: [
       {
@@ -22,6 +57,10 @@ const nextConfig = {
   },
   async headers() {
     return [
+      {
+        source: '/:path*',
+        headers: securityHeaders,
+      },
       {
         source: '/service-worker.js',
         headers: [
@@ -58,7 +97,7 @@ const nextConfig = {
         'theory',
         'analysis',
         'politics',
-        'submit',
+        ...(process.env.SUBMISSIONS_ENABLED === 'true' ? [] : ['submit']),
         'article',
         'profile',
         'directory',

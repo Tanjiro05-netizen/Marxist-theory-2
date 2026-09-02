@@ -557,9 +557,6 @@ const DigitalLibraryPage = () => {
                         <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.32em] text-red-500">{t('library.archive')}</p>
                         <h1 className="font-display text-5xl font-medium tracking-[0.01em] text-white">{t('library.title')}</h1>
                         <div className="mt-4 mb-4 h-[2px] w-11 bg-[#b3122e]" aria-hidden="true" />
-                        <p className="max-w-2xl text-lg text-gray-300">
-                            {t('library.subtitle')}
-                        </p>
                         <button
                             onClick={() => setShowReadingLists(true)}
                             className="mt-6 flex items-center gap-2 border border-[#262a35] px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.2em] text-gray-300 transition-colors hover:border-red-500 hover:text-red-400"

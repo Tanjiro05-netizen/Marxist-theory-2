@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import ePub from 'epubjs';
 import { Loader, AlertCircle, Minus, Plus } from 'lucide-react';
 import * as s from './EditorialReader.css.ts';
+import { sanitizeEpubHtml } from '../../lib/sanitize-html.js';
 
 const TEXT_FAINT = '#6f6c61';
 
@@ -33,7 +34,7 @@ const extractSectionBody = async (html, section, book) => {
   const doc = parser.parseFromString(html, 'text/html');
   const body = doc.body;
 
-  body?.querySelectorAll('script, style, link').forEach((el) => el.remove());
+  body?.querySelectorAll('script, style, link, iframe, object, embed, form, input, button, textarea, select, svg, math, audio, video, base, meta').forEach((el) => el.remove());
 
   const resolveAsset = async (element, attrName) => {
     const value = element.getAttribute(attrName);
@@ -50,7 +51,7 @@ const extractSectionBody = async (html, section, book) => {
   body?.querySelectorAll('img[src]').forEach((el) => tasks.push(resolveAsset(el, 'src')));
   await Promise.all(tasks);
 
-  return body?.innerHTML || '';
+  return sanitizeEpubHtml(body?.innerHTML || '');
 };
 
 /**

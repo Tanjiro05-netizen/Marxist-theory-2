@@ -57,7 +57,6 @@ const App = () => {
 
                 <div className={s.heroContent}>
                     <div className={s.heroCopy}>
-                        <p className={s.heroKicker}>A Platform for the New Generation</p>
                         <h1 className={s.heroTitle}>
                             marxist<span className={s.heroDot}>.</span>info
                         </h1>

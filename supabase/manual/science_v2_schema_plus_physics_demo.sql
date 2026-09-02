@@ -1,8 +1,15 @@
--- One-shot Science v2 setup plus Physics demo seed.
--- Paste this entire file into the Supabase SQL editor and run it once.
--- Do not run the seed-only migration until the schema exists.
+-- RETIRED: this historical one-shot script predates the private assessment
+-- answer store and server-authoritative grading migration. Use the ordered
+-- files in supabase/migrations instead so the security migration cannot be
+-- skipped accidentally.
 
 BEGIN;
+
+DO $$
+BEGIN
+  RAISE EXCEPTION 'This script is retired. Apply the ordered Supabase migrations instead.';
+END;
+$$;
 
 -- Science & Technology V2 learning platform.
 -- Fresh v2 tables; legacy stem_* tables are intentionally untouched.

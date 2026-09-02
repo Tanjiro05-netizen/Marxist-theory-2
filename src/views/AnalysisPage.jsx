@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { BookText, Loader, Search, List, Grid, BookOpen } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import * as s from './AnalysisPage.css.ts';
+import { sanitizeRichHtml } from '../lib/sanitize-html.js';
 
 const AnalysisPage = () => {
     const { user } = useAuth();
@@ -114,7 +115,7 @@ const AnalysisPage = () => {
 
     const articleContentHtml = useMemo(() => {
         if (!selectedArticle?.content) return '<p>Content not available.</p>';
-        let content = selectedArticle.content;
+        let content = sanitizeRichHtml(selectedArticle.content);
         if (scrollToText) {
             const escapedSentence = scrollToText.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
             const regex = new RegExp(escapedSentence, 'i');

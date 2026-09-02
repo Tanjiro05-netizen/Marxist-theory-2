@@ -12,6 +12,7 @@ import {
     RefreshCw,
 } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
+import { sanitizeRichHtml } from '../../lib/sanitize-html.js';
 
 const formatDate = (value) => {
     if (!value) return '';
@@ -106,10 +107,11 @@ const WaitlistAdminPage = () => {
         setSuccess('');
 
         try {
+            const safeHtmlBody = sanitizeRichHtml(htmlBody.trim());
             const { data, error: fnError } = await supabase.functions.invoke('waitlist-broadcast', {
                 body: {
                     subject: subject.trim(),
-                    html_body: htmlBody.trim(),
+                    html_body: safeHtmlBody,
                 },
             });
 
@@ -253,7 +255,7 @@ const WaitlistAdminPage = () => {
                                 <div
                                     className="p-6 text-gray-300 text-sm leading-relaxed"
                                     style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}
-                                    dangerouslySetInnerHTML={{ __html: htmlBody }}
+                                    dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(htmlBody) }}
                                 />
                             </div>
                         )}

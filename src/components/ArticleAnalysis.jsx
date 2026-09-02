@@ -5,6 +5,7 @@ import { Pack } from '@visx/hierarchy';
 import { hierarchy } from '@visx/hierarchy';
 import { scaleOrdinal } from '@visx/scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
+import { sanitizeRichHtml } from '../lib/sanitize-html.js';
 
 const ArticleAnalysis = ({ articleId, articleContent, onJumpToText }) => {
     const [keywords, setKeywords] = useState([]);
@@ -188,7 +189,10 @@ const ArticleAnalysis = ({ articleId, articleContent, onJumpToText }) => {
                                                 key={i} 
                                                 className="text-gray-300 cursor-pointer hover:bg-gray-800/50 p-1 rounded-none transition-colors"
                                                 onClick={() => onJumpToText && onJumpToText(sentence)}
-                                                dangerouslySetInnerHTML={{ __html: sentence.replace(new RegExp(`\b(${concordance.word})\b`, 'gi'), '<strong class="text-red-400 font-bold">$1</strong>') }}>
+                                                dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(sentence).replace(
+                                                    new RegExp(`\\b(${`${concordance.word || ''}`.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\b`, 'gi'),
+                                                    '<strong class="text-red-400 font-bold">$1</strong>'
+                                                ) }}>
                                             </li>
                                         ))
                                     ) : (

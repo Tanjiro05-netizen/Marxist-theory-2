@@ -7,7 +7,7 @@ import {
     Mail, ArrowRight, CheckCircle, AlertTriangle, Loader2,
     X, Eye, Sparkles, ExternalLink, Heart,
     GraduationCap, FlaskConical, BarChart3, PenTool,
-    Layers
+    Layers, Upload
 } from 'lucide-react';
 import MarxBg from '../assets/Marx.jpg';
 import DonationModal from '../components/DonationModal';
@@ -354,10 +354,6 @@ const LandingPage = () => {
                                 </span>
                             </h1>
 
-                            <p className="text-lg md:text-2xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-                                {t('landing.heroNew')}
-                            </p>
-
                             <div className="flex flex-wrap justify-center gap-4 mb-6">
                                 <button
                                     onClick={handleGuestAccess}
@@ -374,6 +370,14 @@ const LandingPage = () => {
                                 >
                                     <LogIn size={20} />
                                     {t('landing.logIn')}
+                                </button>
+                                <button
+                                    onClick={() => router.push('/submit')}
+                                    className="btn-outlined-red landing-highlightable flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-white"
+                                    ref={registerHighlightable}
+                                >
+                                    <Upload size={20} />
+                                    {t('submit.submitWork')}
                                 </button>
                                 <button
                                     onClick={() => setShowRegisterModal(true)}
@@ -884,10 +888,6 @@ const LandingPage = () => {
                         <h1 className="text-5xl md:text-7xl font-bold mb-6">
                             <span className="text-red-600">Marxist</span>.info
                         </h1>
-                        <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-8">
-                            {t('landing.heroNew')}
-                        </p>
-                        
                         {/* Main Action Buttons */}
                         <div className="flex flex-wrap justify-center gap-4 mb-12">
                             <button
@@ -903,6 +903,13 @@ const LandingPage = () => {
                             >
                                 <LogIn size={20} />
                                 {t('landing.logIn')}
+                            </button>
+                            <button
+                                onClick={() => router.push('/submit')}
+                                className="btn-outlined-red flex items-center gap-2 px-6 py-3"
+                            >
+                                <Upload size={20} />
+                                {t('submit.submitWork')}
                             </button>
                             <button
                                 onClick={() => setShowRegisterModal(true)}

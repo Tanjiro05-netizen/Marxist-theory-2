@@ -59,7 +59,7 @@ const TextEditionPanel = ({ sections, source, onSectionsChange, onSourceChange, 
         setExtractStep('Loading pdf.js…');
         try {
             const pdfjs = await import('pdfjs-dist');
-            pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+            pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
             let doc;
             if (pdfFile) {

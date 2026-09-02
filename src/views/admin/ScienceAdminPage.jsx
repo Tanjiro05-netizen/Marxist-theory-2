@@ -1255,6 +1255,7 @@ const ScienceAdminPage = () => {
                 <ScienceBlockRenderer
                   block={{ block_type: blockDraft.block_type, title: blockDraft.title, content_json: createBlockContent(blockDraft) }}
                   questionsById={questionsById}
+                  allowLocalAnswerPreview
                 />
               </div>
 

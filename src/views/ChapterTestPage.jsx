@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { gradeScienceQuestion } from '../components/ScienceTechV2/ScienceBlockRenderer';
 import {
   fetchScienceCheckpoint,
   getCurrentUser,
@@ -44,7 +43,6 @@ const ChapterTestPage = () => {
   const [phase, setPhase] = useState('intro');
   const [answers, setAnswers] = useState({});
   const [results, setResults] = useState(null);
-  const [startedAt, setStartedAt] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -87,7 +85,6 @@ const ChapterTestPage = () => {
   const startQuiz = () => {
     setAnswers({});
     setResults(null);
-    setStartedAt(new Date().toISOString());
     setPhase('taking');
   };
 
@@ -101,44 +98,15 @@ const ChapterTestPage = () => {
     setError('');
 
     try {
-      let totalPoints = 0;
-      let earnedPoints = 0;
-      const questionResults = questions.map((question) => {
-        const answer = answers[question.id] || '';
-        const points = question.points || 1;
-        const isCorrect = gradeScienceQuestion(question, answer);
-        totalPoints += points;
-        if (isCorrect) earnedPoints += points;
-        return {
-          question_id: question.id,
-          prompt: question.prompt,
-          user_answer: answer,
-          correct_answer: question.correct_answer,
-          is_correct: isCorrect,
-          points,
-          explanation: question.explanation,
-        };
-      });
-
-      const score = totalPoints > 0 ? Math.round((earnedPoints / totalPoints) * 100) : 0;
-      const passed = score >= (selectedQuiz.passing_score || 70);
-      const nextResults = {
-        score,
-        earnedPoints,
-        totalPoints,
-        passed,
-        startedAt: startedAt || new Date().toISOString(),
-        questionResults,
-      };
-
-      if (user) {
-        await submitScienceQuizAttempt({
-          userId: user.id,
-          quiz: selectedQuiz,
-          answers,
-          results: nextResults,
-        });
+      if (!user) {
+        router.push(`/login?from=${encodeURIComponent(`/science-tech/courses/${courseSlug}/${chapterSlug}/test`)}`);
+        return;
       }
+
+      const nextResults = await submitScienceQuizAttempt({
+        quizId: selectedQuiz.id,
+        answers,
+      });
 
       setResults(nextResults);
       setPhase('results');
@@ -325,7 +293,11 @@ const ChapterTestPage = () => {
                   </div>
                   <p className="text-gray-300 mb-2">{result.prompt}</p>
                   <p className="text-sm text-gray-500">{t('science.yourAnswer')} <span className="text-gray-300">{getAnswerLabel(t, questions[index], result.user_answer) || t('science.noAnswer')}</span></p>
-                  {!result.is_correct && <p className="text-sm text-gray-500">{t('science.correctAnswer')} <span className="text-green-300">{getAnswerLabel(t, questions[index], result.correct_answer)}</span></p>}
+                  {!result.is_correct && result.correct_answer != null && (
+                    <p className="text-sm text-gray-500">
+                      {t('science.correctAnswer')} <span className="text-green-300">{getAnswerLabel(t, questions[index], result.correct_answer)}</span>
+                    </p>
+                  )}
                   {result.explanation && <p className="mt-3 border border-blue-900/40 bg-blue-950/20 p-3 text-blue-100 text-sm">{result.explanation}</p>}
                 </div>
               ))}

@@ -4,6 +4,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import * as s from './GlossaryTermPage.css.ts';
+import { sanitizeRichHtml } from '../lib/sanitize-html.js';
 
 function renderMarkdown(text) {
     if (!text) return null;
@@ -11,7 +12,7 @@ function renderMarkdown(text) {
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.+?)\*/g, '<em>$1</em>')
         .replace(/— /g, '— <br/>');
-    return <span dangerouslySetInnerHTML={{ __html: html }} />;
+    return <span dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(html) }} />;
 }
 
 const BACK_ROUTES = {

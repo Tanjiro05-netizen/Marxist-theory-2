@@ -12,6 +12,7 @@ import {
   getHrefParts,
   getScrollTopForTarget,
 } from './epubNavigation.js';
+import { sanitizeEpubHtml } from '../../lib/sanitize-html.js';
 
 const ToolbarBtn = ({ icon: Icon, active, onClick, title }) => (
   <motion.button
@@ -274,7 +275,7 @@ const EpubReader = ({ url, title, onProgressChange, onToggleFullscreen, isFullsc
 
     await Promise.all(assetTasks);
 
-    return body?.innerHTML || html;
+    return sanitizeEpubHtml(body?.innerHTML || html);
   }, []);
 
   useEffect(() => {

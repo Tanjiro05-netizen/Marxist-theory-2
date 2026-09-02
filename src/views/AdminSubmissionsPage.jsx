@@ -2,8 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthContext';
-import { Download, Eye, CheckCircle, XCircle, AlertTriangle, Trash2, Loader2 } from 'lucide-react';
+import { Download, Eye, CheckCircle, XCircle, AlertTriangle, Trash2, Loader2, ShieldCheck, RefreshCw } from 'lucide-react';
 import ConfirmationModal from '../components/ConfirmationModal';
+
+const getSubmissionFileName = (submission) =>
+    submission.original_filename || submission.file_path?.split('/').pop() || 'manuscript.pdf';
+
+const requestSubmissionFileUrl = async (submission, download = false) => {
+    const response = await fetch('/api/submissions/file', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            submissionId: submission.id,
+            download,
+        }),
+    });
+
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(body.message || 'Could not open manuscript.');
+    return body.url;
+};
 
 const AdminSubmissionsPage = () => {
     const router = useRouter();
@@ -21,6 +40,7 @@ const AdminSubmissionsPage = () => {
     const [confirmAction, setConfirmAction] = useState(null);
     const [confirmItemId, setConfirmItemId] = useState(null);
     const [processingAction, setProcessingAction] = useState(false);
+    const [scanningId, setScanningId] = useState(null);
     
     // Check if user is admin and redirect if not
     useEffect(() => {
@@ -128,21 +148,13 @@ const AdminSubmissionsPage = () => {
     
     const handleDownload = async (submission) => {
         try {
-            const { data, error } = await supabase.storage
-                .from('manuscripts')
-                .download(submission.file_path);
-                
-            if (error) throw error;
-            
-            // Create a download link
-            const url = URL.createObjectURL(data);
+            const url = await requestSubmissionFileUrl(submission, true);
             const a = document.createElement('a');
             a.href = url;
-            a.download = submission.file_path.split('/').pop() || 'manuscript';
+            a.download = getSubmissionFileName(submission);
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            URL.revokeObjectURL(url);
         } catch (err) {
             console.error("Error downloading file:", err);
             alert("Failed to download file");
@@ -151,13 +163,8 @@ const AdminSubmissionsPage = () => {
     
     const handlePreview = async (submission) => {
         try {
-            const { data, error } = await supabase.storage
-                .from('manuscripts')
-                .createSignedUrl(submission.file_path, 60); // 60 seconds expiry
-                
-            if (error) throw error;
-            
-            window.open(data.signedUrl, '_blank');
+            const url = await requestSubmissionFileUrl(submission, false);
+            window.open(url, '_blank', 'noopener,noreferrer');
         } catch (err) {
             console.error("Error creating preview URL:", err);
             alert("Failed to preview file");
@@ -191,10 +198,18 @@ const AdminSubmissionsPage = () => {
             const submission = submissions.find(s => s.id === confirmItemId);
             
             if (submission) {
-                // Delete the file from storage
-                await supabase.storage
-                    .from('manuscripts')
-                    .remove([submission.file_path]);
+                const storageResponse = await fetch('/api/submissions/file', {
+                    method: 'DELETE',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        submissionId: submission.id,
+                    }),
+                });
+                if (!storageResponse.ok) {
+                    const body = await storageResponse.json().catch(() => ({}));
+                    throw new Error(body.message || 'Failed to delete manuscript file.');
+                }
             }
             
             // Delete the submission record
@@ -226,6 +241,9 @@ const AdminSubmissionsPage = () => {
             const submission = submissions.find(s => s.id === confirmItemId);
             
             if (!submission) return;
+            if (submission.scan_status !== 'clean') {
+                throw new Error('The PDF must pass its safety scan before approval.');
+            }
             
             // Create a new article in theory_articles
             const { error } = await supabase
@@ -325,6 +343,44 @@ const AdminSubmissionsPage = () => {
                 return <span className="px-2 py-1 bg-yellow-900/30 text-yellow-400 rounded-full text-xs">Pending</span>;
         }
     };
+
+    const getScanBadge = (status) => {
+        switch (status) {
+            case 'clean':
+                return <span className="px-2 py-1 bg-green-900/30 text-green-400 rounded-full text-xs">Clean</span>;
+            case 'infected':
+                return <span className="px-2 py-1 bg-red-900/30 text-red-400 rounded-full text-xs">Rejected</span>;
+            case 'scanning':
+                return <span className="px-2 py-1 bg-blue-900/30 text-blue-300 rounded-full text-xs">Scanning</span>;
+            case 'failed':
+                return <span className="px-2 py-1 bg-orange-900/30 text-orange-300 rounded-full text-xs">Scan failed</span>;
+            case 'legacy_unscanned':
+                return <span className="px-2 py-1 bg-yellow-900/30 text-yellow-300 rounded-full text-xs">Needs scan</span>;
+            default:
+                return <span className="px-2 py-1 bg-yellow-900/30 text-yellow-300 rounded-full text-xs">Queued</span>;
+        }
+    };
+
+    const handleScan = async (submission) => {
+        setScanningId(submission.id);
+        try {
+            const response = await fetch('/api/submissions/scan', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ submissionId: submission.id }),
+            });
+            const body = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(body.message || 'The PDF could not be scanned.');
+            await fetchSubmissions();
+            if (body.scanStatus !== 'clean') alert(body.message || 'The PDF remains locked.');
+        } catch (scanError) {
+            console.error('Submission scan failed:', scanError);
+            alert(scanError.message || 'The PDF could not be scanned.');
+        } finally {
+            setScanningId(null);
+        }
+    };
     
     const handleConfirmAction = () => {
         switch(confirmAction) {
@@ -373,6 +429,7 @@ const AdminSubmissionsPage = () => {
                                     <th className="p-4 text-gray-400 font-medium">Tags</th>
                                     <th className="p-4 text-gray-400 font-medium">Submitted</th>
                                     <th className="p-4 text-gray-400 font-medium">Status</th>
+                                    <th className="p-4 text-gray-400 font-medium">Safety</th>
                                     <th className="p-4 text-gray-400 font-medium">Actions</th>
                                 </tr>
                             </thead>
@@ -384,7 +441,7 @@ const AdminSubmissionsPage = () => {
                                             <div className="text-gray-400 text-sm mt-1 line-clamp-2">{submission.abstract}</div>
                                         </td>
                                         <td className="p-4">
-                                            <div>{submission.profiles?.username || 'Unknown'}</div>
+                                            <div>{submission.profiles?.username || 'Anonymous guest'}</div>
                                         </td>
                                         <td className="p-4">
                                             {categories[submission.category_id] || 'Unknown'}
@@ -399,29 +456,47 @@ const AdminSubmissionsPage = () => {
                                             </div>
                                         </td>
                                         <td className="p-4">
-                                            {new Date(submission.created_at).toLocaleDateString()}
+                                            {new Date(submission.submitted_at).toLocaleDateString()}
                                         </td>
                                         <td className="p-4">
                                             {getStatusBadge(submission.status)}
                                         </td>
                                         <td className="p-4">
+                                            {getScanBadge(submission.scan_status)}
+                                        </td>
+                                        <td className="p-4">
                                             <div className="flex space-x-2">
                                                 <button 
                                                     onClick={() => handleDownload(submission)}
-                                                    className="p-2 text-blue-400 hover:bg-blue-900/20 rounded-full"
-                                                    title="Download"
+                                                    disabled={submission.scan_status !== 'clean'}
+                                                    className="p-2 text-blue-400 hover:bg-blue-900/20 rounded-full disabled:opacity-30 disabled:cursor-not-allowed"
+                                                    title={submission.scan_status === 'clean' ? 'Download sanitized PDF' : 'Locked until safety scan passes'}
                                                 >
                                                     <Download className="w-4 h-4" />
                                                 </button>
                                                 <button 
                                                     onClick={() => handlePreview(submission)}
-                                                    className="p-2 text-gray-400 hover:bg-gray-800 rounded-full"
-                                                    title="Preview"
+                                                    disabled={submission.scan_status !== 'clean'}
+                                                    className="p-2 text-gray-400 hover:bg-gray-800 rounded-full disabled:opacity-30 disabled:cursor-not-allowed"
+                                                    title={submission.scan_status === 'clean' ? 'Preview sanitized PDF' : 'Locked until safety scan passes'}
                                                 >
                                                     <Eye className="w-4 h-4" />
                                                 </button>
+
+                                                {submission.scan_status !== 'clean' && submission.scan_status !== 'infected' && (
+                                                    <button
+                                                        onClick={() => handleScan(submission)}
+                                                        disabled={scanningId === submission.id}
+                                                        className="p-2 text-cyan-400 hover:bg-cyan-900/20 rounded-full disabled:opacity-30"
+                                                        title="Run safety scan"
+                                                    >
+                                                        {scanningId === submission.id
+                                                            ? <RefreshCw className="w-4 h-4 animate-spin" />
+                                                            : <ShieldCheck className="w-4 h-4" />}
+                                                    </button>
+                                                )}
                                                 
-                                                {submission.status !== 'approved' && (
+                                                {submission.status !== 'approved' && submission.scan_status === 'clean' && (
                                                     <button 
                                                         onClick={() => confirmApprove(submission.id)}
                                                         className="p-2 text-green-400 hover:bg-green-900/20 rounded-full"

@@ -8,7 +8,6 @@ import {
 const PROTECTED_PREFIXES = [
   '/theory',
   '/analysis',
-  '/submit',
   '/article',
   '/profile',
   '/directory',

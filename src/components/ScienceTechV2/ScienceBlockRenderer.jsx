@@ -6,6 +6,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { Check, ChevronDown, ChevronUp, ExternalLink, HelpCircle, Lightbulb, Play, X } from 'lucide-react';
+import { checkScienceQuestionAnswer, getScienceErrorMessage } from '../../services/scienceApi';
 
 const markdownComponents = {
   h1: ({ children }) => <h1 className="text-3xl font-bold text-white mb-4">{children}</h1>,
@@ -32,7 +33,7 @@ const renderMarkdown = (body) => (
 
 const normalizeAnswer = (value) => `${value || ''}`.trim().toLowerCase();
 
-export const gradeScienceQuestion = (question, answer) => {
+const gradeScienceQuestionForAdminPreview = (question, answer) => {
   if (!question) return false;
   if (question.question_type === 'numeric') {
     const expected = Number(question.correct_answer);
@@ -51,17 +52,39 @@ const getAnswerLabel = (t, question, answer) => {
   return answer;
 };
 
-const ScienceQuestion = ({ question, label }) => {
+const ScienceQuestion = ({ question, label, allowLocalAnswerPreview = false }) => {
   const { t } = useTranslation();
   const [answer, setAnswer] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const [result, setResult] = useState(null);
+  const [isChecking, setIsChecking] = useState(false);
+  const [checkError, setCheckError] = useState('');
   const [showHint, setShowHint] = useState(false);
-  const correct = submitted && gradeScienceQuestion(question, answer);
+  const submitted = Boolean(result);
+  const correct = Boolean(result?.is_correct);
   const options = question?.options || [];
 
-  const submit = () => {
-    if (!answer) return;
-    setSubmitted(true);
+  const submit = async () => {
+    if (!answer || isChecking) return;
+    setCheckError('');
+
+    if (allowLocalAnswerPreview && question?.correct_answer != null) {
+      setResult({
+        is_correct: gradeScienceQuestionForAdminPreview(question, answer),
+        correct_answer: question.correct_answer,
+        explanation: question.explanation,
+      });
+      return;
+    }
+
+    setIsChecking(true);
+    try {
+      const checked = await checkScienceQuestionAnswer({ questionId: question.id, answer });
+      setResult(checked);
+    } catch (error) {
+      setCheckError(getScienceErrorMessage(error, t('science.saveQuizError')));
+    } finally {
+      setIsChecking(false);
+    }
   };
 
   return (
@@ -76,7 +99,7 @@ const ScienceQuestion = ({ question, label }) => {
         <div className="space-y-2">
           {(question.question_type === 'true_false' ? ['True', 'False'] : options).map((option) => {
             const selected = answer === option;
-            const isCorrectOption = normalizeAnswer(option) === normalizeAnswer(question.correct_answer);
+            const isCorrectOption = submitted && normalizeAnswer(option) === normalizeAnswer(result?.correct_answer);
             let stateClass = 'border-gray-800 bg-black/30 hover:border-gray-600';
             if (submitted && isCorrectOption) stateClass = 'border-green-900 bg-green-950/20';
             if (submitted && selected && !isCorrectOption) stateClass = 'border-red-900 bg-red-950/20';
@@ -123,27 +146,31 @@ const ScienceQuestion = ({ question, label }) => {
           <button
             type="button"
             onClick={submit}
-            disabled={!answer}
+            disabled={!answer || isChecking}
             className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm disabled:opacity-50"
           >
-            {t('science.checkAnswer')}
+            {isChecking ? t('science.saving') : t('science.checkAnswer')}
           </button>
         ) : (
           <div className={`inline-flex items-center gap-2 text-sm font-medium ${correct ? 'text-green-400' : 'text-red-400'}`}>
             {correct ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
-            {correct ? t('science.correct') : t('science.answerValue', { answer: getAnswerLabel(t, question, question.correct_answer) })}
+            {correct
+              ? t('science.correct')
+              : t('science.answerValue', { answer: getAnswerLabel(t, question, result?.correct_answer) })}
           </div>
         )}
         {submitted && (
-          <button type="button" onClick={() => { setAnswer(''); setSubmitted(false); }} className="text-sm text-gray-400 hover:text-white">
+          <button type="button" onClick={() => { setAnswer(''); setResult(null); setCheckError(''); }} className="text-sm text-gray-400 hover:text-white">
             {t('science.tryAgain')}
           </button>
         )}
       </div>
 
-      {submitted && question?.explanation && (
+      {checkError && <p className="mt-3 text-sm text-red-300">{checkError}</p>}
+
+      {submitted && result?.explanation && (
         <div className="mt-4 border border-gray-800 bg-black/40 p-3 text-sm text-gray-300">
-          {question.explanation}
+          {result.explanation}
         </div>
       )}
     </div>
@@ -316,7 +343,7 @@ const SimulationLab = ({ block }) => {
   );
 };
 
-export const ScienceBlockRenderer = ({ block, questionsById = {} }) => {
+export const ScienceBlockRenderer = ({ block, questionsById = {}, allowLocalAnswerPreview = false }) => {
   const { t } = useTranslation();
   const content = block?.content_json || {};
   const type = block?.block_type;
@@ -362,7 +389,13 @@ export const ScienceBlockRenderer = ({ block, questionsById = {} }) => {
 
   if (type === 'exercise') {
     const question = content.inline_question || questionsById[content.question_id];
-    return question ? <ScienceQuestion question={question} label={block.title || t('science.checkUnderstanding')} /> : (
+    return question ? (
+      <ScienceQuestion
+        question={question}
+        label={block.title || t('science.checkUnderstanding')}
+        allowLocalAnswerPreview={allowLocalAnswerPreview}
+      />
+    ) : (
       <section className="border border-gray-800 bg-black/30 p-5 text-gray-400">{t('science.exerciseNotConnected')}</section>
     );
   }

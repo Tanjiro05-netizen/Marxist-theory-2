@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
 import { MessageSquare, Bookmark, Link2 } from 'lucide-react';
+import { sanitizeRichHtml } from '../../../lib/sanitize-html.js';
 
 const SectionRenderer = forwardRef(({ 
     section, 
@@ -92,7 +93,7 @@ const SectionRenderer = forwardRef(({
                     prose-a:text-red-400 prose-a:no-underline hover:prose-a:underline
                     selection:bg-red-500/30
                 "
-                dangerouslySetInnerHTML={{ __html: formatContent(content) }}
+                dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(formatContent(content)) }}
             />
 
             {/* Comment indicator badge (analysis mode only) */}

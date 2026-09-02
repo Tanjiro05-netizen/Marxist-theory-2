@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Loader2, BarChart3, Search, Hash, TrendingUp, Quote, X } from 'lucide-react';
+import { sanitizeRichHtml } from '../../../lib/sanitize-html.js';
 
 const TextAnalysisPanel = ({ text, currentLanguage, selectedText = '' }) => {
     const [keywords, setKeywords] = useState([]);
@@ -276,7 +277,7 @@ const TextAnalysisPanel = ({ text, currentLanguage, selectedText = '' }) => {
                                         <p 
                                             key={i}
                                             className="text-xs text-gray-400 p-2 bg-gray-800/30 rounded"
-                                            dangerouslySetInnerHTML={{ __html: `...${sentence}...` }}
+                                            dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(`...${sentence}...`) }}
                                         />
                                     ))}
                                 </div>

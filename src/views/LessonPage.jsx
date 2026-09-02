@@ -120,11 +120,7 @@ const LessonPage = () => {
         return;
       }
       await completeScienceLesson({
-        userId: user.id,
-        courseId: data.course.id,
-        moduleId: data.module.id,
         lessonId: data.lesson.id,
-        xpReward: data.lesson.xp_reward,
       });
       if (nextLesson) {
         router.push(`/science-tech/courses/${courseSlug}/${nextLesson.moduleSlug}/${nextLesson.lessonSlug}`);
