@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css';
+import { style, globalStyle } from '@vanilla-extract/css';
 import { vars } from '../../styles/obsidianTheme.css.ts';
 
 export const root = style({
@@ -8,17 +8,21 @@ export const root = style({
   alignItems: 'start',
   '@media': {
     'screen and (max-width: 1023px)': {
-      gridTemplateColumns: '1fr',
+      gridTemplateColumns: 'minmax(0, 1fr)',
     },
   },
 });
+
+/* Grid tracks bottom out at min-content unless the children are allowed to
+   shrink — without this the reading column forces page overflow. */
+globalStyle(`${root} > *`, { minWidth: 0 });
 
 /* ── Chapter rail ── */
 
 export const rail = style({
   position: 'sticky',
-  top: '72px',
-  maxHeight: 'calc(100vh - 96px)',
+  top: '64px',
+  maxHeight: 'calc(100vh - 88px)',
   overflowY: 'auto',
   '@media': {
     'screen and (max-width: 1023px)': {
@@ -75,23 +79,22 @@ export const railDepth = {
   paddingLeft: `calc(${vars.space.md} + 12px)`,
 };
 
-/* ── Reading shell ── */
+/* ── Reading stage — the window itself is the scroller; nothing contains
+   the text. The book flows in the page like an article. ── */
 
 export const shell = style({
   position: 'relative',
-  height: 'calc(100vh - 210px)',
-  minHeight: '560px',
-  overflowY: 'auto',
-  borderBottom: vars.border.subtle,
-  scrollbarWidth: 'thin',
 });
 
 export const progressTrack = style({
-  position: 'sticky',
+  position: 'fixed',
   top: 0,
-  zIndex: 5,
-  height: '2px',
-  background: vars.color.surfaceSoft,
+  left: 0,
+  width: '100%',
+  zIndex: 70,
+  height: '3px',
+  background: 'transparent',
+  pointerEvents: 'none',
 });
 
 export const progressFill = style({
@@ -100,14 +103,27 @@ export const progressFill = style({
   transition: 'width 300ms ease',
 });
 
+/* The reading toolbar is the only sticky chrome on /book/* — the site
+   navband scrolls away there, so this pins to the viewport top. On mobile
+   it also slides away while scrolling into the text (see ReaderChrome). */
 export const toolbar = style({
+  position: 'sticky',
+  top: 0,
+  zIndex: 30,
   display: 'flex',
+  flexWrap: 'wrap',
   alignItems: 'center',
   justifyContent: 'space-between',
-  gap: vars.space.md,
+  gap: vars.space.sm,
   padding: `${vars.space.sm} 0`,
+  background: vars.color.background,
   borderBottom: `1px solid ${vars.color.borderStrong}`,
   marginBottom: vars.space.xl,
+  '@media': {
+    'screen and (max-width: 780px)': {
+      transition: 'transform 240ms ease',
+    },
+  },
 });
 
 export const chapterMeta = style({
@@ -124,6 +140,11 @@ export const chapterLabel = style({
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
+  flex: '1 1 auto',
+  minWidth: 0,
+  '@media': {
+    'screen and (max-width: 780px)': { fontSize: '13px' },
+  },
 });
 
 export const chapterIndex = style({
@@ -134,6 +155,11 @@ export const chapterIndex = style({
   color: vars.color.textFaint,
   fontVariantNumeric: 'tabular-nums',
   whiteSpace: 'nowrap',
+  '@media': {
+    /* The counter also lives in the contents sheet — drop it here so the
+       toolbar keeps one row on phones. */
+    'screen and (max-width: 780px)': { display: 'none' },
+  },
 });
 
 export const sizeControls = style({
@@ -147,8 +173,8 @@ export const sizeBtn = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '30px',
-  height: '30px',
+  width: '44px',
+  height: '44px',
   background: 'transparent',
   border: vars.border.subtle,
   color: vars.color.textMuted,

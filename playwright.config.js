@@ -23,6 +23,7 @@ module.exports = defineConfig({
     video: 'off',
   },
   webServer: {
+    env: { PLAYWRIGHT_TEST_SERVER: '1', PORT: String(PORT) },
     command: `npm run dev -- -H 127.0.0.1 -p ${PORT}`,
     url: baseURL,
     reuseExistingServer: false,

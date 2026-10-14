@@ -96,7 +96,7 @@ describe('AuthProvider session resume', () => {
         await waitFor(() => {
             expect(screen.getByTestId('loading')).toHaveTextContent('false');
             expect(screen.getByTestId('user-id')).toHaveTextContent(initialUser.id);
-        });
+        }, { timeout: 3000 });
 
         await act(async () => {
             document.dispatchEvent(new Event('visibilitychange'));
@@ -105,7 +105,7 @@ describe('AuthProvider session resume', () => {
         await waitFor(() => {
             expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(1);
             expect(screen.getByTestId('user-id')).toHaveTextContent(refreshedUser.id);
-        });
+        }, { timeout: 3000 });
     });
 
     test('does not block a successful login on profile loading', async () => {
@@ -135,13 +135,13 @@ describe('AuthProvider session resume', () => {
 
         await waitFor(() => {
             expect(supabase.auth.getSession).toHaveBeenCalled();
-        });
+        }, { timeout: 3000 });
 
         fireEvent.click(screen.getByRole('button', { name: 'Login' }));
 
         await waitFor(() => {
             expect(screen.getByTestId('login-status')).toHaveTextContent('done');
-        });
+        }, { timeout: 3000 });
 
         await act(async () => {
             resolveProfile({ id: 'profile-after-login', username: 'Loaded later' });

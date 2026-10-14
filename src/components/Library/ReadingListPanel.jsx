@@ -16,7 +16,7 @@ const ReadingListPanel = ({ onClose, onNavigateToBook }) => {
   };
 
   return (
-    <div style={{
+    <div className="reading-list-panel" style={{
       position: 'fixed', top: 0, right: 0, bottom: 0,
       width: '340px', maxWidth: '90vw',
       background: '#0b0d12', borderLeft: '1px solid rgba(255,255,255,0.08)',
@@ -33,6 +33,7 @@ const ReadingListPanel = ({ onClose, onNavigateToBook }) => {
         </h2>
         <button
           onClick={onClose}
+          aria-label="Close reading lists"
           style={{ padding: '4px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}
         >
           <X size={18} />
@@ -60,7 +61,7 @@ const ReadingListPanel = ({ onClose, onNavigateToBook }) => {
           onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
           placeholder={t('library.listName')}
           style={{
-            flex: 1, padding: '6px 10px', fontSize: '12px',
+            flex: 1, minWidth: 0, padding: '6px 10px', fontSize: '16px',
             background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
             borderRadius: '6px', color: 'rgba(255,255,255,0.8)', outline: 'none',
           }}

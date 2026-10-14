@@ -5,7 +5,10 @@ const withVanillaExtract = createVanillaExtractPlugin({
 });
 
 const securityHeaders = [
-  { key: 'Content-Security-Policy', value: "base-uri 'self'; object-src 'none'; frame-ancestors 'none'" },
+  {
+    key: 'Content-Security-Policy',
+    value: "base-uri 'self'; object-src 'none'; frame-ancestors 'none'; frame-src 'self' https://phet.colorado.edu https://challenges.cloudflare.com",
+  },
   {
     key: 'Content-Security-Policy-Report-Only',
     value: [
@@ -19,7 +22,7 @@ const securityHeaders = [
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
       "connect-src 'self' https: wss:",
-      "frame-src https://challenges.cloudflare.com",
+      "frame-src 'self' https://phet.colorado.edu https://challenges.cloudflare.com",
       "worker-src 'self' blob:",
     ].join('; '),
   },
@@ -40,7 +43,10 @@ const nextConfig = {
   poweredByHeader: false,
   // Keep the live development compiler isolated from production builds.
   // Otherwise `next build` can replace assets that an active dev server is serving.
-  distDir: process.env.NODE_ENV === 'development' ? '.next-dev' : '.next',
+  // Browser tests also start a dev compiler; isolate it from the live preview.
+  distDir: process.env.NODE_ENV === 'development'
+    ? (process.env.PLAYWRIGHT_TEST_SERVER === '1' ? `.next-e2e-${process.env.PORT || '3001'}` : '.next-dev')
+    : '.next',
   outputFileTracingRoot: __dirname,
   images: {
     remotePatterns: [
@@ -103,7 +109,6 @@ const nextConfig = {
         'directory',
         'glossary',
         'study',
-        'science-tech',
         'visualizations',
         'forum',
         'knowledge',

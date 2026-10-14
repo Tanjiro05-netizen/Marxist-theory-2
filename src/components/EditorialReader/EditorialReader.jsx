@@ -1,10 +1,14 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import ePub from 'epubjs';
-import { Loader, AlertCircle, Minus, Plus } from 'lucide-react';
+import { Loader, AlertCircle, List, Minus, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import * as s from './EditorialReader.css.ts';
+import * as chrome from './ReaderChrome.css.ts';
+import ReaderTocSheet from './ReaderTocSheet';
+import { loadReaderPosition, usePositionSaver, useReaderChrome } from './readerChrome';
 import { sanitizeEpubHtml } from '../../lib/sanitize-html.js';
 
-const TEXT_FAINT = '#6f6c61';
+const TEXT_FAINT = 'var(--paper-faint)';
 
 import { editorialProseCss } from './editorialProseCss';
 
@@ -51,6 +55,15 @@ const extractSectionBody = async (html, section, book) => {
   body?.querySelectorAll('img[src]').forEach((el) => tasks.push(resolveAsset(el, 'src')));
   await Promise.all(tasks);
 
+  /* The page already carries the book title as its h1 — embedded title-page
+     headings step down one level so the document keeps a single h1. */
+  body?.querySelectorAll('h1').forEach((h1) => {
+    const h2 = document.createElement('h2');
+    h2.innerHTML = h1.innerHTML;
+    [...h1.attributes].forEach((attr) => h2.setAttribute(attr.name, attr.value));
+    h1.replaceWith(h2);
+  });
+
   return sanitizeEpubHtml(body?.innerHTML || '');
 };
 
@@ -59,8 +72,8 @@ const extractSectionBody = async (html, section, book) => {
  * with a chapter rail and a crimson progress rule. Companion to the
  * paginated EpubReader, which remains available as the ebook view.
  */
-const EditorialReader = ({ url, onProgressChange, fallbackUrl }) => {
-  const scrollRef = useRef(null);
+const EditorialReader = ({ url, bookId, onProgressChange, fallbackUrl }) => {
+  const { t } = useTranslation();
   const onProgressRef = useRef(onProgressChange);
   onProgressRef.current = onProgressChange;
 
@@ -74,6 +87,11 @@ const EditorialReader = ({ url, onProgressChange, fallbackUrl }) => {
     return saved ? parseInt(saved, 10) : 100;
   });
   const [status, setStatus] = useState('loading'); // loading | ready | error
+
+  const { toolbarHidden, tocOpen, openToc, closeToc } = useReaderChrome();
+  const savePosition = usePositionSaver(bookId);
+  const tocBtnRef = useRef(null);
+  const restoredRef = useRef(false);
 
   useEffect(() => {
     if (!url) return undefined;
@@ -147,39 +165,67 @@ const EditorialReader = ({ url, onProgressChange, fallbackUrl }) => {
     return match?.label || null;
   }, [toc]);
 
+  /* The page (window) is the scroller — progress and active chapter are
+     derived from document scroll, not from any contained panel. The resting
+     place is persisted (throttled) so the book resumes where it was left. */
   const handleScroll = useCallback(() => {
-    const scroller = scrollRef.current;
-    if (!scroller) return;
-
-    const maxScroll = scroller.scrollHeight - scroller.clientHeight;
-    const pct = maxScroll > 0 ? Math.round((scroller.scrollTop / maxScroll) * 100) : 0;
+    const doc = document.documentElement;
+    const maxScroll = doc.scrollHeight - window.innerHeight;
+    const pct = maxScroll > 0 ? Math.round((window.scrollY / maxScroll) * 100) : 0;
     setProgress(pct);
     if (onProgressRef.current) onProgressRef.current(pct);
 
-    const nodes = Array.from(scroller.querySelectorAll('[data-section-canonical]'));
-    const active = nodes.filter((n) => n.offsetTop <= scroller.scrollTop + 200).pop() || nodes[0];
-    if (active) setActiveHref(active.getAttribute('data-section-canonical'));
-  }, []);
+    const nodes = Array.from(document.querySelectorAll('[data-section-canonical]'));
+    const active = nodes.filter((n) => n.getBoundingClientRect().top <= 220).pop() || nodes[0];
+    if (active) {
+      const canonical = active.getAttribute('data-section-canonical');
+      setActiveHref(canonical);
+      if (restoredRef.current) savePosition({ canonical, pct });
+    }
+  }, [savePosition]);
+
+  useEffect(() => {
+    if (status !== 'ready') return undefined;
+    /* Resume: jump straight back to the last resting section, silently. */
+    if (!restoredRef.current) {
+      restoredRef.current = true;
+      const saved = loadReaderPosition(bookId);
+      if (saved?.canonical) {
+        const target = Array.from(document.querySelectorAll('[data-section-canonical]'))
+          .find((n) => {
+            const c = n.getAttribute('data-section-canonical');
+            return c === saved.canonical || c.endsWith(saved.canonical) || saved.canonical.endsWith(c);
+          });
+        if (target && target.getBoundingClientRect().top > window.innerHeight) {
+          const top = target.getBoundingClientRect().top + window.scrollY - 84;
+          window.scrollTo({ top: Math.max(0, top), behavior: 'auto' });
+        }
+      }
+    }
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [status, handleScroll, bookId]);
 
   const scrollToHref = useCallback((href) => {
-    const scroller = scrollRef.current;
-    if (!scroller || !href) return;
+    if (!href) return;
     const [base, hash] = href.split('#');
 
     let target = null;
     if (hash) {
-      target = scroller.querySelector(`[data-anchor-id="${hash}"], a[name="${hash}"], #${CSS.escape(hash)}`);
+      target = document.querySelector(`[data-anchor-id="${hash}"], a[name="${hash}"], #${CSS.escape(hash)}`);
     }
     if (!target && base) {
       const canonicalBase = base;
-      target = Array.from(scroller.querySelectorAll('[data-section-canonical]'))
+      target = Array.from(document.querySelectorAll('[data-section-canonical]'))
         .find((n) => {
           const c = n.getAttribute('data-section-canonical');
           return c === canonicalBase || c.endsWith(base) || base.endsWith(c);
         });
     }
     if (target) {
-      scroller.scrollTo({ top: Math.max(0, target.offsetTop - 24), behavior: 'smooth' });
+      const top = target.getBoundingClientRect().top + window.scrollY - 84;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
     }
   }, []);
 
@@ -204,6 +250,17 @@ const EditorialReader = ({ url, onProgressChange, fallbackUrl }) => {
   };
 
   const proseSize = Math.round(18 * (fontSize / 100));
+
+  const tocSheetItems = toc.map((item, idx) => {
+    const base = item.href.split('#')[0];
+    return {
+      key: `${item.href}-${idx}`,
+      label: item.label,
+      depth: item.depth,
+      active: activeHref === base || activeHref?.endsWith(base) || base.endsWith(activeHref || ''),
+      href: item.href,
+    };
+  });
 
   return (
     <div className={s.root} data-testid="editorial-reader">
@@ -232,30 +289,43 @@ const EditorialReader = ({ url, onProgressChange, fallbackUrl }) => {
       </nav>
 
       <div>
-        {/* Toolbar: current chapter + index + type controls */}
-        <div className={s.toolbar}>
+        {/* Toolbar: chapter + index + contents + type controls. Slides away
+            while the reader scrolls into the text (mobile). */}
+        <div className={`${s.toolbar}${toolbarHidden ? ` ${chrome.toolbarHidden}` : ''}`}>
           <div className={s.chapterMeta}>
+            <button
+              type="button"
+              ref={tocBtnRef}
+              className={chrome.tocBtn}
+              onClick={openToc}
+              aria-label={t('book.tableOfContents', { defaultValue: 'Table of Contents' })}
+              aria-haspopup="dialog"
+              aria-expanded={tocOpen}
+            >
+              <List size={15} />
+            </button>
             <span className={s.chapterLabel}>{currentLabel || 'Reading'}</span>
             <span className={s.chapterIndex}>
               {activeIndex >= 0 ? `${String(activeIndex + 1).padStart(2, '0')} / ${String(sections.length).padStart(2, '0')}` : ''}
             </span>
           </div>
           <div className={s.sizeControls}>
+            <span className={chrome.progressPct} aria-label={t('book.readingProgress', { defaultValue: 'Reading progress' })}>
+              {progress}%
+            </span>
             <button className={s.sizeBtn} onClick={() => adjustFont(-10)} aria-label="Smaller text" title="Smaller text">
-              <Minus size={14} />
+              <Minus size={15} />
             </button>
             <span className={s.sizeValue}>{fontSize}%</span>
             <button className={s.sizeBtn} onClick={() => adjustFont(10)} aria-label="Larger text" title="Larger text">
-              <Plus size={14} />
+              <Plus size={15} />
             </button>
           </div>
         </div>
 
-        {/* Scroll shell with progress rule */}
+        {/* Reading stage — flows with the page; progress rule rides the viewport top */}
         <div
           className={s.shell}
-          ref={scrollRef}
-          onScroll={handleScroll}
           onClick={handleColumnClick}
           data-testid="editorial-reader-scroll"
         >
@@ -297,9 +367,9 @@ const EditorialReader = ({ url, onProgressChange, fallbackUrl }) => {
                   />
                   {i < sections.length - 1 && (
                     <div className={s.sectionRule} aria-hidden="true">
-                      <span style={{ flex: 1, height: '1px', background: '#262a35' }} />
-                      <span style={{ width: '6px', height: '6px', background: '#b3122e', transform: 'rotate(45deg)' }} />
-                      <span style={{ flex: 1, height: '1px', background: '#262a35' }} />
+                      <span style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
+                      <span style={{ width: '6px', height: '6px', background: 'var(--red)', transform: 'rotate(45deg)' }} />
+                      <span style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
                     </div>
                   )}
                 </React.Fragment>
@@ -309,6 +379,15 @@ const EditorialReader = ({ url, onProgressChange, fallbackUrl }) => {
           )}
         </div>
       </div>
+
+      {/* Mobile contents — the rail's chapter list as a bottom sheet */}
+      <ReaderTocSheet
+        open={tocOpen}
+        onClose={closeToc}
+        items={tocSheetItems}
+        onSelect={(item) => scrollToHref(item.href)}
+        triggerRef={tocBtnRef}
+      />
     </div>
   );
 };

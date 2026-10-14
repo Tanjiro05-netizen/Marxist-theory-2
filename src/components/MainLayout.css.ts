@@ -3,6 +3,7 @@ import { vars } from '../styles/obsidianTheme.css.ts';
 
 export const shell = style({
   minHeight: '100vh',
+  minWidth: 0,
   background: vars.color.background,
   color: vars.color.text,
   fontFamily: vars.font.body,
@@ -14,11 +15,13 @@ export const shell = style({
    so no fixed-header padding is needed. */
 export const main = style({
   flex: 1,
+  minWidth: 0,
   paddingTop: 0,
 });
 
 export const mainFullBleed = style({
   flex: 1,
+  minWidth: 0,
   paddingTop: 0,
 });
 
@@ -28,6 +31,12 @@ export const fab = style({
   right: vars.space.lg,
   zIndex: 50,
   textDecoration: 'none',
+  '@media': {
+    'screen and (max-width: 768px)': {
+      bottom: 'max(16px, env(safe-area-inset-bottom))',
+      right: 'max(12px, env(safe-area-inset-right))',
+    },
+  },
 });
 
 export const fabCircle = style({

@@ -6,6 +6,7 @@ import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import { BookText, Loader, Search, List, Grid, BookOpen } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
+import { proseTheme } from '../styles/obsidianTheme.css.ts';
 import * as s from './AnalysisPage.css.ts';
 import { sanitizeRichHtml } from '../lib/sanitize-html.js';
 
@@ -120,7 +121,7 @@ const AnalysisPage = () => {
             const escapedSentence = scrollToText.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
             const regex = new RegExp(escapedSentence, 'i');
             if (content.match(regex)) {
-                content = content.replace(regex, (match) => `<span id="highlighted-concordance" class="bg-yellow-500/30 transition-all duration-300 p-1 rounded">${match}</span>`);
+                content = content.replace(regex, (match) => `<span id="highlighted-concordance" class="${s.concordanceHit}">${match}</span>`);
             }
         }
         return content;
@@ -199,34 +200,34 @@ const AnalysisPage = () => {
         <div className={s.page}>
             <main className={s.main}>
                 {selectedArticle && !selectedArticle.loadingContent ? (
-                    <div>
+                    <div className={s.readerStage}>
                         <button onClick={() => setSelectedArticle(null)} className={s.backBtn}>
                             ← Back to Articles
                         </button>
-                        <div className={s.readerCard}>
-                            <h1 className={s.readerTitle}>{selectedArticle.title}</h1>
+                        <header className={s.readerTitleBand}>
                             <p className={s.readerCategory}>{selectedArticle.theory_categories?.name || 'Uncategorized'}</p>
+                            <h1 className={s.readerTitle}>{selectedArticle.title}</h1>
+                        </header>
 
-                            <div className={s.tabRow}>
-                                {TABS.map((tab) => (
-                                    <button
-                                        key={tab}
-                                        onClick={() => setActiveTab(tab)}
-                                        className={`${s.tabBtn} ${activeTab === tab ? s.tabBtnActive : ''}`}
-                                    >
-                                        {tab}
-                                    </button>
-                                ))}
-                            </div>
+                        <div className={s.tabRow}>
+                            {TABS.map((tab) => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab)}
+                                    className={`${s.tabBtn} ${activeTab === tab ? s.tabBtnActive : ''}`}
+                                >
+                                    {tab}
+                                </button>
+                            ))}
+                        </div>
 
-                            <div>
-                                {activeTab === 'Content' && (
-                                    <div className={s.contentPane} dangerouslySetInnerHTML={{ __html: articleContentHtml }} style={{color:'rgba(255,255,255,0.72)',lineHeight:1.8}} />
-                                )}
-                                {activeTab === 'Comments' && <ArticleComments articleId={selectedArticle.id} userRole={userRole} />}
-                                {activeTab === 'Notes' && <PrivateNotes articleId={selectedArticle.id} />}
-                                {activeTab === 'Analysis' && <ArticleAnalysis articleId={selectedArticle.id} articleContent={selectedArticle.content} onJumpToText={handleJumpToText} />}
-                            </div>
+                        <div>
+                            {activeTab === 'Content' && (
+                                <div className={`proseTheme ${s.contentPane} prose prose-invert max-w-none`} dangerouslySetInnerHTML={{ __html: articleContentHtml }} />
+                            )}
+                            {activeTab === 'Comments' && <ArticleComments articleId={selectedArticle.id} userRole={userRole} />}
+                            {activeTab === 'Notes' && <PrivateNotes articleId={selectedArticle.id} />}
+                            {activeTab === 'Analysis' && <ArticleAnalysis articleId={selectedArticle.id} articleContent={selectedArticle.content} onJumpToText={handleJumpToText} />}
                         </div>
                     </div>
                 ) : (

@@ -1,35 +1,16 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import 'katex/dist/katex.min.css';
-import { Check, ChevronDown, ChevronUp, ExternalLink, HelpCircle, Lightbulb, Play, X } from 'lucide-react';
-import { checkScienceQuestionAnswer, getScienceErrorMessage } from '../../services/scienceApi';
-
-const markdownComponents = {
-  h1: ({ children }) => <h1 className="text-3xl font-bold text-white mb-4">{children}</h1>,
-  h2: ({ children }) => <h2 className="text-2xl font-bold text-white mt-6 mb-3 border-b border-gray-800 pb-2">{children}</h2>,
-  h3: ({ children }) => <h3 className="text-lg font-semibold text-white mt-5 mb-2">{children}</h3>,
-  p: ({ children }) => <p className="text-gray-300 mb-4 leading-relaxed">{children}</p>,
-  ul: ({ children }) => <ul className="list-disc pl-6 text-gray-300 mb-4 space-y-1">{children}</ul>,
-  ol: ({ children }) => <ol className="list-decimal pl-6 text-gray-300 mb-4 space-y-1">{children}</ol>,
-  li: ({ children }) => <li className="text-gray-300">{children}</li>,
-  code: ({ inline, children }) => inline
-    ? <code className="bg-black/50 border border-gray-800 px-1.5 py-0.5 text-red-300 text-sm">{children}</code>
-    : <pre className="bg-black/60 p-4 overflow-x-auto border border-gray-800"><code className="text-gray-300 text-sm">{children}</code></pre>,
-  blockquote: ({ children }) => <blockquote className="border-l-2 border-red-800 pl-4 italic text-gray-400">{children}</blockquote>,
-  table: ({ children }) => <table className="w-full border-collapse my-4">{children}</table>,
-  th: ({ children }) => <th className="border border-gray-700 px-3 py-2 text-left text-white bg-black/40">{children}</th>,
-  td: ({ children }) => <td className="border border-gray-700 px-3 py-2 text-gray-300">{children}</td>,
-};
-
-const renderMarkdown = (body) => (
-  <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]} components={markdownComponents}>
-    {body || ''}
-  </ReactMarkdown>
-);
+import { Check, ChevronDown, ChevronUp, ExternalLink, Eye, HelpCircle, Lightbulb, Play, X } from 'lucide-react';
+import { checkScienceQuestionAnswer, getScienceErrorMessage, saveScienceBlockEvidence } from '../../services/scienceApi';
+import { renderScienceMarkdown } from './blocks/scienceMarkdown';
+import WorkedExampleStudio from './blocks/WorkedExampleStudio';
+import ConstructedResponse from './blocks/ConstructedResponse';
+import DebugTask from './blocks/DebugTask';
+import MotionLab from './blocks/MotionLab';
+import SimLab from './blocks/SimLab';
+import GraphTableLab from './blocks/GraphTableLab';
+import FbdBuilder from './blocks/FbdBuilder';
+import InteractiveWidgetBlock from '../ScienceTech/blocks/InteractiveWidgetBlock';
 
 const normalizeAnswer = (value) => `${value || ''}`.trim().toLowerCase();
 
@@ -199,7 +180,7 @@ const WorkedExample = ({ block }) => {
           {(content.steps || []).map((step, index) => (
             <div key={`${step}-${index}`} className="flex gap-3 text-gray-300">
               <span className="text-gray-600 font-mono text-sm">{index + 1}</span>
-              <div className="flex-1">{renderMarkdown(step)}</div>
+              <div className="flex-1">{renderScienceMarkdown(step)}</div>
             </div>
           ))}
           {content.answer && (
@@ -229,7 +210,7 @@ const LabList = ({ title, items }) => (
   </div>
 );
 
-const SimulationLab = ({ block }) => {
+const SimulationLab = ({ block, initialEvidence }) => {
   const { t } = useTranslation();
   const content = block?.content_json || {};
   const variables = content.variables || [];
@@ -238,6 +219,21 @@ const SimulationLab = ({ block }) => {
   const [completedTasks, setCompletedTasks] = useState({});
   const [notes, setNotes] = useState({});
   const completedCount = tasks.filter((_, index) => completedTasks[index]).length;
+
+  // Prediction-first wrapper: commit a prediction before the sim is revealed.
+  const [prediction, setPrediction] = useState(initialEvidence?.evidence?.prediction || '');
+  const [simRevealed, setSimRevealed] = useState(Boolean(initialEvidence?.evidence?.simRevealed) || !content.prediction);
+
+  const revealSimulation = () => {
+    setSimRevealed(true);
+    if (block?.id) {
+      saveScienceBlockEvidence({
+        blockId: block.id,
+        evidence: { prediction, simRevealed: true },
+        state: 'completed',
+      }).catch(() => {});
+    }
+  };
 
   const toggleTask = (index) => {
     setCompletedTasks((current) => ({ ...current, [index]: !current[index] }));
@@ -279,9 +275,32 @@ const SimulationLab = ({ block }) => {
         </div>
       )}
 
-      {content.url ? (
+      {content.prediction && !simRevealed ? (
+        <div className="p-4 border-b border-gray-800 bg-black/25">
+          <p className="text-xs uppercase tracking-wide text-gray-600 mb-2">{t('science.simLabPredictFirst')}</p>
+          <p className="text-sm text-gray-300 mb-3">{content.prediction}</p>
+          <textarea
+            value={prediction}
+            onChange={(event) => setPrediction(event.target.value)}
+            rows={3}
+            placeholder={t('science.simLabPredictionPlaceholder')}
+            className="w-full border border-gray-800 bg-black/45 p-3 text-sm text-white outline-none focus:border-red-700"
+          />
+          <button
+            type="button"
+            onClick={revealSimulation}
+            disabled={prediction.trim().length < 5}
+            className="mt-3 inline-flex items-center gap-2 border border-red-800 bg-red-950/20 px-4 py-2 text-sm text-red-300 hover:bg-red-950/40 disabled:opacity-40"
+          >
+            <Eye className="w-4 h-4" />
+            {t('science.simRevealSimulation')}
+          </button>
+        </div>
+      ) : content.url ? (
         <iframe src={content.url} title={block.title || t('science.simulation')} className="w-full h-[420px] bg-black" allowFullScreen />
-      ) : (
+      ) : null}
+
+      {!content.url && simRevealed && (
         <div className="p-6 text-gray-500">{t('science.missingSimulationUrl')}</div>
       )}
 
@@ -343,99 +362,134 @@ const SimulationLab = ({ block }) => {
   );
 };
 
-export const ScienceBlockRenderer = ({ block, questionsById = {}, allowLocalAnswerPreview = false }) => {
+// Registry: block_type → renderer. Evidence-bearing blocks receive the
+// learner's saved evidence for that block.
+export const ScienceBlockRenderer = ({ block, questionsById = {}, evidenceByBlock = {}, allowLocalAnswerPreview = false }) => {
   const { t } = useTranslation();
   const content = block?.content_json || {};
   const type = block?.block_type;
+  const initialEvidence = evidenceByBlock[block?.id];
 
-  if (type === 'rich_text') {
-    return <section className="border border-gray-800 bg-black/35 p-5">{renderMarkdown(content.body)}</section>;
-  }
+  switch (type) {
+    case 'rich_text':
+      return <section className="border border-gray-800 bg-black/35 p-5">{renderScienceMarkdown(content.body)}</section>;
 
-  if (type === 'math') {
-    return (
-      <section className="border border-gray-800 bg-black/30 p-5">
-        <div className="text-gray-500 text-xs uppercase tracking-wide mb-3">{t('science.mathNote')}</div>
-        {renderMarkdown(content.body)}
-      </section>
-    );
-  }
+    case 'math':
+      return (
+        <section className="border border-gray-800 bg-black/30 p-5">
+          <div className="text-gray-500 text-xs uppercase tracking-wide mb-3">{t('science.mathNote')}</div>
+          {renderScienceMarkdown(content.body)}
+        </section>
+      );
 
-  if (type === 'worked_example') {
-    return <WorkedExample block={block} />;
-  }
+    case 'worked_example':
+      return <WorkedExample block={block} />;
 
-  if (type === 'video') {
-    const embed = videoEmbedUrl(content.url);
-    return (
-      <section className="border border-gray-800 bg-black/35 overflow-hidden">
-        <div className="p-4 border-b border-gray-800 flex items-center gap-2 text-white font-medium">
-          <Play className="w-4 h-4 text-red-400" />
-          {block.title || t('science.video')}
+    case 'video': {
+      const embed = videoEmbedUrl(content.url);
+      return (
+        <section className="border border-gray-800 bg-black/35 overflow-hidden">
+          <div className="p-4 border-b border-gray-800 flex items-center gap-2 text-white font-medium">
+            <Play className="w-4 h-4 text-red-400" />
+            {block.title || t('science.video')}
+          </div>
+          {embed ? (
+            <iframe src={embed} title={block.title || t('science.video')} allowFullScreen className="w-full aspect-video bg-black" />
+          ) : content.url ? (
+            <video src={content.url} controls className="w-full aspect-video bg-black" />
+          ) : null}
+          {content.transcript && (
+            <div className="p-4 text-sm text-gray-400 border-t border-gray-800">
+              {!content.url && <p className="text-xs uppercase tracking-wide text-gray-600 mb-2">{t('science.videoTranscriptOnly')}</p>}
+              {renderScienceMarkdown(content.transcript)}
+            </div>
+          )}
+        </section>
+      );
+    }
+
+    case 'simulation_embed':
+      return <SimulationLab block={block} initialEvidence={initialEvidence} />;
+
+    case 'exercise': {
+      const question = content.inline_question || questionsById[content.question_id];
+      return question ? (
+        <ScienceQuestion
+          question={question}
+          label={block.title || t('science.checkUnderstanding')}
+          allowLocalAnswerPreview={allowLocalAnswerPreview}
+        />
+      ) : (
+        <section className="border border-gray-800 bg-black/30 p-5 text-gray-400">{t('science.exerciseNotConnected')}</section>
+      );
+    }
+
+    case 'quiz':
+      return (
+        <section className="border border-gray-800 bg-black/30 p-5">
+          <p className="text-white font-medium">{block.title || t('science.checkpointQuiz')}</p>
+          <p className="text-gray-500 text-sm mt-1">{t('science.openCheckpoint')}</p>
+        </section>
+      );
+
+    case 'callout': {
+      const variants = {
+        warning: 'border-yellow-900/40 bg-black/30 text-gray-200',
+        theorem: 'border-gray-700 bg-black/30 text-gray-200',
+        definition: 'border-gray-700 bg-black/30 text-gray-200',
+        mistake: 'border-red-900/40 bg-black/30 text-gray-200',
+        intuition: 'border-gray-700 bg-black/30 text-gray-200',
+      };
+      const variant = content.variant || 'intuition';
+      return (
+        <section className={`border p-5 ${variants[variant] || variants.intuition}`}>
+          <p className="uppercase tracking-wide text-xs opacity-70 mb-2">{t(`science.callout.${variant}`, { defaultValue: variant })}</p>
+          {renderScienceMarkdown(content.body)}
+        </section>
+      );
+    }
+
+    case 'image':
+      return (
+        <figure className="border border-gray-800 bg-black/35 p-3">
+          {content.url ? <img src={content.url} alt={content.alt || content.caption || ''} className="w-full object-contain max-h-[520px]" /> : null}
+          {content.caption && <figcaption className="text-gray-500 text-sm mt-3">{content.caption}</figcaption>}
+        </figure>
+      );
+
+    // --- PHY111 interactive layer ---
+
+    case 'worked_example_studio':
+      return <WorkedExampleStudio block={block} initialEvidence={initialEvidence} />;
+
+    case 'constructed_response':
+      return <ConstructedResponse block={block} initialEvidence={initialEvidence} />;
+
+    case 'debug_task':
+      return <DebugTask block={block} initialEvidence={initialEvidence} />;
+
+    case 'motion_lab':
+      return <MotionLab block={block} initialEvidence={initialEvidence} />;
+
+    case 'sim_lab':
+      return <SimLab block={block} initialEvidence={initialEvidence} />;
+
+    case 'graph_table_lab':
+      return <GraphTableLab block={block} initialEvidence={initialEvidence} />;
+
+    case 'fbd_builder':
+      return <FbdBuilder block={block} initialEvidence={initialEvidence} />;
+
+    case 'interactive_widget':
+      return (
+        <div className="my-2">
+          <InteractiveWidgetBlock block={{ widget_type: content.widget_type, config: content.config || {} }} />
         </div>
-        {embed ? (
-          <iframe src={embed} title={block.title || t('science.video')} allowFullScreen className="w-full aspect-video bg-black" />
-        ) : (
-          <video src={content.url} controls className="w-full aspect-video bg-black" />
-        )}
-        {content.transcript && <div className="p-4 text-sm text-gray-400 border-t border-gray-800">{content.transcript}</div>}
-      </section>
-    );
-  }
+      );
 
-  if (type === 'simulation_embed') {
-    return <SimulationLab block={block} />;
+    default:
+      return <section className="border border-gray-800 bg-black/35 p-5 text-gray-500">{t('science.unsupportedBlock', { type })}</section>;
   }
-
-  if (type === 'exercise') {
-    const question = content.inline_question || questionsById[content.question_id];
-    return question ? (
-      <ScienceQuestion
-        question={question}
-        label={block.title || t('science.checkUnderstanding')}
-        allowLocalAnswerPreview={allowLocalAnswerPreview}
-      />
-    ) : (
-      <section className="border border-gray-800 bg-black/30 p-5 text-gray-400">{t('science.exerciseNotConnected')}</section>
-    );
-  }
-
-  if (type === 'quiz') {
-    return (
-      <section className="border border-gray-800 bg-black/30 p-5">
-        <p className="text-white font-medium">{block.title || t('science.checkpointQuiz')}</p>
-        <p className="text-gray-500 text-sm mt-1">{t('science.openCheckpoint')}</p>
-      </section>
-    );
-  }
-
-  if (type === 'callout') {
-    const variants = {
-      warning: 'border-yellow-900/40 bg-black/30 text-gray-200',
-      theorem: 'border-gray-700 bg-black/30 text-gray-200',
-      definition: 'border-gray-700 bg-black/30 text-gray-200',
-      mistake: 'border-red-900/40 bg-black/30 text-gray-200',
-      intuition: 'border-gray-700 bg-black/30 text-gray-200',
-    };
-    const variant = content.variant || 'intuition';
-    return (
-      <section className={`border p-5 ${variants[variant] || variants.intuition}`}>
-        <p className="uppercase tracking-wide text-xs opacity-70 mb-2">{t(`science.callout.${variant}`, { defaultValue: variant })}</p>
-        {renderMarkdown(content.body)}
-      </section>
-    );
-  }
-
-  if (type === 'image') {
-    return (
-      <figure className="border border-gray-800 bg-black/35 p-3">
-        {content.url ? <img src={content.url} alt={content.alt || content.caption || ''} className="w-full object-contain max-h-[520px]" /> : null}
-        {content.caption && <figcaption className="text-gray-500 text-sm mt-3">{content.caption}</figcaption>}
-      </figure>
-    );
-  }
-
-  return <section className="border border-gray-800 bg-black/35 p-5 text-gray-500">{t('science.unsupportedBlock', { type })}</section>;
 };
 
 export default ScienceBlockRenderer;

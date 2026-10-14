@@ -22,6 +22,25 @@ const parseAttributes = (raw = '') => {
   return attrs;
 };
 
+// Complex interactive blocks carry a JSON payload in a fenced block:
+//   :::block type=sim_lab title=...
+//   ```json
+//   { ...content_json... }
+//   ```
+//   :::
+const extractJsonFence = (rawContent) => {
+  const match = rawContent.match(/```json\s*([\s\S]*?)```/);
+  if (!match) return null;
+  try {
+    return JSON.parse(match[1]);
+  } catch {
+    return null;
+  }
+};
+
+const stripJsonFence = (rawContent) =>
+  rawContent.replace(/```json\s*[\s\S]*?```/g, '').trim();
+
 const parseMetadataLine = (line) => {
   const match = line.match(/^([A-Za-z][A-Za-z\s]+):\s*(.+)$/);
   if (!match) return null;
@@ -105,6 +124,65 @@ const createBlockFromRaw = (type, attrs, rawContent, lineNumber) => {
     block.content_json = {
       body: content,
       variant: attrs.variant || 'intuition',
+    };
+    return block;
+  }
+
+  // Interactive PHY111 block kinds: line-DSL for the simple ones, JSON fence
+  // for the complex ones (labs, FBD, sim models).
+  const interactiveJsonKinds = [
+    'sim_lab',
+    'motion_lab',
+    'graph_table_lab',
+    'fbd_builder',
+    'interactive_widget',
+  ];
+  if (interactiveJsonKinds.includes(block.block_type)) {
+    const payload = extractJsonFence(rawContent);
+    block.content_json = payload || { body: stripJsonFence(content) };
+    if (block.block_type === 'interactive_widget') {
+      block.content_json = {
+        widget_type: attrs.widget || attrs.widget_type || payload?.widget_type || 'function_plotter',
+        config: payload?.config || {},
+      };
+    }
+    return block;
+  }
+
+  if (block.block_type === 'worked_example_studio') {
+    const steps = [];
+    let problem = '';
+    let answer = '';
+    let interpretation = '';
+    content.split('\n').forEach((line) => {
+      const trimmed = line.trim();
+      if (/^problem:/i.test(trimmed)) {
+        problem = trimmed.replace(/^problem:\s*/i, '');
+      } else if (/^answer:/i.test(trimmed)) {
+        answer = trimmed.replace(/^answer:\s*/i, '');
+      } else if (/^interpretation:/i.test(trimmed)) {
+        interpretation = trimmed.replace(/^interpretation:\s*/i, '');
+      } else if (/^step\s*\d*:/i.test(trimmed)) {
+        steps.push(trimmed.replace(/^step\s*\d*:\s*/i, ''));
+      } else if (trimmed) {
+        steps.push(trimmed);
+      }
+    });
+    block.content_json = { problem, steps, answer, interpretation, prompt: attrs.prompt || '' };
+    block.config_json.min_attempt_chars = attrs.min_chars ? Number(attrs.min_chars) : 40;
+    return block;
+  }
+
+  if (block.block_type === 'constructed_response' || block.block_type === 'debug_task') {
+    const payload = extractJsonFence(rawContent);
+    if (payload) {
+      block.content_json = payload;
+      block.config_json.min_chars = attrs.min_chars ? Number(attrs.min_chars) : 20;
+      return block;
+    }
+    block.content_json = {
+      prompt: content,
+      minChars: attrs.min_chars ? Number(attrs.min_chars) : 20,
     };
     return block;
   }

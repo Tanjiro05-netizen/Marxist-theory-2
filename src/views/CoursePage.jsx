@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import {
   enrollInScienceCourse,
   fetchScienceCourse,
+  fetchScienceModuleUnlockState,
   getCurrentUser,
   getScienceErrorMessage,
 } from '../services/scienceApi';
@@ -22,6 +23,7 @@ import {
   HelpCircle,
   Layers,
   Lock,
+  RefreshCw,
   Target,
 } from 'lucide-react';
 import 'katex/dist/katex.min.css';
@@ -60,6 +62,7 @@ const CoursePage = () => {
   const [enrolled, setEnrolled] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
   const [error, setError] = useState('');
+  const [moduleLocks, setModuleLocks] = useState({}); // moduleId -> unlocked boolean
 
   useEffect(() => {
     const load = async () => {
@@ -78,7 +81,20 @@ const CoursePage = () => {
         }
         if (currentUser) {
           const enrollments = courseData.course.science_enrollments || [];
-          setEnrolled(enrollments.some((item) => item.user_id === currentUser.id));
+          const isEnrolled = enrollments.some((item) => item.user_id === currentUser.id);
+          setEnrolled(isEnrolled);
+          if (isEnrolled) {
+            try {
+              const unlockStates = await fetchScienceModuleUnlockState(courseData.course.id);
+              const lookup = {};
+              (unlockStates || []).forEach((item) => {
+                lookup[item.moduleId] = item.unlocked;
+              });
+              setModuleLocks(lookup);
+            } catch {
+              // Unlock state is advisory UI; the server enforces the real gate.
+            }
+          }
         }
       } catch (loadError) {
         console.error('Error loading Science v2 course:', loadError);
@@ -198,6 +214,20 @@ const CoursePage = () => {
 
         <div className="container mx-auto max-w-7xl px-4 py-8 grid gap-6 xl:grid-cols-[1fr_340px]">
           <section className="space-y-6">
+            {course.metadata?.phy111?.suggestedCadence && (
+              <div className="border border-gray-800 bg-black/30 p-4 flex items-start gap-3">
+                <Clock className="w-4 h-4 text-red-400 mt-0.5" />
+                <div>
+                  <p className="text-sm text-white font-medium">{t('science.suggestedPace')}</p>
+                  <p className="text-sm text-gray-400 mt-1">{course.metadata.phy111.suggestedCadence}</p>
+                  {course.metadata.phy111.availableModules && (
+                    <p className="text-xs text-gray-600 mt-1">
+                      {t('science.availableModules')}: {course.metadata.phy111.availableModules.join(' · ')}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
             <Panel title={t('science.syllabus')}>
               <div className="border border-gray-800 bg-black/30 overflow-hidden">
                 <div className="hidden md:grid grid-cols-[54px_1fr_90px_90px_130px] gap-3 px-4 py-2 bg-black/50 border-b border-gray-800 text-xs uppercase tracking-wide text-gray-600">
@@ -211,11 +241,12 @@ const CoursePage = () => {
                   <p className="p-5 text-gray-600">{t('science.noModules')}</p>
                 ) : modules.map((module, moduleIndex) => {
                   const isOpen = expanded[module.id];
+                  const moduleLocked = enrolled && moduleLocks[module.id] === false;
                   const lessons = module.science_lessons || [];
                   const moduleBlocks = lessons.flatMap((lesson) => lesson.science_lesson_blocks || []);
                   const moduleQuizzes = lessons.flatMap((lesson) => lesson.science_quizzes || []);
                   return (
-                    <div key={module.id} className="border-b border-gray-800 last:border-b-0">
+                    <div key={module.id} className={`border-b border-gray-800 last:border-b-0 ${moduleLocked ? 'opacity-70' : ''}`}>
                       <button
                         type="button"
                         onClick={() => setExpanded((value) => ({ ...value, [module.id]: !value[module.id] }))}
@@ -223,8 +254,12 @@ const CoursePage = () => {
                       >
                         <span className="text-gray-600 font-mono">{String(moduleIndex + 1).padStart(2, '0')}</span>
                         <span>
-                          <span className="block text-white font-semibold">{module.title}</span>
+                          <span className="flex items-center gap-2 text-white font-semibold">
+                            {moduleLocked && <Lock className="w-3.5 h-3.5 text-yellow-500" />}
+                            {module.title}
+                          </span>
                           {module.description && <span className="block text-gray-500 text-sm mt-1 line-clamp-1">{module.description}</span>}
+                          {moduleLocked && <span className="block text-yellow-500/80 text-xs mt-1">{t('science.moduleLockedHint')}</span>}
                         </span>
                         <span className="text-sm text-gray-400">{lessons.length}</span>
                         <span className="text-sm text-gray-400">{moduleBlocks.length}</span>
@@ -244,7 +279,9 @@ const CoursePage = () => {
                             <p className="px-4 py-3 text-gray-600">{t('science.noLessons')}</p>
                           ) : lessons.map((lesson, lessonIndex) => {
                             const Icon = lessonKindIcon[lesson.lesson_kind] || BookOpen;
-                            const locked = !enrolled && lessonIndex > 0;
+                            const previewLocked = !enrolled && lessonIndex > 0;
+                            const sequenceLocked = enrolled && moduleLocked;
+                            const locked = previewLocked || sequenceLocked;
                             const target = `/science-tech/courses/${course.slug}/${module.slug}/${lesson.slug}`;
                             return (
                               <Link
@@ -253,7 +290,7 @@ const CoursePage = () => {
                                 onClick={(event) => {
                                   if (locked) {
                                     event.preventDefault();
-                                    handleEnroll();
+                                    if (!sequenceLocked) handleEnroll();
                                   }
                                 }}
                                 className={`grid md:grid-cols-[54px_1fr_90px_90px_36px] gap-3 px-4 py-3 border-b border-gray-800/60 last:border-b-0 hover:bg-black/30 ${locked ? 'opacity-60' : ''}`}
@@ -317,6 +354,15 @@ const CoursePage = () => {
                 <Metric label={t('science.required')} value={stats.required} icon={FileText} />
                 <Metric label={t('science.certificate')} value={course.certificate_available ? t('common.yes') : t('common.no')} icon={Award} />
               </div>
+              {enrolled && (
+                <Link
+                  href="/science-tech/review"
+                  className="mt-3 flex items-center justify-between border border-gray-800 px-3 py-2 text-gray-300 text-sm hover:border-red-900/60 hover:text-white"
+                >
+                  {t('science.reviewTitle')}
+                  <RefreshCw className="w-4 h-4 text-gray-500" />
+                </Link>
+              )}
             </Panel>
           </aside>
         </div>

@@ -63,12 +63,31 @@ const blockTypes = [
   'rich_text',
   'math',
   'worked_example',
+  'worked_example_studio',
   'video',
   'simulation_embed',
   'exercise',
   'quiz',
   'callout',
   'image',
+  'interactive_widget',
+  'sim_lab',
+  'motion_lab',
+  'graph_table_lab',
+  'fbd_builder',
+  'debug_task',
+  'constructed_response',
+];
+
+// Blocks whose content_json is authored directly as JSON in the studio.
+const jsonEditorBlockTypes = [
+  'interactive_widget',
+  'sim_lab',
+  'motion_lab',
+  'graph_table_lab',
+  'fbd_builder',
+  'debug_task',
+  'constructed_response',
 ];
 
 const subjectIconMap = {
@@ -125,6 +144,46 @@ const blockTypeMeta = {
     label: 'Diagram',
     description: 'Figure, caption, and alt text for diagrams or reference images.',
     icon: ImageIcon,
+  },
+  worked_example_studio: {
+    label: 'Worked-example studio',
+    description: 'Cover-the-solution: learner writes an attempt before the model solution reveals.',
+    icon: Calculator,
+  },
+  interactive_widget: {
+    label: 'Interactive widget',
+    description: 'Bundled canvas widget: function plotter, projectile motion, spring-mass, unit converter.',
+    icon: Code2,
+  },
+  sim_lab: {
+    label: 'Parameter-play lab',
+    description: 'Pre-written physics model with sliders, prediction, run, and validation checklist.',
+    icon: FlaskConical,
+  },
+  motion_lab: {
+    label: 'Motion-tracking lab',
+    description: 'Frame-step click-to-track video analysis with calibration, plots, and fits (or bundled dataset).',
+    icon: FlaskConical,
+  },
+  graph_table_lab: {
+    label: 'Graph/table lab',
+    description: 'Editable data table with live plot, optional fit, and interpretation prompts.',
+    icon: FileText,
+  },
+  fbd_builder: {
+    label: 'Free-body diagram builder',
+    description: 'Force palette and angle control checked against a canonical diagram.',
+    icon: Target,
+  },
+  debug_task: {
+    label: 'Debug the solution',
+    description: 'Flawed worked solution the learner critiques; taxonomy-tagged diagnosis reveal.',
+    icon: HelpCircle,
+  },
+  constructed_response: {
+    label: 'Constructed response',
+    description: 'Written response with model answer and rubric self-check (formative).',
+    icon: BookOpen,
   },
 };
 
@@ -212,6 +271,7 @@ const emptyBlockDraft = {
   transcript: '',
   question_id: '',
   quiz_id: '',
+  contentJsonText: '',
   order_index: 0,
 };
 
@@ -263,8 +323,24 @@ const courseToForm = (course) => ({
 });
 
 const createBlockContent = (draft) => {
+  if (jsonEditorBlockTypes.includes(draft.block_type)) {
+    try {
+      return draft.contentJsonText ? JSON.parse(draft.contentJsonText) : {};
+    } catch {
+      return {};
+    }
+  }
   if (draft.block_type === 'worked_example') {
     return { problem: draft.problem || draft.body, steps: splitLines(draft.stepsText), answer: draft.answer };
+  }
+  if (draft.block_type === 'worked_example_studio') {
+    return {
+      problem: draft.problem || draft.body,
+      prompt: draft.prompt,
+      steps: splitLines(draft.stepsText),
+      answer: draft.answer,
+      interpretation: draft.setup,
+    };
   }
   if (draft.block_type === 'video') {
     return { url: draft.url, transcript: draft.transcript, duration: draft.duration || null };
@@ -308,7 +384,7 @@ const blockToDraft = (block) => {
     alt: content.alt || '',
     variant: content.variant || 'intuition',
     prompt: content.prompt || '',
-    setup: content.setup || '',
+    setup: content.interpretation || content.setup || '',
     variablesText: (content.variables || []).join('\n'),
     tasksText: (content.tasks || []).join('\n'),
     observationsText: (content.observations || []).join('\n'),
@@ -318,6 +394,9 @@ const blockToDraft = (block) => {
     transcript: content.transcript || '',
     question_id: content.question_id || '',
     quiz_id: content.quiz_id || '',
+    contentJsonText: jsonEditorBlockTypes.includes(block.block_type)
+      ? JSON.stringify(content, null, 2)
+      : '',
     order_index: block.order_index || 0,
   };
 };
@@ -330,8 +409,14 @@ const hasBlockContent = (block) => {
     content.question_id ||
     content.quiz_id ||
     content.problem ||
+    content.prompt ||
+    content.instructions ||
+    content.scenario ||
+    content.flawedSteps ||
+    content.widget_type ||
     content.answer ||
-    (content.steps || []).length
+    (content.steps || []).length ||
+    (content.dataset || content.model)
   );
 };
 
@@ -1177,6 +1262,31 @@ const ScienceAdminPage = () => {
                     <Field label="Solution Steps"><textarea value={blockDraft.stepsText} onChange={(event) => setBlockDraft({ ...blockDraft, stepsText: event.target.value })} rows={6} className="input" /></Field>
                     <Field label="Final Answer"><input value={blockDraft.answer} onChange={(event) => setBlockDraft({ ...blockDraft, answer: event.target.value })} className="input" /></Field>
                   </>
+                )}
+
+                {blockDraft.block_type === 'worked_example_studio' && (
+                  <>
+                    <Field label="Problem"><textarea value={blockDraft.problem} onChange={(event) => setBlockDraft({ ...blockDraft, problem: event.target.value })} rows={3} className="input" /></Field>
+                    <Field label="Attempt Prompt" hint="Shown above the learner's attempt box before the reveal."><input value={blockDraft.prompt} onChange={(event) => setBlockDraft({ ...blockDraft, prompt: event.target.value })} className="input" /></Field>
+                    <Field label="Model Solution Steps"><textarea value={blockDraft.stepsText} onChange={(event) => setBlockDraft({ ...blockDraft, stepsText: event.target.value })} rows={6} className="input" /></Field>
+                    <Field label="Final Answer"><input value={blockDraft.answer} onChange={(event) => setBlockDraft({ ...blockDraft, answer: event.target.value })} className="input" /></Field>
+                    <Field label="Interpretation"><textarea value={blockDraft.setup} onChange={(event) => setBlockDraft({ ...blockDraft, setup: event.target.value })} rows={3} className="input" /></Field>
+                  </>
+                )}
+
+                {jsonEditorBlockTypes.includes(blockDraft.block_type) && (
+                  <Field
+                    label="Content JSON"
+                    hint="The block's full content_json payload (prompts, model, dataset, palette, targets) as authored JSON."
+                  >
+                    <textarea
+                      value={blockDraft.contentJsonText}
+                      onChange={(event) => setBlockDraft({ ...blockDraft, contentJsonText: event.target.value })}
+                      rows={14}
+                      spellCheck={false}
+                      className="input font-mono text-xs"
+                    />
+                  </Field>
                 )}
 
                 {blockDraft.block_type === 'simulation_embed' && (

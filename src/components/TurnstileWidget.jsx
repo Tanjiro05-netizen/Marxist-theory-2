@@ -21,24 +21,34 @@ const TurnstileWidget = ({ onToken, resetKey = 0, className = '' }) => {
     }
 
     let cancelled = false;
+    let renderedSize = null;
     let script = document.getElementById(SCRIPT_ID);
 
     const render = () => {
       if (cancelled || !containerRef.current || !window.turnstile) return;
+      // Flexible widgets have a 300px minimum. The compact 150px variant
+      // fits the form on small phones without scaling the security challenge.
+      const size = containerRef.current.clientWidth < 300 ? 'compact' : 'flexible';
+      if (widgetIdRef.current !== null && renderedSize === size) return;
       if (widgetIdRef.current !== null) {
         window.turnstile.remove(widgetIdRef.current);
+        onToken(null);
       }
+      renderedSize = size;
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey,
         action: 'submit_work',
         theme: 'dark',
-        size: 'flexible',
+        size,
         appearance: 'interaction-only',
         callback: (token) => onToken(token),
         'expired-callback': () => onToken(null),
         'error-callback': () => onToken(null),
       });
     };
+
+    const observer = new ResizeObserver(() => render());
+    if (containerRef.current) observer.observe(containerRef.current);
 
     if (window.turnstile) {
       render();
@@ -56,6 +66,7 @@ const TurnstileWidget = ({ onToken, resetKey = 0, className = '' }) => {
 
     return () => {
       cancelled = true;
+      observer.disconnect();
       script?.removeEventListener('load', render);
       if (widgetIdRef.current !== null && window.turnstile) {
         window.turnstile.remove(widgetIdRef.current);

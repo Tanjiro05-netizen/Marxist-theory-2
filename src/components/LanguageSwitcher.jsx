@@ -11,9 +11,11 @@ const LANGUAGES = [
   { code: 'it', label: 'Italiano', flag: 'IT' },
 ];
 
-const bandInk = '#14161d';
-const bandHairline = 'rgba(20, 22, 29, 0.2)';
-const bandAccent = '#b3122e';
+/* Band palette follows the page theme (paper band in light, ink band in
+   dark) — same vars the Header's navband uses. */
+const bandInk = 'var(--text-primary)';
+const bandHairline = 'var(--line)';
+const bandAccent = 'var(--red-bright)';
 
 const LanguageSwitcher = () => {
   const { t, i18n } = useTranslation();
@@ -33,6 +35,9 @@ const LanguageSwitcher = () => {
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button
+        className="language-switcher-trigger"
+        aria-label={t('nav.changeLanguage')}
+        aria-expanded={open}
         onClick={() => setOpen(!open)}
         style={{
           display: 'flex',
@@ -75,7 +80,7 @@ const LanguageSwitcher = () => {
             top: '100%',
             left: 0,
             marginTop: '6px',
-            background: '#ffffff',
+            background: 'var(--ink-2)',
             border: `1px solid ${bandHairline}`,
             borderRadius: '0px',
             padding: '5px 0',
@@ -87,6 +92,7 @@ const LanguageSwitcher = () => {
           {LANGUAGES.map(lang => (
             <button
               key={lang.code}
+              className="language-switcher-option"
               onClick={() => {
                 i18n.changeLanguage(lang.code);
                 setOpen(false);

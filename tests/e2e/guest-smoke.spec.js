@@ -115,6 +115,11 @@ async function openFirstLibraryEbook(page) {
   await settle(page);
   await expectNoAuditIssues(page, issues, 'first library ebook');
 
+  // The book page opens in the editorial reading view by default; the
+  // epub.js full-book surface this suite audits lives behind the Ebook tab.
+  await page.getByRole('tab', { name: 'Ebook', exact: true }).click();
+  await settle(page);
+
   return new URL(page.url()).pathname;
 }
 

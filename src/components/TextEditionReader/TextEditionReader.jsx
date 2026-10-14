@@ -2,15 +2,22 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { AlertCircle, Minus, Plus } from 'lucide-react';
+import Mark from 'mark.js';
+import { AlertCircle, ChevronDown, ChevronUp, List, Minus, Plus, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { editorialProseCss } from '../EditorialReader/editorialProseCss';
+import ReaderTocSheet from '../EditorialReader/ReaderTocSheet';
+import * as chrome from '../EditorialReader/ReaderChrome.css.ts';
+import { loadReaderPosition, usePositionSaver, useReaderChrome } from '../EditorialReader/readerChrome';
 import { FRONT_MATTER_TITLE } from '../../utils/textEdition';
+import { buildMarkCandidates } from '../../utils/textSearch';
 import * as s from '../EditorialReader/EditorialReader.css.ts';
 
-/* The sticky chrome sits directly under the app navband (46px + hairlines). */
-const STICKY_TOP = 47;
-/* Room for navband + sticky toolbar when jumping to a section. */
-const SECTION_JUMP_OFFSET = 110;
+/* On /book/* the navband scrolls away, so the toolbar pins to the viewport
+   top and is the only sticky chrome while reading. */
+const STICKY_TOP = 0;
+/* Room for the sticky toolbar when jumping to a section. */
+const SECTION_JUMP_OFFSET = 84;
 
 /**
  * The text-edition reading surface — one fullscreen editorial column with a
@@ -18,11 +25,25 @@ const SECTION_JUMP_OFFSET = 110;
  * The page itself scrolls: progress and scroll-spy run on the document, so
  * keyboard scrolling, find-in-page and mobile behave natively. Sections come
  * from digital_library_books.text_edition.
+ *
+ * highlightQuery/initialSectionId carry the deep link from library full-text
+ * search: the phrase gets marked across the whole text, the first hit inside
+ * the target section is scrolled to and flashed, and a chip in the sticky
+ * toolbar offers hit-to-hit navigation.
  */
-const TextEditionReader = ({ edition, onProgressChange, fallbackUrl, fallbackLabel }) => {
+const TextEditionReader = ({ edition, bookId, onProgressChange, fallbackUrl, fallbackLabel, highlightQuery, initialSectionId }) => {
     const rootRef = useRef(null);
     const onProgressRef = useRef(onProgressChange);
     onProgressRef.current = onProgressChange;
+    const markRef = useRef(null);
+    const [hitCount, setHitCount] = useState(0);
+    const [activeHit, setActiveHit] = useState(0);
+    const { t } = useTranslation();
+
+    const { toolbarHidden, tocOpen, openToc, closeToc } = useReaderChrome();
+    const savePosition = usePositionSaver(bookId);
+    const tocBtnRef = useRef(null);
+    const restoredRef = useRef(false);
 
     const sections = edition?.sections || [];
     const [activeId, setActiveId] = useState(sections[0]?.id ?? null);
@@ -39,7 +60,8 @@ const TextEditionReader = ({ edition, onProgressChange, fallbackUrl, fallbackLab
         }
     }, [sections, activeId]);
 
-    /* The page is the scroller: progress and rail highlight follow the document. */
+    /* The page is the scroller: progress and rail highlight follow the
+       document, and the resting section is persisted for silent resume. */
     useEffect(() => {
         if (!sections.length) return undefined;
 
@@ -63,11 +85,29 @@ const TextEditionReader = ({ edition, onProgressChange, fallbackUrl, fallbackLab
             if (window.scrollY <= 2) {
                 active = nodes[0];
             } else {
-                const marker = STICKY_TOP + 60;
+                const marker = 80;
                 active = nodes.filter((n) => n.getBoundingClientRect().top <= marker).pop() || nodes[0];
             }
-            setActiveId(active.getAttribute('data-section-canonical'));
+            const activeSectionId = active.getAttribute('data-section-canonical');
+            setActiveId(activeSectionId);
+            if (restoredRef.current) savePosition({ sectionId: activeSectionId, pct });
         };
+
+        /* Resume where the reader left off — unless a search deep link is
+           taking over, in which case its own jump wins. */
+        if (!restoredRef.current) {
+            restoredRef.current = true;
+            if (!highlightQuery && !initialSectionId) {
+                const saved = loadReaderPosition(bookId);
+                const node = saved?.sectionId
+                    ? rootRef.current?.querySelector(`[data-section-canonical="${saved.sectionId}"]`)
+                    : null;
+                if (node && node.getBoundingClientRect().top > window.innerHeight) {
+                    const top = node.getBoundingClientRect().top + window.scrollY - SECTION_JUMP_OFFSET;
+                    window.scrollTo({ top: Math.max(0, top), behavior: 'auto' });
+                }
+            }
+        }
 
         handleScroll();
         window.addEventListener('scroll', handleScroll, { passive: true });
@@ -76,13 +116,92 @@ const TextEditionReader = ({ edition, onProgressChange, fallbackUrl, fallbackLab
             window.removeEventListener('scroll', handleScroll);
             window.removeEventListener('resize', handleScroll);
         };
-    }, [sections.length]);
+    }, [sections.length, bookId, highlightQuery, initialSectionId, savePosition]);
 
     const scrollToSection = useCallback((id) => {
         const node = rootRef.current?.querySelector(`[data-section-canonical="${id}"]`);
         if (!node) return;
         const top = node.getBoundingClientRect().top + window.scrollY - SECTION_JUMP_OFFSET;
         window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    }, []);
+
+    const scrollToElement = useCallback((el) => {
+        const top = el.getBoundingClientRect().top + window.scrollY - SECTION_JUMP_OFFSET;
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    }, []);
+
+    /* Deep-link highlighting: mark every occurrence of the phrase, then jump
+       to the first hit inside the target section (falling back to the first
+       hit anywhere). Candidates cover typographic punctuation variants. */
+    useEffect(() => {
+        const root = rootRef.current;
+        const candidates = highlightQuery ? buildMarkCandidates(highlightQuery) : [];
+        if (!root || candidates.length === 0) return undefined;
+
+        const instance = new Mark(root);
+        markRef.current = instance;
+
+        instance.unmark({
+            done: () => {
+                instance.mark(candidates, {
+                    className: 'search-hit',
+                    separateWordSearch: false,
+                    accuracy: 'partially',
+                    caseSensitive: false,
+                    done: (count) => {
+                        setHitCount(count);
+                        setActiveHit(0);
+                        const marks = root.querySelectorAll('mark.search-hit');
+                        if (!marks.length) return;
+                        let target = null;
+                        if (initialSectionId) {
+                            const section = root.querySelector(`[data-section-canonical="${initialSectionId}"]`);
+                            target = section ? section.querySelector('mark.search-hit') : null;
+                        }
+                        target = target || marks[0];
+                        const idx = Array.prototype.indexOf.call(marks, target);
+                        setActiveHit(idx + 1);
+                        scrollToElement(target);
+                        target.classList.add('search-hit-flash');
+                    },
+                });
+            },
+        });
+
+        return () => {
+            try { instance.unmark(); } catch { /* root already unmounted */ }
+            markRef.current = null;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sections.length, highlightQuery, initialSectionId]);
+
+    const jumpToHit = useCallback((direction) => {
+        const marks = rootRef.current ? Array.from(rootRef.current.querySelectorAll('mark.search-hit')) : [];
+        if (!marks.length) return;
+        const next = (((activeHit - 1 + direction) % marks.length) + marks.length) % marks.length;
+        setActiveHit(next + 1);
+        scrollToElement(marks[next]);
+    }, [activeHit, scrollToElement]);
+
+    const clearHighlight = useCallback(() => {
+        if (markRef.current) {
+            try { markRef.current.unmark(); } catch { /* already gone */ }
+        }
+        markRef.current = null;
+        setHitCount(0);
+        setActiveHit(0);
+        // Drop ?q=&section= so reloads/links don't re-trigger the highlight.
+        if (typeof window !== 'undefined' && window.location.search) {
+            const params = new URLSearchParams(window.location.search);
+            params.delete('q');
+            params.delete('section');
+            const qs = params.toString();
+            window.history.replaceState(
+                window.history.state,
+                '',
+                qs ? `${window.location.pathname}?${qs}` : window.location.pathname
+            );
+        }
     }, []);
 
     const adjustFont = (delta) => {
@@ -150,17 +269,29 @@ const TextEditionReader = ({ edition, onProgressChange, fallbackUrl, fallbackLab
             </nav>
 
             <div>
-                {/* Sticky reading header: current chapter + index + type controls,
-                    with the crimson progress rule riding its top edge. */}
+                {/* Sticky reading header: chapter + index + contents + type
+                    controls, with the crimson progress rule riding its top
+                    edge. Slides away while scrolling into the text (mobile). */}
                 <div
-                    className={s.toolbar}
-                    style={{ position: 'sticky', top: STICKY_TOP, zIndex: 6, background: '#0b0d12' }}
+                    className={`${s.toolbar}${toolbarHidden ? ` ${chrome.toolbarHidden}` : ''}`}
+                    style={{ position: 'sticky', top: STICKY_TOP, zIndex: 6 }}
                     data-testid="text-edition-reader-toolbar"
                 >
                     <div className={s.progressTrack} style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 1 }}>
                         <div className={s.progressFill} style={{ width: `${progress}%` }} />
                     </div>
                     <div className={s.chapterMeta}>
+                        <button
+                            type="button"
+                            ref={tocBtnRef}
+                            className={chrome.tocBtn}
+                            onClick={openToc}
+                            aria-label={t('book.tableOfContents', { defaultValue: 'Table of Contents' })}
+                            aria-haspopup="dialog"
+                            aria-expanded={tocOpen}
+                        >
+                            <List size={15} />
+                        </button>
                         <span className={s.chapterLabel}>{currentSection?.title || 'Reading'}</span>
                         <span className={s.chapterIndex}>
                             {activeIndex >= 0
@@ -169,13 +300,77 @@ const TextEditionReader = ({ edition, onProgressChange, fallbackUrl, fallbackLab
                             {minutesLabel ? ` · ${minutesLabel}` : ''}
                         </span>
                     </div>
+                    {highlightQuery && hitCount > 0 && (
+                        <div
+                            data-testid="search-hits-chip"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                marginLeft: 'auto',
+                                marginRight: '10px',
+                                padding: '3px 6px 3px 10px',
+                                border: '1px solid rgba(179, 18, 46, 0.45)',
+                                background: 'rgba(179, 18, 46, 0.08)',
+                                maxWidth: '46%',
+                            }}
+                        >
+                            <span
+                                title={highlightQuery}
+                                style={{
+                                    fontFamily: "'Outfit', system-ui, sans-serif",
+                                    fontSize: '10px',
+                                    letterSpacing: '0.06em',
+                                    color: '#e8aeb7',
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    maxWidth: '180px',
+                                }}
+                            >
+                                {t('book.searchHits', {
+                                    defaultValue: '{{active}}/{{count}} hits',
+                                    active: activeHit || 1,
+                                    count: hitCount,
+                                })}
+                            </span>
+                            <button
+                                onClick={() => jumpToHit(-1)}
+                                aria-label={t('book.prevHit', { defaultValue: 'Previous match' })}
+                                title={t('book.prevHit', { defaultValue: 'Previous match' })}
+                                style={{ background: 'transparent', border: 'none', color: '#e8aeb7', cursor: 'pointer', padding: '2px', display: 'flex' }}
+                            >
+                                <ChevronUp size={13} />
+                            </button>
+                            <button
+                                onClick={() => jumpToHit(1)}
+                                aria-label={t('book.nextHit', { defaultValue: 'Next match' })}
+                                title={t('book.nextHit', { defaultValue: 'Next match' })}
+                                style={{ background: 'transparent', border: 'none', color: '#e8aeb7', cursor: 'pointer', padding: '2px', display: 'flex' }}
+                            >
+                                <ChevronDown size={13} />
+                            </button>
+                            <button
+                                onClick={clearHighlight}
+                                aria-label={t('book.clearSearch', { defaultValue: 'Clear search highlighting' })}
+                                title={t('book.clearSearch', { defaultValue: 'Clear search highlighting' })}
+                                data-testid="clear-search-hits"
+                                style={{ background: 'transparent', border: 'none', color: '#8f949f', cursor: 'pointer', padding: '2px', display: 'flex' }}
+                            >
+                                <X size={13} />
+                            </button>
+                        </div>
+                    )}
                     <div className={s.sizeControls}>
+                        <span className={chrome.progressPct} aria-label={t('book.readingProgress', { defaultValue: 'Reading progress' })}>
+                            {progress}%
+                        </span>
                         <button className={s.sizeBtn} onClick={() => adjustFont(-10)} aria-label="Smaller text" title="Smaller text">
-                            <Minus size={14} />
+                            <Minus size={15} />
                         </button>
                         <span className={s.sizeValue}>{fontSize}%</span>
                         <button className={s.sizeBtn} onClick={() => adjustFont(10)} aria-label="Larger text" title="Larger text">
-                            <Plus size={14} />
+                            <Plus size={15} />
                         </button>
                     </div>
                 </div>
@@ -195,9 +390,9 @@ const TextEditionReader = ({ edition, onProgressChange, fallbackUrl, fallbackLab
                             </section>
                             {i < sections.length - 1 && (
                                 <div className={s.sectionRule} aria-hidden="true">
-                                    <span style={{ flex: 1, height: '1px', background: '#262a35' }} />
-                                    <span style={{ width: '6px', height: '6px', background: '#b3122e', transform: 'rotate(45deg)' }} />
-                                    <span style={{ flex: 1, height: '1px', background: '#262a35' }} />
+                                    <span style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
+                                    <span style={{ width: '6px', height: '6px', background: 'var(--red)', transform: 'rotate(45deg)' }} />
+                                    <span style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
                                 </div>
                             )}
                         </React.Fragment>
@@ -205,6 +400,21 @@ const TextEditionReader = ({ edition, onProgressChange, fallbackUrl, fallbackLab
                     <style>{editorialProseCss}</style>
                 </div>
             </div>
+
+            {/* Mobile contents — the rail's chapter list as a bottom sheet */}
+            <ReaderTocSheet
+                open={tocOpen}
+                onClose={closeToc}
+                items={sections.map((sec, idx) => ({
+                    key: sec.id || `sec-${idx}`,
+                    label: sec.title || `Section ${idx + 1}`,
+                    depth: sec.level > 1 ? 1 : 0,
+                    active: sec.id === activeId,
+                    id: sec.id,
+                }))}
+                onSelect={(item) => scrollToSection(item.id)}
+                triggerRef={tocBtnRef}
+            />
         </div>
     );
 };

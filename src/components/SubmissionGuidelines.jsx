@@ -19,10 +19,10 @@ const AccordionIcon = ({ isOpen }) => (
 const AccordionItem = ({ title, children, isOpen, onClick }) => {
     return (
         <div className="bg-stone-900 border border-red-900/50 rounded-none">
-            <div className="flex justify-between items-center p-4 cursor-pointer" onClick={onClick}>
-                <h2 className="text-xl font-semibold text-red-300">{title}</h2>
+            <button type="button" aria-expanded={isOpen} className="w-full flex justify-between items-center gap-3 p-4 cursor-pointer text-left [&>svg]:shrink-0" onClick={onClick}>
+                <span className="text-lg sm:text-xl font-semibold text-red-300">{title}</span>
                 <AccordionIcon isOpen={isOpen} />
-            </div>
+            </button>
             <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen ? 'max-h-[2000px]' : 'max-h-0'}`}>
                 <div className="p-4 border-t border-red-900/50">
                     {children}
@@ -244,22 +244,22 @@ const SubmissionGuidelines = ({ isOpen, onClose }) => {
 
     if (!isOpen) return null;
 
-    const commonButtonStyles = "px-4 py-2 rounded-none transition-colors duration-200";
+    const commonButtonStyles = "min-w-0 min-h-11 px-3 sm:px-4 py-2 text-sm sm:text-base rounded-none transition-colors duration-200";
     const activeButtonStyles = "bg-red-500 text-white";
     const inactiveButtonStyles = "bg-stone-800 text-gray-300 hover:bg-stone-700";
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 backdrop-blur-sm">
-            <div className="bg-black border border-red-900/50 rounded-none shadow-none p-6 w-full max-w-4xl max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[100] backdrop-blur-sm p-3 sm:p-6">
+            <div role="dialog" aria-modal="true" aria-label="Submission guidelines" className="bg-black border border-red-900/50 rounded-none shadow-none p-4 sm:p-6 w-full min-w-0 max-w-4xl max-h-[90dvh] flex flex-col">
                 <div className="flex justify-end mb-4">
-                    <button onClick={onClose} className="text-gray-400 hover:text-red-500">
+                    <button aria-label="Close submission guidelines" onClick={onClose} className="min-h-11 min-w-11 grid place-items-center text-gray-400 hover:text-red-500">
                         <X size={24} />
                     </button>
                 </div>
                 
-                <div className="flex-grow overflow-y-auto pr-4" style={{ fontFamily: "'Inter', sans-serif" }}>
+                <div className="flex-grow min-h-0 overflow-y-auto sm:pr-4 break-words" style={{ fontFamily: "'Inter', sans-serif" }}>
                     <div className="max-w-4xl mx-auto">
-                        <div className="flex justify-center mb-8 bg-stone-900 border border-red-900/50 p-2 rounded-none space-x-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6 bg-stone-900 border border-red-900/50 p-2 rounded-none">
                             <button 
                                 onClick={() => setActiveView('methodological')} 
                                 className={`${commonButtonStyles} ${activeView === 'methodological' ? activeButtonStyles : inactiveButtonStyles}`}

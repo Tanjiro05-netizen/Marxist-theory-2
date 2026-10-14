@@ -172,40 +172,42 @@ const TextBrowser = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white">
-            <div className="container mx-auto px-4 py-8">
+        <div className="min-h-screen">
+            <div className="max-w-[1380px] mx-auto px-4 py-8">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pb-6 border-b border-[color:var(--line)]">
                     <div>
-                        <h1 className="text-3xl md:text-4xl font-bold text-white flex items-center gap-3">
-                            <BarChart3 className="text-red-500" />
+                        <p className="m-0 mb-2 font-[Outfit,sans-serif] text-[10px] font-medium uppercase tracking-[0.28em] text-[color:var(--red-bright)]">
+                            Theory · Close Reading
+                        </p>
+                        <h1 className="m-0 font-[var(--font-display)] text-[clamp(32px,4vw,48px)] font-medium leading-none text-[color:var(--paper)]">
                             Text Analysis
                         </h1>
-                        <p className="text-gray-400 mt-2">
+                        <p className="mt-3 mb-0 text-sm text-[color:var(--paper-dim)]">
                             Read, annotate, and deeply analyze revolutionary texts
                         </p>
                     </div>
                     <Link href="/theory"
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-none text-sm font-medium transition-colors"
+                        className="inline-flex items-center gap-2 min-h-[44px] px-5 border border-[color:var(--line)] hover:border-[color:var(--red-bright)] text-[color:var(--paper-dim)] hover:text-[color:var(--red-bright)] font-[Outfit,sans-serif] text-[11px] uppercase tracking-[0.14em] transition-colors"
                     >
-                        <BookOpen size={16} />
+                        <BookOpen size={15} />
                         Browse Theory
                     </Link>
-                </div>
+                </header>
 
                 {/* Feature highlights */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
                     {[
                         { icon: MessageSquare, label: 'Section Comments', desc: 'Discuss passages' },
                         { icon: Highlighter, label: 'Highlights & Notes', desc: 'Annotate key ideas' },
                         { icon: Link2, label: 'Cross-References', desc: 'Link related texts' },
-                        { icon: BarChart3, label: 'Text Analysis', desc: 'AI-powered insights' },
+                        { icon: BarChart3, label: 'Text Analysis', desc: 'Keyword & concordance tools' },
                     ].map(({ icon: Icon, label, desc }) => (
-                        <div key={label} className="bg-gray-900/50 border border-gray-800 rounded-none p-3 flex items-start gap-3">
-                            <Icon size={18} className="text-red-500 mt-0.5 shrink-0" />
+                        <div key={label} className="border border-[color:var(--line-soft)] p-3 flex items-start gap-3">
+                            <Icon size={18} className="text-[color:var(--red-bright)] mt-0.5 shrink-0" />
                             <div>
-                                <span className="text-xs font-medium text-white">{label}</span>
-                                <span className="block text-[11px] text-gray-500">{desc}</span>
+                                <span className="text-xs font-medium text-[color:var(--paper)]">{label}</span>
+                                <span className="block text-[11px] text-[color:var(--paper-faint)]">{desc}</span>
                             </div>
                         </div>
                     ))}
@@ -215,10 +217,10 @@ const TextBrowser = () => {
                 <div className="flex items-center gap-2 mb-4">
                     <button
                         onClick={() => setBrowseMode('all')}
-                        className={`px-4 py-2 rounded-none text-sm font-medium transition-colors ${
+                        className={`px-4 py-2 min-h-[44px] text-sm font-medium border transition-colors ${
                             browseMode === 'all'
-                                ? 'bg-red-600 text-white'
-                                : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                                ? 'bg-[color:var(--red)] text-[#f5f0e6] border-[color:var(--red)]'
+                                : 'bg-transparent border-[color:var(--line)] text-[color:var(--paper-dim)] hover:text-[color:var(--paper)]'
                         }`}
                     >
                         All Texts ({allTexts.length})
@@ -226,10 +228,10 @@ const TextBrowser = () => {
                     {user && user.id !== 'dev-admin' && (
                         <button
                             onClick={() => setBrowseMode('library')}
-                            className={`flex items-center gap-1.5 px-4 py-2 rounded-none text-sm font-medium transition-colors ${
+                            className={`flex items-center gap-1.5 px-4 py-2 min-h-[44px] text-sm font-medium border transition-colors ${
                                 browseMode === 'library'
-                                    ? 'bg-red-600 text-white'
-                                    : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                                    ? 'bg-[color:var(--red)] text-[#f5f0e6] border-[color:var(--red)]'
+                                    : 'bg-transparent border-[color:var(--line)] text-[color:var(--paper-dim)] hover:text-[color:var(--paper)]'
                             }`}
                         >
                             <Library size={14} />
@@ -239,24 +241,24 @@ const TextBrowser = () => {
                 </div>
 
                 {/* Search & Filters */}
-                <div className="bg-gray-900/50 rounded-none p-4 mb-6">
+                <div className="border-y border-[color:var(--line)] py-4 mb-6">
                     <div className="flex flex-col md:flex-row gap-4">
                         {/* Search */}
                         <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--paper-faint)]" size={18} />
                             <input
                                 type="text"
                                 placeholder="Search by title, author, or tag..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-700 rounded-none text-white placeholder-gray-500 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none"
+                                className="w-full pl-10 pr-4 py-2.5 bg-transparent border border-[color:var(--line)] text-[color:var(--paper)] placeholder-[color:var(--paper-faint)] focus:border-[color:var(--red-bright)] outline-none transition-colors"
                             />
                         </div>
 
                         {/* Filter Toggle (Mobile) */}
                         <button
                             onClick={() => setShowFilters(!showFilters)}
-                            className="md:hidden flex items-center gap-2 px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-none"
+                            className="md:hidden flex items-center gap-2 px-4 py-2.5 min-h-[44px] border border-[color:var(--line)] text-[color:var(--paper-dim)]"
                         >
                             <Filter size={18} />
                             Filters
@@ -268,7 +270,7 @@ const TextBrowser = () => {
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
-                                className="px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-none text-white cursor-pointer"
+                                className="px-3 py-2.5 bg-transparent border border-[color:var(--line)] text-[color:var(--paper)] cursor-pointer"
                             >
                                 <option value="newest">Newest First</option>
                                 <option value="oldest">Oldest First</option>
@@ -276,16 +278,16 @@ const TextBrowser = () => {
                                 <option value="year">Year</option>
                             </select>
 
-                            <div className="flex border border-gray-700 rounded-none overflow-hidden">
+                            <div className="flex border border-[color:var(--line)] overflow-hidden">
                                 <button
                                     onClick={() => setViewMode('grid')}
-                                    className={`p-2.5 ${viewMode === 'grid' ? 'bg-red-600' : 'bg-gray-800 hover:bg-gray-700'}`}
+                                    className={`p-2.5 ${viewMode === 'grid' ? 'bg-[color:var(--red)] text-[#f5f0e6]' : 'text-[color:var(--paper-dim)] hover:text-[color:var(--paper)]'}`}
                                 >
                                     <Grid size={18} />
                                 </button>
                                 <button
                                     onClick={() => setViewMode('list')}
-                                    className={`p-2.5 ${viewMode === 'list' ? 'bg-red-600' : 'bg-gray-800 hover:bg-gray-700'}`}
+                                    className={`p-2.5 ${viewMode === 'list' ? 'bg-[color:var(--red)] text-[#f5f0e6]' : 'text-[color:var(--paper-dim)] hover:text-[color:var(--paper)]'}`}
                                 >
                                     <List size={18} />
                                 </button>
@@ -294,14 +296,14 @@ const TextBrowser = () => {
                     </div>
 
                     {/* Filter Row */}
-                    <div className={`mt-4 flex flex-wrap gap-3 ${showFilters ? 'block' : 'hidden md:flex'}`}>
+                    <div className={`mt-4 flex flex-wrap gap-3 ${showFilters ? 'flex' : 'hidden md:flex'}`}>
                         {/* Category Filter */}
                         <div className="flex items-center gap-2">
-                            <Globe size={16} className="text-gray-400" />
+                            <Globe size={16} className="text-[color:var(--paper-faint)]" />
                             <select
                                 value={selectedCategory}
                                 onChange={(e) => setSelectedCategory(e.target.value)}
-                                className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-none text-sm text-white cursor-pointer"
+                                className="px-3 py-2 bg-transparent border border-[color:var(--line)] text-sm text-[color:var(--paper)] cursor-pointer"
                             >
                                 {categories.map(cat => (
                                     <option key={cat} value={cat}>
@@ -313,11 +315,11 @@ const TextBrowser = () => {
 
                         {/* Language Filter */}
                         <div className="flex items-center gap-2">
-                            <Tag size={16} className="text-gray-400" />
+                            <Tag size={16} className="text-[color:var(--paper-faint)]" />
                             <select
                                 value={selectedLanguage}
                                 onChange={(e) => setSelectedLanguage(e.target.value)}
-                                className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-none text-sm text-white cursor-pointer"
+                                className="px-3 py-2 bg-transparent border border-[color:var(--line)] text-sm text-[color:var(--paper)] cursor-pointer"
                             >
                                 {languages.map(lang => (
                                     <option key={lang} value={lang}>
@@ -332,7 +334,7 @@ const TextBrowser = () => {
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
-                                className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-none text-sm text-white cursor-pointer"
+                                className="px-3 py-2 bg-transparent border border-[color:var(--line)] text-sm text-[color:var(--paper)] cursor-pointer"
                             >
                                 <option value="newest">Newest</option>
                                 <option value="oldest">Oldest</option>
@@ -344,49 +346,49 @@ const TextBrowser = () => {
                 </div>
 
                 {/* Results Count */}
-                <div className="text-sm text-gray-400 mb-4">
+                <div className="text-sm text-[color:var(--paper-dim)] mb-4">
                     {filteredTexts.length} {filteredTexts.length === 1 ? 'text' : 'texts'} found
                 </div>
 
                 {/* Content */}
                 {loading ? (
                     <div className="flex items-center justify-center py-20">
-                        <Loader2 className="w-10 h-10 text-red-500 animate-spin" />
+                        <Loader2 className="w-10 h-10 text-[color:var(--red-bright)] animate-spin" />
                     </div>
                 ) : error ? (
                     <div className="text-center py-20">
-                        <p className="text-red-400 mb-4">{error}</p>
-                        <button onClick={fetchTexts} className="text-red-500 hover:underline">
+                        <p className="text-[color:var(--red-bright)] mb-4">{error}</p>
+                        <button onClick={fetchTexts} className="text-[color:var(--red-bright)] hover:underline">
                             Try again
                         </button>
                     </div>
                 ) : filteredTexts.length === 0 ? (
                     <div className="text-center py-20">
-                        <BookOpen className="w-16 h-16 mx-auto text-gray-600 mb-4" />
+                        <BookOpen className="w-16 h-16 mx-auto text-[color:var(--paper-faint)] mb-4" />
                         {browseMode === 'library' ? (
                             <>
-                                <p className="text-gray-400 text-lg">No saved texts in your library</p>
-                                <p className="text-gray-500 text-sm mt-2">Save texts from the Revolutionary Theory page or browse all texts above</p>
+                                <p className="text-[color:var(--paper-dim)] text-lg">No saved texts in your library</p>
+                                <p className="text-[color:var(--paper-faint)] text-sm mt-2">Save texts from the Revolutionary Theory page or browse all texts above</p>
                                 <button
                                     onClick={() => setBrowseMode('all')}
-                                    className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-none text-sm font-medium transition-colors"
+                                    className="mt-4 px-4 py-2 min-h-[44px] bg-[color:var(--red)] hover:bg-[color:var(--red-bright)] text-[#f5f0e6] text-sm font-medium transition-colors"
                                 >
                                     Browse All Texts
                                 </button>
                             </>
                         ) : (
                             <>
-                                <p className="text-gray-400 text-lg">No texts available yet</p>
-                                <p className="text-gray-500 text-sm mt-2">Texts will appear here once uploaded by admins or the community</p>
+                                <p className="text-[color:var(--paper-dim)] text-lg">No texts available yet</p>
+                                <p className="text-[color:var(--paper-faint)] text-sm mt-2">Texts will appear here once uploaded by admins or the community</p>
                             </>
                         )}
                     </div>
                 ) : viewMode === 'grid' ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredTexts.map(text => (
-                            <TextCard 
-                                key={text.id} 
-                                text={text} 
+                            <TextCard
+                                key={text.id}
+                                text={text}
                                 isAdmin={isAdmin && isAdmin()}
                                 onDelete={handleDeleteText}
                             />
@@ -395,10 +397,10 @@ const TextBrowser = () => {
                 ) : (
                     <div className="space-y-4">
                         {filteredTexts.map(text => (
-                            <TextCard 
-                                key={text.id} 
-                                text={text} 
-                                variant="list" 
+                            <TextCard
+                                key={text.id}
+                                text={text}
+                                variant="list"
                                 isAdmin={isAdmin && isAdmin()}
                                 onDelete={handleDeleteText}
                             />

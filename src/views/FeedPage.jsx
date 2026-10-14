@@ -705,16 +705,18 @@ function FeedPage({ initialSurface = null }) {
 
     if (posts.length === 0) {
       return (
-        <div className={s.stateBlock}>
-          {socialLocked
-            ? t('feed.loginForTimeline')
-            : selectedTopicInfo && !isBoards
-              ? t('feed.noPostsForTopic', { topic: getTopicLabel(t, selectedTopicInfo) })
-              : socialTab === 'following'
-                ? t('feed.followPeoplePrompt')
-                : isBoards
-                  ? t('feed.noBoardThreads')
-                  : t('feed.noPosts')}
+        <div className={s.emptyNotice} role="status">
+          <p>
+            {socialLocked
+              ? t('feed.loginForTimeline')
+              : selectedTopicInfo && !isBoards
+                ? t('feed.noPostsForTopic', { topic: getTopicLabel(t, selectedTopicInfo) })
+                : socialTab === 'following'
+                  ? t('feed.followPeoplePrompt')
+                  : isBoards
+                    ? t('feed.noBoardThreads')
+                    : t('feed.noPosts')}
+          </p>
         </div>
       )
     }

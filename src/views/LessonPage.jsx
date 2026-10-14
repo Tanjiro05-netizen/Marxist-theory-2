@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import ScienceBlockRenderer from '../components/ScienceTechV2/ScienceBlockRenderer';
 import {
   completeScienceLesson,
+  fetchScienceBlockEvidence,
   fetchScienceLesson,
   getCurrentUser,
   getScienceErrorMessage,
@@ -29,12 +30,20 @@ const blockSignals = {
   rich_text: { labelKey: 'science.reading', icon: BookOpen },
   math: { labelKey: 'science.math', icon: Target },
   worked_example: { labelKey: 'science.example', icon: Check },
+  worked_example_studio: { labelKey: 'science.exampleStudio', icon: Check },
   video: { labelKey: 'science.media', icon: Clock },
   simulation_embed: { labelKey: 'science.lab', icon: FlaskConical },
   exercise: { labelKey: 'science.practice', icon: HelpCircle },
   quiz: { labelKey: 'science.quiz', icon: HelpCircle },
   callout: { labelKey: 'science.note', icon: Layers },
   image: { labelKey: 'science.diagram', icon: Layers },
+  interactive_widget: { labelKey: 'science.interactiveWidget', icon: FlaskConical },
+  sim_lab: { labelKey: 'science.simLabType', icon: FlaskConical },
+  motion_lab: { labelKey: 'science.motionLabType', icon: FlaskConical },
+  graph_table_lab: { labelKey: 'science.graphTableLabType', icon: FlaskConical },
+  fbd_builder: { labelKey: 'science.fbdBuilderType', icon: Target },
+  debug_task: { labelKey: 'science.debugTaskType', icon: HelpCircle },
+  constructed_response: { labelKey: 'science.constructedResponseType', icon: BookOpen },
 };
 
 const lessonKindKeys = {
@@ -56,6 +65,7 @@ const LessonPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isCompleting, setIsCompleting] = useState(false);
   const [showOutline, setShowOutline] = useState(false);
+  const [evidenceByBlock, setEvidenceByBlock] = useState({});
 
   useEffect(() => {
     const load = async () => {
@@ -68,6 +78,19 @@ const LessonPage = () => {
         ]);
         setData(lessonData);
         setUser(currentUser);
+
+        if (currentUser && lessonData?.lesson?.id && !lessonData.demoMode) {
+          try {
+            const evidenceRows = await fetchScienceBlockEvidence({ lessonIds: [lessonData.lesson.id] });
+            const lookup = {};
+            (evidenceRows || []).forEach((row) => {
+              lookup[row.block_id] = row;
+            });
+            setEvidenceByBlock(lookup);
+          } catch {
+            // Evidence is a progressive enhancement; lessons render without it.
+          }
+        }
       } catch (loadError) {
         console.error('Error loading Science v2 lesson:', loadError);
         setError(getScienceErrorMessage(loadError, t('science.loadLessonError')));
@@ -231,7 +254,7 @@ const LessonPage = () => {
               </div>
             ) : (
               data.blocks.map((block) => (
-                <ScienceBlockRenderer key={block.id} block={block} questionsById={questionsById} />
+                <ScienceBlockRenderer key={block.id} block={block} questionsById={questionsById} evidenceByBlock={evidenceByBlock} />
               ))
             )}
 

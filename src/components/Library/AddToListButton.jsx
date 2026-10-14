@@ -3,6 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { ListPlus, Check, Plus } from 'lucide-react';
 import { useReadingLists } from '../../hooks/useReadingLists';
 
+/* Colors ride the global theme tokens (theme.css) so the dropdown follows
+   light/dark instead of the old hardcoded dark palette. */
+const inkSurface = 'var(--ink-2, #10131b)';
+const hairline = 'var(--line, #262a35)';
+const textDim = 'var(--paper-dim, #a5a194)';
+const textFaint = 'var(--paper-faint, #6f6c61)';
+const redText = 'var(--red-bright, #c11730)';
+
 const AddToListButton = ({ bookId }) => {
   const { t } = useTranslation();
   const { lists, createList, addBookToList, removeBookFromList, getListsForBook } = useReadingLists();
@@ -11,12 +19,20 @@ const AddToListButton = ({ bookId }) => {
   const ref = useRef(null);
 
   useEffect(() => {
-    const handleClick = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    if (!open) return undefined;
+    const handleInteraction = (e) => {
+      // Outside click or Escape closes; Escape is the keyboard-friendly route.
+      if (e.type === 'keydown' && e.key !== 'Escape') return;
+      if (e.type === 'mousedown' && ref.current && ref.current.contains(e.target)) return;
+      setOpen(false);
     };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
+    document.addEventListener('mousedown', handleInteraction);
+    document.addEventListener('keydown', handleInteraction);
+    return () => {
+      document.removeEventListener('mousedown', handleInteraction);
+      document.removeEventListener('keydown', handleInteraction);
+    };
+  }, [open]);
 
   const bookLists = getListsForBook(bookId);
   const isInList = (listId) => bookLists.some(l => l.id === listId);
@@ -41,36 +57,38 @@ const AddToListButton = ({ bookId }) => {
       <button
         onClick={() => setOpen(!open)}
         aria-label={t('library.addToList')}
+        aria-expanded={open}
+        aria-haspopup="menu"
         style={{
-          display: 'flex', alignItems: 'center', gap: '4px',
-          padding: '4px 8px', fontSize: '11px',
-          background: bookLists.length > 0 ? 'rgba(179, 18, 46,0.12)' : 'rgba(255,255,255,0.06)',
-          border: `1px solid ${bookLists.length > 0 ? 'rgba(179, 18, 46,0.25)' : 'rgba(255,255,255,0.08)'}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+          minHeight: '44px', minWidth: '44px', padding: '10px 14px', fontSize: '11px',
+          background: bookLists.length > 0 ? 'rgba(179, 18, 46,0.12)' : 'rgba(127,127,127,0.08)',
+          border: `1px solid ${bookLists.length > 0 ? 'rgba(179, 18, 46,0.25)' : 'rgba(127,127,127,0.16)'}`,
           borderRadius: '6px',
-          color: bookLists.length > 0 ? '#d41f3d' : 'rgba(255,255,255,0.5)',
+          color: bookLists.length > 0 ? redText : textDim,
           cursor: 'pointer', transition: 'all 120ms',
         }}
         title={t('library.addToList')}
       >
-        <ListPlus size={13} />
+        <ListPlus size={14} />
       </button>
 
       {open && (
-        <div style={{
+        <div role="menu" style={{
           position: 'absolute', top: '100%', right: 0, marginTop: '4px',
-          background: '#111', border: '1px solid rgba(255,255,255,0.1)',
-          borderRadius: '10px', padding: '6px', minWidth: '180px',
-          zIndex: 9999, boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+          background: inkSurface, border: `1px solid ${hairline}`,
+          borderRadius: '10px', padding: '6px', minWidth: '200px',
+          zIndex: 9999, boxShadow: '0 14px 36px rgba(0,0,0,0.45)',
         }}>
-          <div style={{ padding: '4px 8px 6px', fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>
+          <div style={{ padding: '4px 8px 6px', fontSize: '11px', color: textFaint, fontWeight: 600 }}>
             {t('library.addToList')}
-            <div style={{ marginTop: '2px', fontSize: '10px', fontWeight: 400, color: 'rgba(255,255,255,0.28)' }}>
+            <div style={{ marginTop: '2px', fontSize: '10px', fontWeight: 400, color: textFaint }}>
               {t('library.localListsNote')}
             </div>
           </div>
 
           {lists.length === 0 && (
-            <div style={{ padding: '6px 8px', fontSize: '11px', color: 'rgba(255,255,255,0.25)' }}>
+            <div style={{ padding: '6px 8px', fontSize: '11px', color: textFaint }}>
               {t('library.noLists')}
             </div>
           )}
@@ -78,28 +96,30 @@ const AddToListButton = ({ bookId }) => {
           {lists.map(list => (
             <button
               key={list.id}
+              role="menuitemcheckbox"
+              aria-checked={isInList(list.id)}
               onClick={() => handleToggle(list.id)}
               style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                width: '100%', padding: '5px 8px', background: 'none', border: 'none',
-                color: isInList(list.id) ? '#d41f3d' : 'rgba(255,255,255,0.6)',
-                fontSize: '12px', cursor: 'pointer', borderRadius: '5px',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
+                width: '100%', minHeight: '40px', padding: '10px 8px', background: 'none', border: 'none',
+                color: isInList(list.id) ? redText : textDim,
+                fontSize: '12.5px', cursor: 'pointer', borderRadius: '5px',
                 textAlign: 'left', transition: 'background 100ms',
               }}
-              onMouseEnter={e => e.target.style.background = 'rgba(255,255,255,0.04)'}
-              onMouseLeave={e => e.target.style.background = 'none'}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(127,127,127,0.08)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'none'}
             >
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {list.name}
               </span>
-              {isInList(list.id) && <Check size={12} />}
+              {isInList(list.id) && <Check size={13} />}
             </button>
           ))}
 
           <div style={{
-            borderTop: '1px solid rgba(255,255,255,0.06)',
+            borderTop: `1px solid ${hairline}`,
             marginTop: '4px', paddingTop: '4px',
-            display: 'flex', gap: '4px',
+            display: 'flex', gap: '4px', alignItems: 'center',
           }}>
             <input
               value={newName}
@@ -107,9 +127,11 @@ const AddToListButton = ({ bookId }) => {
               onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
               placeholder={t('library.listName')}
               style={{
-                flex: 1, padding: '4px 6px', fontSize: '11px',
-                background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '4px', color: 'rgba(255,255,255,0.7)', outline: 'none',
+                flex: 1, minHeight: '40px', padding: '6px 8px',
+                /* 16px keeps iOS Safari from zooming the page on focus */
+                fontSize: '16px',
+                background: 'rgba(0,0,0,0.35)', border: `1px solid ${hairline}`,
+                borderRadius: '4px', color: textDim, outline: 'none',
               }}
             />
             <button
@@ -117,13 +139,15 @@ const AddToListButton = ({ bookId }) => {
               disabled={!newName.trim()}
               aria-label={t('library.createAndAddToList')}
               style={{
-                padding: '4px', background: newName.trim() ? 'rgba(179, 18, 46,0.2)' : 'rgba(255,255,255,0.04)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                minHeight: '40px', minWidth: '40px', padding: '6px',
+                background: newName.trim() ? 'rgba(179, 18, 46,0.2)' : 'rgba(127,127,127,0.06)',
                 border: 'none', borderRadius: '4px',
-                color: newName.trim() ? '#d41f3d' : 'rgba(255,255,255,0.2)',
+                color: newName.trim() ? redText : textFaint,
                 cursor: newName.trim() ? 'pointer' : 'default',
               }}
             >
-              <Plus size={12} />
+              <Plus size={14} />
             </button>
           </div>
         </div>

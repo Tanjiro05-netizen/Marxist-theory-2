@@ -6,16 +6,21 @@ import { Bot } from 'lucide-react';
 import Header from './Header';
 import Footer from './Footer';
 import * as s from './MainLayout.css.ts';
-import { studyThemeClass } from '../styles/obsidianTheme.css.ts';
+import { themeDefaults } from '../styles/obsidianTheme.css.ts';
 
 const MainLayout = ({ children, hideHeader = false, hideFab = false }) => {
     const pathname = usePathname();
     // Routes that render their own full-height surface (chat / social feed)
     const hideFabForRoute = pathname === '/marxbot' || pathname === '/feed/social';
+    // Reading surfaces keep the page to themselves: the band scrolls away and
+    // the reader's own toolbar is the only sticky chrome.
+    const readerRoute = Boolean(
+        pathname && (pathname.startsWith('/book') || pathname.startsWith('/science-tech/textbooks'))
+    );
 
     return (
-        <div className={`${studyThemeClass} ${s.shell}`}>
-            {!hideHeader && <Header />}
+        <div className={`${themeDefaults} ${s.shell}`}>
+            {!hideHeader && <Header bandStatic={readerRoute} />}
             <main className={hideHeader ? s.mainFullBleed : s.main}>
                 {children}
             </main>

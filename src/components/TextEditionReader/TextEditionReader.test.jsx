@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TextEditionReader from './TextEditionReader';
 
@@ -84,5 +84,45 @@ describe('TextEditionReader', () => {
         expect(screen.getByRole('button', { name: 'Smaller text' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Larger text' })).toBeInTheDocument();
         expect(screen.getByText('01 / 02 · 3 min')).toBeInTheDocument();
+    });
+
+    it('opens the contents as a dialog sheet from the toolbar and closes on Escape', () => {
+        render(<TextEditionReader edition={edition} />);
+
+        const tocButton = screen.getByRole('button', { name: /table of contents/i });
+        expect(tocButton).toHaveAttribute('aria-expanded', 'false');
+        fireEvent.click(tocButton);
+
+        const sheet = screen.getByRole('dialog', { name: /contents/i });
+        expect(tocButton).toHaveAttribute('aria-expanded', 'true');
+        expect(sheet).toHaveAttribute('aria-modal', 'true');
+        expect(document.body.className).toContain('reader-toc-open');
+
+        // Choosing a chapter closes the sheet again.
+        fireEvent.click(within(sheet).getByRole('button', { name: /chapter one/i }));
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+        fireEvent.click(tocButton);
+        expect(screen.getByRole('dialog', { name: /contents/i })).toBeInTheDocument();
+        fireEvent.keyDown(window, { key: 'Escape' });
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+        expect(document.body.className).not.toContain('reader-toc-open');
+    });
+
+    it('silently restores the last reading position for the book', () => {
+        const store = new Map([['reader-position:book-9', JSON.stringify({ sectionId: 's2', pct: 40 })]]);
+        jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => store.get(key) ?? null);
+        jest.spyOn(Storage.prototype, 'setItem').mockImplementation((key, value) => store.set(key, value));
+
+        render(<TextEditionReader edition={edition} bookId="book-9" />);
+
+        // Scrolling persists the resting section (throttled, but a fresh
+        // mount always allows the first write).
+        fireEvent.scroll(window);
+        const saved = JSON.parse(store.get('reader-position:book-9'));
+        expect(saved.sectionId).toBe('s1'); // jsdom rects are zero — top section is active
+
+        Storage.prototype.getItem.mockRestore();
+        Storage.prototype.setItem.mockRestore();
     });
 });

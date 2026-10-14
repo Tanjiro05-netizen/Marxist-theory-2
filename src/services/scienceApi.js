@@ -670,6 +670,68 @@ export const submitScienceQuizAttempt = async ({ quizId, answers }) => {
   return data;
 };
 
+// --- PHY111 interactive layer: block evidence, review cards, module unlocks ---
+
+export const saveScienceBlockEvidence = async ({ blockId, evidence, state = 'started' }) => {
+  const { data, error } = await withScienceTimeout(
+    supabase.rpc('save_science_block_evidence', {
+      p_block_id: blockId,
+      p_evidence: evidence || {},
+      p_state: state,
+    }),
+    'Block evidence save timed out.'
+  );
+  if (error) throw error;
+  return data;
+};
+
+export const fetchScienceBlockEvidence = async ({ lessonIds }) => {
+  if (!lessonIds || lessonIds.length === 0) return [];
+  const { data, error } = await withScienceTimeout(
+    supabase
+      .from('science_block_evidence')
+      .select('id, lesson_id, block_id, evidence, state, updated_at')
+      .in('lesson_id', lessonIds),
+    'Block evidence loading timed out.'
+  );
+  if (error) throw error;
+  return data || [];
+};
+
+export const fetchScienceReviewCards = async ({ courseId = null, dueOnly = false } = {}) => {
+  const { data, error } = await withScienceTimeout(
+    supabase.rpc('list_science_review_cards', {
+      p_course_id: courseId,
+      p_due_only: dueOnly,
+    }),
+    'Review cards loading timed out.'
+  );
+  if (error) throw error;
+  return data || [];
+};
+
+export const rateScienceReviewCard = async ({ questionId, rating }) => {
+  const { data, error } = await withScienceTimeout(
+    supabase.rpc('rate_science_review_card', {
+      p_question_id: questionId,
+      p_rating: rating,
+    }),
+    'Review card rating timed out.'
+  );
+  if (error) throw error;
+  return data;
+};
+
+export const fetchScienceModuleUnlockState = async (courseId) => {
+  const { data, error } = await withScienceTimeout(
+    supabase.rpc('get_science_module_unlock_state', { p_course_id: courseId }),
+    'Module unlock state loading timed out.'
+  );
+  if (error) throw error;
+  return data || [];
+};
+
+
 export const fetchScienceAdminData = async () => {
   await requireAdminSession();
   const [{ data: subjects, error: subjectError }, { data: courses, error: courseError }] = await Promise.all([

@@ -1,13 +1,23 @@
-import { style } from '@vanilla-extract/css';
+import { style, globalStyle, keyframes } from '@vanilla-extract/css';
 import { vars } from '../styles/obsidianTheme.css.ts';
 
-/* Band ink — the dark text that lives on the paper navband */
-const bandInk = '#14161d';
-const bandInkFaint = 'rgba(20, 22, 29, 0.72)';
-const bandHairline = 'rgba(20, 22, 29, 0.16)';
-const bandAccent = '#b3122e';
+/* Band palette follows the page theme: these map to the global theme vars,
+   which flip with html[data-theme]. Light mode keeps the paper navband;
+   dark mode turns it into a frosted ink band over the ink page. */
+const bandInk = 'var(--text-primary)';
+const bandInkFaint = 'var(--text-secondary)';
+const bandHairline = 'var(--line)';
+const bandAccent = 'var(--red-bright)';
 /* Parchment gold — the warm tan plate that marks hovered/active selectors */
 const bandHighlight = '#e0ccaa';
+/* Live green — the only place the site allows a status color */
+const liveGreen = '#2f7d4f';
+
+const livePulse = keyframes({
+  '0%': { boxShadow: `0 0 0 0 rgba(47, 125, 79, 0.45)` },
+  '70%': { boxShadow: '0 0 0 6px rgba(47, 125, 79, 0)' },
+  '100%': { boxShadow: '0 0 0 0 rgba(47, 125, 79, 0)' },
+});
 
 /* ── Masthead — centered, scrolls away ── */
 
@@ -26,7 +36,7 @@ export const mastheadWord = style({
   fontSize: 'clamp(22px, 3.2vw, 34px)',
   fontWeight: 500,
   textTransform: 'uppercase',
-  letterSpacing: '0.18em',
+  letterSpacing: '0.06em',
   lineHeight: 1,
   color: vars.color.text,
 });
@@ -49,16 +59,45 @@ export const mastheadRule = style({
   },
 });
 
-/* ── Paper navband — sticky ── */
+/* ── Frosted parchment navband — sticky. Translucent warm glass: content
+   ghosts through beneath it, it lifts on scroll, and the page keeps its
+   continuity instead of being cut by an opaque slab. ── */
 
 export const navband = style({
   position: 'sticky',
   top: 0,
   zIndex: 50,
-  background: '#f4f2ec',
+  /* Near-opaque in dark mode: at 80% the ink bleeds into whatever scrolls
+     beneath (light covers turn the frost into beige mud). */
+  background: 'rgba(16, 19, 27, 0.97)',
+  backdropFilter: 'blur(18px) saturate(150%)',
+  WebkitBackdropFilter: 'blur(18px) saturate(150%)',
   borderTop: `1px solid ${bandHairline}`,
   borderBottom: `1px solid ${bandHairline}`,
-  boxShadow: '0 12px 28px rgba(0, 0, 0, 0.3)',
+  transition: 'box-shadow 280ms ease, background 280ms ease',
+  selectors: {
+    'html[data-theme="light"] &': {
+      background: 'rgba(244, 242, 236, 0.8)',
+    },
+  },
+});
+
+export const navbandScrolled = style({
+  background: '#10131b',
+  boxShadow: '0 14px 36px rgba(0, 0, 0, 0.55)',
+  selectors: {
+    'html[data-theme="light"] &': {
+      background: 'rgba(250, 248, 242, 0.9)',
+      boxShadow: '0 14px 36px rgba(20, 22, 29, 0.14)',
+    },
+  },
+});
+
+/* Reader routes: the band stays at the top of the document and scrolls away
+   with it, so immersive pages keep their chrome to the reader's own toolbar. */
+export const navbandStatic = style({
+  position: 'static',
+  zIndex: 'auto',
 });
 
 export const navbandInner = style({
@@ -68,7 +107,7 @@ export const navbandInner = style({
   maxWidth: '1680px',
   margin: '0 auto',
   display: 'grid',
-  gridTemplateColumns: '1fr auto 1fr',
+  gridTemplateColumns: 'auto minmax(0, 1fr) auto',
   columnGap: vars.space.md,
   alignItems: 'center',
   minHeight: '46px',
@@ -90,22 +129,51 @@ export const desktopNav = style({
   alignItems: 'center',
   justifyContent: 'center',
   '@media': {
-    'screen and (max-width: 768px)': {
+    'screen and (max-width: 1199px)': {
       display: 'none',
     },
   },
 });
 
 export const navRow = style({
+  position: 'relative',
   display: 'flex',
   alignItems: 'center',
-  flexWrap: 'nowrap',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
   overflowX: 'visible',
   overflowY: 'visible',
   scrollbarWidth: 'none',
   selectors: {
     '&::-webkit-scrollbar': {
       display: 'none',
+    },
+  },
+});
+
+/* The sliding plate — one soft pill that glides between items and rests on
+   the active page. Gold-tinted on the parchment band; on the dark band the
+   gold turns to mud, so it becomes a faint crimson wash under the crimson
+   label instead. */
+export const navIndicator = style({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '0',
+  height: '0',
+  borderRadius: '2px',
+  background: 'rgba(224, 204, 170, 0.5)',
+  opacity: 0,
+  pointerEvents: 'none',
+  transition: 'transform 360ms cubic-bezier(0.22, 1, 0.36, 1), width 360ms cubic-bezier(0.22, 1, 0.36, 1), height 360ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease, background-color 280ms ease',
+  selectors: {
+    'html:not([data-theme="light"]) &': {
+      background: 'rgba(193, 23, 48, 0.18)',
+    },
+  },
+  '@media': {
+    '(prefers-reduced-motion: reduce)': {
+      transition: 'none',
     },
   },
 });
@@ -118,69 +186,46 @@ export const navLink = style({
   zIndex: 0,
   display: 'inline-flex',
   alignItems: 'center',
-  height: '46px',
-  padding: '0 7px',
+  minHeight: '40px',
+  padding: '0 5px',
   fontFamily: vars.font.label,
-  fontSize: '10.5px',
+  fontSize: '10px',
   fontWeight: 500,
   textTransform: 'uppercase',
-  letterSpacing: '0.18em',
+  letterSpacing: '0.12em',
   color: bandInk,
   whiteSpace: 'nowrap',
   transition: 'color 180ms ease',
   '@media': {
-    'screen and (max-width: 1365px)': {
-      fontSize: '10px',
-      letterSpacing: '0.12em',
-      padding: '0 5px',
+    'screen and (max-width: 1599px)': {
+      fontSize: '9px',
+      letterSpacing: '0.06em',
+      padding: '0 3px',
     },
   },
 });
 
-const navFill = {
-  content: '""',
-  position: 'absolute',
-  inset: 0,
-  zIndex: -1,
-  background: bandHighlight,
-  transform: 'scaleY(0)',
-  transformOrigin: 'bottom',
-  transition: 'transform 360ms cubic-bezier(0.22, 1, 0.36, 1)',
-};
-
-const navFillMotionOff = {
-  '@media': {
-    '(prefers-reduced-motion: reduce)': {
-      selectors: {
-        '&::before': { transition: 'none' },
-      },
-    },
-  },
-};
-
+/* Idle links carry no plate — the sliding indicator handles highlight.
+   Hover and focus tint the label crimson. */
 export const navLinkIdle = style({
   selectors: {
-    '&::before': navFill,
-    '&:hover::before': { transform: 'scaleY(1)' },
-    '&:focus-visible::before': { transform: 'scaleY(1)' },
+    '&:hover, &:focus-visible': { color: bandAccent },
   },
-  ...navFillMotionOff,
 });
 
+/* The active page keeps a permanent crimson label; the plate rests under it. */
 export const navLinkActive = style({
-  selectors: {
-    '&::before': { ...navFill, transform: 'scaleY(1)' },
-  },
+  color: bandAccent,
 });
 
-export const navLinkRestricted = style({
+export const navLinkRestricted = style([navLinkIdle, {
   color: bandInk,
   selectors: {
     '&:hover': {
       color: bandAccent,
     },
   },
-});
+}]);
 
 export const restrictedMark = style({
   marginLeft: vars.space.xxs,
@@ -199,37 +244,32 @@ export const dropdownTrigger = style({
   zIndex: 0,
   display: 'flex',
   alignItems: 'center',
-  height: '46px',
-  padding: '0 7px',
+  minHeight: '40px',
+  padding: '0 5px',
   fontFamily: vars.font.label,
-  fontSize: '10.5px',
+  fontSize: '10px',
   fontWeight: 500,
   textTransform: 'uppercase',
-  letterSpacing: '0.18em',
+  letterSpacing: '0.12em',
   color: bandInk,
   background: 'none',
   border: 'none',
   cursor: 'pointer',
   whiteSpace: 'nowrap',
   '@media': {
-    'screen and (max-width: 1365px)': {
-      fontSize: '10px',
-      letterSpacing: '0.12em',
-      padding: '0 5px',
+    'screen and (max-width: 1599px)': {
+      fontSize: '9px',
+      letterSpacing: '0.06em',
+      padding: '0 3px',
     },
   },
   selectors: {
-    '&::before': navFill,
-    '&:hover::before': { transform: 'scaleY(1)' },
-    '&:focus-visible::before': { transform: 'scaleY(1)' },
+    '&:hover, &:focus-visible': { color: bandAccent },
   },
-  ...navFillMotionOff,
 });
 
 export const dropdownTriggerActive = style({
-  selectors: {
-    '&::before': { ...navFill, transform: 'scaleY(1)' },
-  },
+  color: bandAccent,
 });
 
 export const dropdownMenu = style({
@@ -237,19 +277,27 @@ export const dropdownMenu = style({
   left: 0,
   top: '100%',
   width: '250px',
-  background: '#ffffff',
+  background: 'rgba(255, 255, 255, 0.94)',
+  backdropFilter: 'blur(14px) saturate(140%)',
+  WebkitBackdropFilter: 'blur(14px) saturate(140%)',
   border: `1px solid ${bandHairline}`,
   borderRadius: vars.radius.tiny,
-  boxShadow: vars.shadow.panel,
+  boxShadow: '0 18px 44px rgba(11, 13, 18, 0.28)',
   padding: `${vars.space.xxs} 0`,
   opacity: 0,
   visibility: 'hidden' as any,
-  transition: 'opacity 180ms ease, visibility 180ms ease',
+  transition: 'opacity 180ms ease, visibility 180ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1)',
+  transform: 'translateY(-4px)',
   zIndex: 60,
   selectors: {
-    [`${dropdownWrap}:hover &`]: {
+    [`${dropdownWrap}:hover &, ${dropdownWrap}:focus-within &`]: {
       opacity: 1,
       visibility: 'visible' as any,
+      transform: 'translateY(0)',
+    },
+    'html:not([data-theme="light"]) &': {
+      background: 'rgba(22, 25, 34, 0.97)',
+      boxShadow: '0 18px 44px rgba(0, 0, 0, 0.55)',
     },
   },
 });
@@ -264,8 +312,11 @@ export const dropdownItem = style({
   transition: 'color 140ms ease, background 140ms ease',
   selectors: {
     '&:hover': {
-      background: 'rgba(179, 18, 46, 0.06)',
+      background: 'rgba(155, 16, 34, 0.06)',
       color: bandAccent,
+    },
+    'html:not([data-theme="light"]) &:hover': {
+      background: 'rgba(193, 23, 48, 0.16)',
     },
   },
 });
@@ -299,18 +350,27 @@ export const actionsRow = style({
 
 /* ── Band flanks — the printer's marks at either end of the navband ── */
 
-export const bandIconLink = style({
+/* The printer's-mark slot, as a <button> that opens the search palette */
+export const bandIconButton = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   width: '30px',
   height: '34px',
+  padding: 0,
+  border: 'none',
+  background: 'transparent',
+  cursor: 'pointer',
   color: bandInk,
   opacity: 0.65,
   transition: 'color 180ms ease, opacity 180ms ease',
   selectors: {
     '&:hover': {
       color: bandAccent,
+      opacity: 1,
+    },
+    '&:focus-visible': {
+      outline: `1px solid ${bandAccent}`,
       opacity: 1,
     },
   },
@@ -350,6 +410,31 @@ export const iconButton = style({
 
 export const notificationWrap = style({
   position: 'relative',
+});
+
+/* ── Admin live-visitor badge — a pulsing dot + count in the navband ── */
+
+export const liveBadge = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '6px',
+  height: '34px',
+  padding: '0 6px',
+  fontFamily: vars.font.label,
+  fontSize: '12.5px',
+  fontWeight: 500,
+  letterSpacing: '0.04em',
+  fontVariantNumeric: 'tabular-nums',
+  color: bandInkFaint,
+  whiteSpace: 'nowrap',
+});
+
+export const liveDot = style({
+  width: '7px',
+  height: '7px',
+  borderRadius: '50%',
+  background: liveGreen,
+  animation: `${livePulse} 2.2s ease-out infinite`,
 });
 
 export const notificationBadge = style({
@@ -462,17 +547,17 @@ export const loginButton = style({
   fontWeight: 500,
   textTransform: 'uppercase',
   letterSpacing: '0.2em',
-  color: '#ffffff',
-  border: `1px solid ${bandAccent}`,
-  background: bandAccent,
+  color: bandInk,
+  border: `1px solid ${bandHairline}`,
+  background: 'transparent',
   borderRadius: vars.radius.tiny,
   cursor: 'pointer',
   whiteSpace: 'nowrap',
   transition: 'background 200ms ease, border-color 200ms ease',
   selectors: {
     '&:hover': {
-      background: '#d41f3d',
-      borderColor: '#d41f3d',
+      color: bandAccent,
+      borderColor: bandAccent,
     },
   },
 });
@@ -481,7 +566,7 @@ export const loginButton = style({
 
 export const mobileMenuBtn = style([iconButton, {
   '@media': {
-    'screen and (min-width: 769px)': {
+    'screen and (min-width: 1200px)': {
       display: 'none',
     },
   },
@@ -492,10 +577,10 @@ export const mobileOverlay = style({
   inset: 0,
   zIndex: 60,
   background: vars.color.background,
-  paddingTop: '72px',
+  paddingTop: 'env(safe-area-inset-top, 0px)',
   overflowY: 'auto',
   '@media': {
-    'screen and (min-width: 769px)': {
+    'screen and (min-width: 1200px)': {
       display: 'none',
     },
   },
@@ -616,6 +701,32 @@ export const mobileComingSoon = style({
   color: vars.color.textFaint,
 });
 
+globalStyle(`.${navbandInner}`, {
+  '@media': {
+    'screen and (max-width: 1199px)': {
+      gridTemplateColumns: 'minmax(0, 1fr) auto',
+      columnGap: '8px',
+      minHeight: '56px',
+      padding: '4px max(12px, env(safe-area-inset-right)) 4px max(12px, env(safe-area-inset-left))',
+    },
+  },
+});
+const mobile = (className, rules) => globalStyle(`.${className}`, {
+  '@media': { 'screen and (max-width: 1199px)': rules },
+});
+mobile(bandSlot, { minWidth: 0, gap: '8px' });
+mobile(bandIconButton, { width: '44px', height: '44px', flexShrink: 0 });
+mobile(iconButton, { width: '44px', height: '44px', flexShrink: 0 });
+mobile(loginButton, { minHeight: '44px', padding: '10px 16px', letterSpacing: '0.12em' });
+mobile(mobileInner, { padding: '16px max(16px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left))' });
+mobile(mobileNavStack, { gap: '4px', padding: '12px 0' });
+mobile(mobileLink, { minHeight: '48px', gap: '8px', flexWrap: 'wrap', letterSpacing: '0.12em', overflowWrap: 'anywhere' });
+mobile(mobileComingSoon, { marginLeft: 'auto', fontSize: '9px' });
+mobile(mobileSubLink, { minHeight: '44px', padding: '8px 0' });
+globalStyle(`.${masthead}`, { '@media': { 'screen and (max-width: 768px)': { padding: '18px 16px 14px' } } });
+globalStyle(`.${mastheadWord}`, { '@media': { 'screen and (max-width: 768px)': { fontSize: '26px', letterSpacing: '0.06em' } } });
+globalStyle(`.${bandMark}`, { '@media': { 'screen and (max-width: 400px)': { display: 'none' } } });
+
 export const mobileActions = style({
   marginTop: vars.space.xl,
   display: 'flex',
@@ -640,6 +751,16 @@ export const mobileLogout = style({
   selectors: {
     '&:hover': {
       color: vars.color.accentHover,
+    },
+  },
+});
+
+/* Admin & editorial triggers leave the desktop band on narrower screens —
+   they remain available in the mobile overlay menu. */
+export const navExtra = style({
+  '@media': {
+    'screen and (max-width: 1599px)': {
+      display: 'none',
     },
   },
 });

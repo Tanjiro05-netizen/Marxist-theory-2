@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { Loader, AlertCircle, Download, BookOpen, Bookmark, ArrowLeft, FileText, BookMarked } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { recordBookDownload } from '../services/libraryStats';
 import EpubReader from '../components/EpubReader/EpubReader';
 import EditorialReader from '../components/EditorialReader/EditorialReader';
 import TextEditionReader from '../components/TextEditionReader/TextEditionReader';
@@ -14,6 +15,10 @@ import * as s from './BookReaderPage.css.ts';
 
 const BookReaderPage = () => {
     const { bookId } = useParams();
+    // Deep link from library full-text search: ?q=<phrase>&section=<sN>
+    const searchParams = useSearchParams();
+    const highlightQuery = searchParams.get('q') || null;
+    const highlightSectionId = searchParams.get('section') || null;
     const { user } = useAuth();
     const { t } = useTranslation();
 
@@ -29,7 +34,9 @@ const BookReaderPage = () => {
     const [progress, setProgress] = useState(0);
     const [isSavingProgress, setIsSavingProgress] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const [view, setView] = useState('read'); // 'read' (editorial) | 'ebook' (paginated reader)
+    // 'read' (editorial) | 'text' (indexed text edition, search deep links) | 'ebook' (paginated reader)
+    const [view, setView] = useState('read');
+    const [relatedBooks, setRelatedBooks] = useState([]);
     const progressTimerRef = useRef(null);
 
     const isAuthed = !!user && user.id !== 'dev-admin';
@@ -54,6 +61,17 @@ const BookReaderPage = () => {
                 if (!bookData) throw new Error('Book not found.');
 
                 setBook(bookData);
+
+                // A text-search hit lands on the indexed text edition (the
+                // section ids only exist there), even when an EPUB exists.
+                if (
+                    highlightQuery &&
+                    bookData.epub_filename &&
+                    Array.isArray(bookData.text_edition?.sections) &&
+                    bookData.text_edition.sections.length > 0
+                ) {
+                    setView('text');
+                }
 
                 // Build EPUB URL for the reader (primary reading format)
                 if (bookData.epub_filename) {
@@ -98,7 +116,48 @@ const BookReaderPage = () => {
         };
 
         fetchBook();
-    }, [bookId, user]);
+    }, [bookId, user, highlightQuery]);
+
+    // Books proposed at the foot of the reading page — same shelf first.
+    useEffect(() => {
+        if (!bookId) return undefined;
+        let cancelled = false;
+        const fetchRelated = async () => {
+            try {
+                const { data } = await supabase
+                    .from('digital_library_books')
+                    .select('id, title, author, year, cover_image_url, category')
+                    .neq('id', bookId)
+                    .limit(8);
+                if (cancelled || !Array.isArray(data)) return;
+                const withCovers = data.map((b) => {
+                    let cover = null;
+                    const raw = b.cover_image_url;
+                    if (raw?.includes('supabase')) {
+                        cover = raw;
+                    } else if (raw?.startsWith('/')) {
+                        const filename = raw.split('/').pop();
+                        const { data: coverData } = supabase.storage.from('covers').getPublicUrl(filename);
+                        cover = coverData?.publicUrl || null;
+                    } else {
+                        cover = raw || null;
+                    }
+                    return { ...b, cover };
+                });
+                const shelf = book?.category;
+                withCovers.sort((a, b) => {
+                    const aMatch = shelf && a.category === shelf ? 0 : 1;
+                    const bMatch = shelf && b.category === shelf ? 0 : 1;
+                    return aMatch - bMatch;
+                });
+                if (!cancelled) setRelatedBooks(withCovers.slice(0, 4));
+            } catch (err) {
+                console.error('Error fetching suggested books:', err);
+            }
+        };
+        fetchRelated();
+        return () => { cancelled = true; };
+    }, [bookId, book?.category]);
 
     const handleToggleBookmark = useCallback(async () => {
         if (!isAuthed) return;
@@ -231,14 +290,27 @@ const BookReaderPage = () => {
                 <div className={s.toolbar}>
                     {(epubUrl || textEdition) && (
                         <div className={s.viewTabs} role="tablist" aria-label="Reading view">
-                            <button
-                                className={`${s.viewTab} ${view === 'read' ? s.viewTabActive : ''}`}
-                                onClick={() => setView('read')}
-                                role="tab"
-                                aria-selected={view === 'read'}
-                            >
-                                Read
-                            </button>
+                            {epubUrl && (
+                                <button
+                                    className={`${s.viewTab} ${view === 'read' ? s.viewTabActive : ''}`}
+                                    onClick={() => setView('read')}
+                                    role="tab"
+                                    aria-selected={view === 'read'}
+                                >
+                                    Read
+                                </button>
+                            )}
+                            {epubUrl && textEdition && highlightQuery && (
+                                <button
+                                    className={`${s.viewTab} ${view === 'text' ? s.viewTabActive : ''}`}
+                                    onClick={() => setView('text')}
+                                    role="tab"
+                                    aria-selected={view === 'text'}
+                                    data-testid="text-view-tab"
+                                >
+                                    {t('book.textView', { defaultValue: 'Text' })}
+                                </button>
+                            )}
                             {(epubUrl || pdfDownloadUrl) && (
                                 <button
                                     className={`${s.viewTab} ${view === (epubUrl ? 'ebook' : 'pdf') ? s.viewTabActive : ''}`}
@@ -254,7 +326,21 @@ const BookReaderPage = () => {
 
                     <div className={s.actions}>
                         {pdfDownloadUrl && (
-                            <a href={pdfDownloadUrl} download={`${book.title}.pdf`} className={s.toolBtn}>
+                            <a
+                                href={pdfDownloadUrl}
+                                download={`${book.title}.pdf`}
+                                className={s.toolBtn}
+                                onClick={(e) => {
+                                    // Let modifier-clicks and middle clicks behave natively
+                                    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                                    // Hold the navigation until the counter request is sent —
+                                    // navigating first would abort the in-flight fetch.
+                                    e.preventDefault();
+                                    recordBookDownload(book.id).finally(() => {
+                                        window.location.href = pdfDownloadUrl;
+                                    });
+                                }}
+                            >
                                 <Download size={14} />
                                 {t('book.downloadPDF')}
                             </a>
@@ -280,11 +366,24 @@ const BookReaderPage = () => {
 
                 {/* ── Reader surface ── */}
                 <div className={s.readerSection} data-testid="book-reader">
-                    {epubUrl ? (
+                    {view === 'text' && textEdition ? (
+                        <div data-testid="book-reader-text-edition">
+                            <TextEditionReader
+                                edition={textEdition}
+                                bookId={bookId}
+                                onProgressChange={handleAutoProgress}
+                                fallbackUrl={pdfDownloadUrl}
+                                fallbackLabel="Open the PDF directly"
+                                highlightQuery={highlightQuery}
+                                initialSectionId={highlightSectionId}
+                            />
+                        </div>
+                    ) : epubUrl ? (
                         view === 'read' ? (
                             <div data-testid="book-reader-editorial">
                                 <EditorialReader
                                     url={epubUrl}
+                                    bookId={bookId}
                                     onProgressChange={handleAutoProgress}
                                     fallbackUrl={pdfDownloadUrl}
                                 />
@@ -306,9 +405,12 @@ const BookReaderPage = () => {
                             <div data-testid="book-reader-text-edition">
                                 <TextEditionReader
                                     edition={textEdition}
+                                    bookId={bookId}
                                     onProgressChange={handleAutoProgress}
                                     fallbackUrl={pdfDownloadUrl}
                                     fallbackLabel="Open the PDF directly"
+                                    highlightQuery={highlightQuery}
+                                    initialSectionId={highlightSectionId}
                                 />
                             </div>
                         ) : (
@@ -342,6 +444,28 @@ const BookReaderPage = () => {
 
                 {/* Book Reviews */}
                 <BookReviewSection bookId={bookId} canWrite={isAuthed} />
+
+                {/* ── Suggested reading ── */}
+                {relatedBooks.length > 0 && (
+                    <section className={s.suggested} data-testid="suggested-books">
+                        <h2 className={s.suggestedTitle}>{t('book.suggestedReading')}</h2>
+                        <div className={s.suggestedGrid}>
+                            {relatedBooks.map((b) => (
+                                <Link key={b.id} href={`/book/${b.id}`} className={s.suggestedCard}>
+                                    <div className={s.suggestedCover}>
+                                        {b.cover ? (
+                                            <img src={b.cover} alt="" loading="lazy" className={s.suggestedCoverImg} />
+                                        ) : (
+                                            <BookOpen size={22} className={s.suggestedCoverIcon} />
+                                        )}
+                                    </div>
+                                    <p className={s.suggestedBookTitle}>{b.title}</p>
+                                    <p className={s.suggestedMeta}>{[b.author, b.year].filter(Boolean).join(' · ')}</p>
+                                </Link>
+                            ))}
+                        </div>
+                    </section>
+                )}
             </div>
         </div>
     );

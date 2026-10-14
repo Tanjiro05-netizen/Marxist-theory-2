@@ -195,8 +195,11 @@ export const tab = style({
   gap: '7px',
   color: vars.color.textMuted,
   borderBottom: '2px solid transparent',
-  fontSize: '13px',
-  fontWeight: 600,
+  fontFamily: vars.font.label,
+  fontSize: '11px',
+  fontWeight: 700,
+  letterSpacing: '0.06em',
+  textTransform: 'uppercase',
   selectors: {
     '&:hover': {
       color: vars.color.text,
@@ -229,12 +232,16 @@ export const socialTopicPill = style({
   display: 'inline-flex',
   alignItems: 'center',
   border: vars.border.subtle,
-  borderRadius: '999px',
+  borderRadius: '2px',
   background: vars.color.surface,
   color: vars.color.textMuted,
-  padding: '0 11px',
-  fontSize: '12px',
-  fontWeight: 800,
+  padding: '0 10px',
+  fontFamily: vars.font.label,
+  fontSize: '10px',
+  fontWeight: 700,
+  letterSpacing: '0.07em',
+  textTransform: 'uppercase',
+  transition: 'color 140ms ease, border-color 140ms ease',
   selectors: {
     '&:hover': {
       color: vars.color.text,
@@ -453,12 +460,14 @@ export const topicChip = style({
   display: 'inline-flex',
   alignItems: 'center',
   border: vars.border.subtle,
-  borderRadius: '999px',
+  borderRadius: '2px',
   background: vars.color.surface,
   color: vars.color.textMuted,
-  padding: '0 10px',
-  fontSize: '12px',
+  padding: '0 9px',
+  fontFamily: vars.font.label,
+  fontSize: '10px',
   fontWeight: 700,
+  letterSpacing: '0.05em',
   selectors: {
     '&:hover': {
       color: vars.color.text,
@@ -629,7 +638,7 @@ export const topicSpotlight = style({
   alignItems: 'center',
   gap: '14px',
   borderBottom: vars.border.subtle,
-  background: `${vars.color.surface}`,
+  background: vars.color.surface,
   padding: '14px 18px',
   '@media': {
     'screen and (max-width: 620px)': {
@@ -1013,6 +1022,24 @@ export const stateBlock = style({
   textAlign: 'center',
 })
 
+/* Empty feeds read like Twitter's empty states: one quiet centered line. */
+export const emptyNotice = style({
+  minHeight: '200px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderBottom: vars.border.subtle,
+  padding: '32px 24px',
+})
+
+globalStyle(`${emptyNotice} p`, {
+  margin: 0,
+  fontSize: '14px',
+  lineHeight: 1.6,
+  color: vars.color.textMuted,
+  textAlign: 'center',
+})
+
 export const retryButton = style({
   ...buttonReset,
   marginTop: '12px',
@@ -1042,6 +1069,22 @@ export const railSection = style({
   borderRadius: '0px',
   background: vars.color.surface,
   overflow: 'hidden',
+})
+
+export const railHeader = style({
+  minHeight: '44px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: '10px',
+  padding: '0 14px',
+  borderBottom: vars.border.subtle,
+  fontFamily: vars.font.label,
+  fontSize: '11px',
+  fontWeight: 700,
+  letterSpacing: '0.07em',
+  textTransform: 'uppercase',
+  color: vars.color.textMuted,
 })
 
 export const surfaceReferenceLink = style({
@@ -1290,19 +1333,6 @@ globalStyle(`${surfaceReferenceLink} small`, {
   color: vars.color.textFaint,
   fontSize: '12px',
   lineHeight: 1.35,
-})
-
-export const railHeader = style({
-  minHeight: '46px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: '10px',
-  padding: '0 14px',
-  borderBottom: vars.border.subtle,
-  color: vars.color.text,
-  fontSize: '14px',
-  fontWeight: 700,
 })
 
 export const suggestionList = style({
@@ -1554,7 +1584,7 @@ globalStyle(`${weiboTopNav} a:hover`, {
 })
 
 export const weiboTopNavActive = style({
-  color: '#d8c79f',
+  color: 'var(--sand)',
   selectors: {
     '&::after': {
       content: '""',
@@ -1656,10 +1686,7 @@ export const weiboLeftRail = style({
   top: '72px',
   alignSelf: 'start',
   minHeight: 'calc(100vh - 72px)',
-  borderLeft: '1px solid rgba(255,255,255,0.05)',
-  borderRight: '1px solid rgba(226,61,61,0.14)',
-  background: 'rgba(13, 16, 19, 0.72)',
-  padding: '28px 18px',
+  padding: '20px 10px',
   '@media': {
     'screen and (max-width: 1080px)': {
       display: 'none',
@@ -1670,53 +1697,75 @@ export const weiboLeftRail = style({
 export const weiboLeftNavGroup = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: '18px',
+  gap: '2px',
 })
 
 export const weiboLeftNavItem = style({
   ...buttonReset,
-  minHeight: '32px',
+  minHeight: '46px',
   display: 'inline-flex',
   alignItems: 'center',
-  gap: '12px',
+  gap: '14px',
+  padding: '0 14px',
+  borderRadius: '2px',
   color: vars.color.textMuted,
-  fontSize: '15px',
-  fontWeight: 800,
+  fontSize: '14.5px',
+  fontWeight: 600,
   selectors: {
     '&:hover': {
       color: vars.color.text,
+      background: vars.color.surface,
     },
   },
 })
 
 export const weiboLeftNavItemActive = style({
-  color: '#d8c79f',
+  color: 'var(--red-bright)',
+  selectors: {
+    '&:hover': {
+      color: 'var(--red-bright)',
+    },
+  },
 })
 
 export const weiboLeftCategoryList = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: '18px',
-  marginTop: '30px',
-  paddingLeft: '8px',
+  gap: '1px',
+  marginTop: '18px',
+  paddingTop: '14px',
+  borderTop: '1px solid var(--line-soft)',
 })
 
 export const weiboLeftCategoryItem = style({
   ...buttonReset,
+  minHeight: '38px',
   display: 'inline-flex',
   alignItems: 'center',
   gap: '12px',
+  padding: '0 14px',
+  borderRadius: '2px',
   color: vars.color.textMuted,
-  fontSize: '15px',
+  fontSize: '13.5px',
   selectors: {
     '&:hover': {
       color: vars.color.text,
+      background: vars.color.surface,
     },
   },
 })
 
+globalStyle(`${weiboLeftCategoryItem} span`, {
+  display: 'none',
+})
+
 export const weiboLeftCategoryItemActive = style({
-  color: '#4a7fb5',
+  color: 'var(--red-bright)',
+  selectors: {
+    '&:hover': {
+      color: 'var(--red-bright)',
+    },
+  },
 })
 
 export const weiboMainFeed = style({
@@ -1751,7 +1800,7 @@ globalStyle(`${weiboFeedTabs} ${tab}`, {
 })
 
 globalStyle(`${weiboFeedTabs} ${tabActive}`, {
-  color: '#d8c79f',
+  color: 'var(--sand)',
   borderBottomColor: '#d41f3d',
 })
 
@@ -1775,7 +1824,7 @@ globalStyle(`${signalBriefingHeader} span`, {
   display: 'inline-flex',
   alignItems: 'center',
   gap: '8px',
-  color: '#d8c79f',
+  color: 'var(--sand)',
   fontSize: '12px',
   fontWeight: 900,
   textTransform: 'uppercase',
@@ -1852,7 +1901,7 @@ globalStyle(`${signalBriefingMetrics} span`, {
 })
 
 globalStyle(`${signalBriefingMetrics} b`, {
-  color: '#d8c79f',
+  color: 'var(--sand)',
   fontFamily: vars.font.label,
   fontSize: '15px',
 })
@@ -1924,7 +1973,7 @@ globalStyle(`${weiboMainFeed} ${displayName}`, {
 })
 
 globalStyle(`${weiboMainFeed} ${boardBadge}`, {
-  color: '#d8c79f',
+  color: 'var(--sand)',
   borderColor: 'rgba(241,207,116,0.34)',
   background: 'rgba(241,207,116,0.09)',
 })
@@ -1959,7 +2008,7 @@ export const weiboRightRail = style({
 export const weiboHotPanel = style({
   border: vars.border.subtle,
   borderRadius: '0px',
-  background: '#10131b',
+  background: vars.color.surface,
   overflow: 'hidden',
 })
 
@@ -1998,20 +2047,26 @@ globalStyle(`${weiboHotTabs} button`, {
   ...buttonReset,
   minHeight: '34px',
   borderRadius: '0px',
-  background: '#10131b',
+  border: vars.border.subtle,
+  background: 'transparent',
   color: vars.color.textMuted,
-  fontSize: '13px',
+  fontFamily: vars.font.label,
+  fontSize: '10.5px',
+  fontWeight: 700,
+  letterSpacing: '0.06em',
+  textTransform: 'uppercase',
 })
 
 export const weiboHotTabActive = style({
   color: vars.color.text,
-  background: '#1a1f2b',
+  background: vars.color.surfaceSoft,
+  borderColor: vars.color.borderAccent,
 })
 
 export const weiboHotRankList = style({
   display: 'flex',
   flexDirection: 'column',
-  padding: '6px 14px 12px',
+  padding: '4px 14px 10px',
 })
 
 export const weiboHotRankItem = style({
@@ -2021,8 +2076,12 @@ export const weiboHotRankItem = style({
   alignItems: 'center',
   gap: '8px',
   color: vars.color.textMuted,
-  fontSize: '14px',
+  fontSize: '13px',
   selectors: {
+    /* Ledger rows: hairline rules instead of floating list items. */
+    '&:not(:last-child)': {
+      borderBottom: '1px solid var(--line-soft)',
+    },
     '&:hover': {
       color: vars.color.text,
     },
@@ -2030,10 +2089,11 @@ export const weiboHotRankItem = style({
 })
 
 globalStyle(`${weiboHotRankItem} span`, {
-  color: '#d8c79f',
+  color: vars.color.textFaint,
   fontFamily: vars.font.label,
-  fontSize: '16px',
-  fontWeight: 800,
+  fontSize: '11px',
+  fontWeight: 700,
+  fontVariantNumeric: 'tabular-nums',
 })
 
 globalStyle(`${weiboHotRankItem} strong`, {
@@ -2047,45 +2107,59 @@ globalStyle(`${weiboHotRankItem} strong`, {
 globalStyle(`${weiboHotRankItem} em`, {
   color: vars.color.textFaint,
   fontFamily: vars.font.label,
-  fontSize: '12px',
+  fontSize: '11px',
   fontStyle: 'normal',
+  fontVariantNumeric: 'tabular-nums',
 })
 
 globalStyle(`${weiboHotRankItem} b`, {
-  minWidth: '26px',
-  height: '18px',
+  minWidth: '24px',
+  height: '16px',
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  borderRadius: '0px',
-  background: '#d41f3d',
+  borderRadius: '2px',
+  background: vars.color.accent,
   color: '#fff',
   padding: '0 4px',
-  fontSize: '10px',
+  fontFamily: vars.font.label,
+  fontSize: '8.5px',
+  fontWeight: 700,
+  letterSpacing: '0.06em',
+  textTransform: 'uppercase',
 })
 
 export const weiboHotRankItemActive = style({
-  color: '#d8c79f',
+  color: 'var(--sand)',
 })
 
 export const weiboFullHotLink = style({
-  minHeight: '44px',
+  minHeight: '46px',
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
   gap: '8px',
   margin: '0 14px 14px',
   borderRadius: '0px',
-  background: '#10131b',
+  borderTop: vars.border.subtle,
+  background: 'transparent',
   color: vars.color.textMuted,
-  fontSize: '13px',
+  fontSize: '12.5px',
+  fontWeight: 600,
+  selectors: {
+    '&:hover': {
+      color: vars.color.text,
+      background: vars.color.surfaceRaised,
+    },
+  },
 })
 
 export const weiboUtilityLinks = style({
   display: 'grid',
   gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-  gap: '12px 20px',
-  padding: '24px 4px',
+  gap: '10px 20px',
+  padding: '20px 4px 8px',
   color: vars.color.textFaint,
   fontSize: '11px',
+  lineHeight: 1.5,
 })

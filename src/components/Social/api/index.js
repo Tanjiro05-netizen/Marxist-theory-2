@@ -76,6 +76,23 @@ const normalizePage = ({ data, count, page, limit }) => ({
   totalPages: Math.ceil((count || 0) / limit),
 })
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+const isProfilesPermissionError = (error) => Boolean(error)
+  && error.code === '42501'
+  && `${error.message || ''}`.includes('permission denied for table profiles')
+
+// profiles is granted only to authenticated (20260303170000 hardening), while
+// the localhost dev-auth bypass queries with the anon role. Retry those reads
+// once with the profiles-free select so local dev renders the feed (posts show
+// "Someone" identities) instead of a permission error.
+const readWithProfilesFallback = async (runWithSelect) => {
+  const first = await runWithSelect(SOCIAL_POST_SELECT)
+  if (!isProfilesPermissionError(first.error)) return first
+  console.warn('Supabase denied the profiles embed; retrying without profile data.')
+  return runWithSelect(PUBLIC_BOARD_POST_SELECT)
+}
+
 const ignoreDuplicate = (error) => {
   if (!error) return
   if (error.code === '23505') return
@@ -104,7 +121,9 @@ const applyTimelineMode = async (query, { mode, boardSlug, userId, sortBy, topic
   }
 
   if (mode === 'following') {
-    if (!userId) return { empty: true }
+    // A non-UUID id (e.g. the localhost dev-auth user) can never match rows;
+    // skip the round trip so the tab renders its empty state, not a 22P02.
+    if (!UUID_RE.test(userId || '')) return { empty: true }
     const followingIds = await socialApiService.getFollowingIds(userId)
     if (!followingIds.length) return { empty: true }
     return {
@@ -142,39 +161,54 @@ export const socialApiService = {
       return normalizePage({ data: [], count: 0, page, limit })
     }
 
-    const select = mode === 'boards' && !userId ? PUBLIC_BOARD_POST_SELECT : SOCIAL_POST_SELECT
-    let query = supabase
-      .from('social_posts')
-      .select(select, { count: 'exact' })
-
-    const modeQuery = await applyTimelineMode(query, { mode, boardSlug, userId, sortBy, topic })
-    if (modeQuery.empty) return normalizePage({ data: [], count: 0, page, limit })
-
+    const wantsProfiles = mode !== 'boards' || Boolean(userId)
     const from = (page - 1) * limit
     const to = from + limit - 1
-    const { data, error, count } = await modeQuery.query.range(from, to)
-    if (error) throw error
-    return normalizePage({ data, count, page, limit })
+
+    const run = async (select) => {
+      const query = supabase
+        .from('social_posts')
+        .select(select, { count: 'exact' })
+
+      const modeQuery = await applyTimelineMode(query, { mode, boardSlug, userId, sortBy, topic })
+      if (modeQuery.empty) return { empty: true }
+      return modeQuery.query.range(from, to)
+    }
+
+    const result = wantsProfiles
+      ? await readWithProfilesFallback(run)
+      : await run(PUBLIC_BOARD_POST_SELECT)
+    if (result.empty) return normalizePage({ data: [], count: 0, page, limit })
+    if (result.error) throw result.error
+    return normalizePage({ data: result.data, count: result.count, page, limit })
   },
 
   async getPost(postId, { includeProfiles = true } = {}) {
-    const { data, error } = await supabase
+    const run = (select) => supabase
       .from('social_posts')
-      .select(includeProfiles ? SOCIAL_POST_SELECT : PUBLIC_BOARD_POST_SELECT)
+      .select(select)
       .eq('id', postId)
       .single()
+
+    const { data, error } = includeProfiles
+      ? await readWithProfilesFallback(run)
+      : await run(PUBLIC_BOARD_POST_SELECT)
 
     if (error) throw error
     return data
   },
 
   async getThread(rootId, { includeProfiles = true } = {}) {
-    const { data, error } = await supabase
+    const run = (select) => supabase
       .from('social_posts')
-      .select(includeProfiles ? SOCIAL_POST_SELECT : PUBLIC_BOARD_POST_SELECT)
+      .select(select)
       .eq('root_id', rootId)
       .eq('is_deleted', false)
       .order('created_at', { ascending: true })
+
+    const { data, error } = includeProfiles
+      ? await readWithProfilesFallback(run)
+      : await run(PUBLIC_BOARD_POST_SELECT)
 
     if (error) throw error
     return data || []

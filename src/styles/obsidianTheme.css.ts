@@ -1,4 +1,4 @@
-import { createTheme, createThemeContract, globalStyle, keyframes, style } from '@vanilla-extract/css';
+import { createGlobalTheme, createTheme, createThemeContract, globalStyle, keyframes, style } from '@vanilla-extract/css';
 import { recipe } from '@vanilla-extract/recipes';
 
 export const vars = createThemeContract({
@@ -67,7 +67,7 @@ export const vars = createThemeContract({
   },
 });
 
-export const studyThemeClass = createTheme(vars, {
+const darkTokens = {
   color: {
     background: '#0b0d12',
     surface: '#10131b',
@@ -76,12 +76,12 @@ export const studyThemeClass = createTheme(vars, {
     overlay: '#151924',
     border: 'rgba(236, 233, 224, 0.08)',
     borderStrong: '#262a35',
-    borderAccent: 'rgba(179, 18, 46, 0.45)',
-    accent: '#b3122e',
-    accentHover: '#d41f3d',
-    accentSoft: 'rgba(179, 18, 46, 0.16)',
-    accentWash: 'rgba(179, 18, 46, 0.08)',
-    accentGlow: 'rgba(179, 18, 46, 0.28)',
+    borderAccent: 'rgba(155, 16, 34, 0.45)',
+    accent: '#9b1022',
+    accentHover: '#c11730',
+    accentSoft: 'rgba(155, 16, 34, 0.16)',
+    accentWash: 'rgba(155, 16, 34, 0.08)',
+    accentGlow: 'rgba(155, 16, 34, 0.28)',
     spotlight: 'rgba(236, 233, 224, 0.04)',
     text: '#ece9e0',
     textSoft: '#c9c5b8',
@@ -129,9 +129,58 @@ export const studyThemeClass = createTheme(vars, {
   border: {
     subtle: '1px solid #1c202b',
     strong: '1px solid #262a35',
-    accent: '1px solid rgba(179, 18, 46, 0.45)',
+    accent: '1px solid rgba(155, 16, 34, 0.45)',
   },
-});
+};
+
+export const studyThemeClass = createTheme(vars, darkTokens);
+
+const lightTokens = {
+  color: {
+    background: '#f3f0e7',
+    surface: '#faf8f2',
+    surfaceRaised: '#ffffff',
+    surfaceSoft: '#ece7d9',
+    overlay: '#ece7d9',
+    border: 'rgba(20, 22, 29, 0.14)',
+    borderStrong: '#c8c1af',
+    borderAccent: 'rgba(155, 16, 34, 0.45)',
+    accent: '#9b1022',
+    accentHover: '#c11730',
+    accentSoft: 'rgba(155, 16, 34, 0.12)',
+    accentWash: 'rgba(155, 16, 34, 0.06)',
+    accentGlow: 'rgba(155, 16, 34, 0.18)',
+    spotlight: 'rgba(20, 22, 29, 0.05)',
+    text: '#1c1a14',
+    textSoft: '#453f33',
+    textMuted: '#6b6455',
+    textFaint: '#948b76',
+    success: '#256b43',
+    warning: '#8f6206',
+    info: '#3a6289',
+  },
+  font: darkTokens.font,
+  space: darkTokens.space,
+  radius: darkTokens.radius,
+  shadow: {
+    soft: '0 1px 2px rgba(20, 22, 29, 0.15)',
+    panel: '0 14px 36px rgba(20, 22, 29, 0.16)',
+    glow: 'none',
+  },
+  layout: darkTokens.layout,
+  border: {
+    subtle: '1px solid #e2dccd',
+    strong: '1px solid #c8c1af',
+    accent: '1px solid rgba(155, 16, 34, 0.45)',
+  },
+};
+
+/* Global token layers. `:root` carries the dark default; the light theme is
+   declared on html[data-theme='light'] and wins by specificity, so every
+   vars.* consumer site-wide follows the single data-theme attribute — which
+   the pre-paint script in app/layout.jsx sets before first paint. */
+createGlobalTheme(':root', vars, darkTokens);
+createGlobalTheme('html[data-theme="light"]', vars, lightTokens);
 
 const spin = keyframes({
   '0%': { transform: 'rotate(0deg)' },
@@ -147,38 +196,52 @@ export const themeRoot = style({
   isolation: 'isolate',
 });
 
-globalStyle(`${studyThemeClass}`, {
+/* Layout-level default class. It carries NO theme contract values — the
+   :root / html[data-theme] global layers own those — so the document-level
+   theme can reach every element. Applied by MainLayout's shell. */
+export const themeDefaults = style({ isolation: 'isolate' });
+
+const themeScope = `${themeDefaults}, ${studyThemeClass}`;
+
+globalStyle(`${themeScope}`, {
   color: vars.color.text,
   backgroundColor: vars.color.background,
   fontFamily: vars.font.body,
 });
 
-globalStyle(`${studyThemeClass} *`, {
+globalStyle(`${themeDefaults} *, ${studyThemeClass} *`, {
   boxSizing: 'border-box',
 });
 
-globalStyle(`${studyThemeClass} a`, {
+globalStyle(`${themeScope} a`, {
   textDecoration: 'none',
 });
 
 /* Only classless anchors inherit — this must never out-rank a component's
    own color class (e.g. the ink links on the paper navband). */
-globalStyle(`${studyThemeClass} a:not([class])`, {
+globalStyle(`${themeDefaults} a:not([class]), ${studyThemeClass} a:not([class])`, {
   color: 'inherit',
 });
 
-globalStyle(`${studyThemeClass} button`, {
+globalStyle(`${themeScope} button`, {
   fontFamily: vars.font.body,
 });
 
-globalStyle(`${studyThemeClass} input`, {
+globalStyle(`${themeScope} input`, {
   fontFamily: vars.font.body,
 });
 
-globalStyle(`${studyThemeClass} input::placeholder`, {
+globalStyle(`${themeScope} input::placeholder`, {
   color: vars.color.textFaint,
 });
 
+/* NB: selector lists must NOT be used for pseudo-element rules like this —
+   `${themeDefaults}, ${studyThemeClass} ::selection` parses as two selectors,
+   and the bare `.themeDefaults` half paints the entire shell red. */
+globalStyle(`${themeDefaults} ::selection`, {
+  background: vars.color.accent,
+  color: '#ffffff',
+});
 globalStyle(`${studyThemeClass} ::selection`, {
   background: vars.color.accent,
   color: '#ffffff',
@@ -665,5 +728,29 @@ export const dropCap = style({
       paddingTop: '0.06em',
       color: vars.color.accentHover,
     },
+  },
+});
+
+/* Tailwind Typography override — route the prose palette through the theme
+   tokens so longform text follows light/dark instead of prose-invert's
+   fixed light-on-dark. */
+export const proseTheme = style({
+  vars: {
+    '--tw-prose-body': 'var(--paper)',
+    '--tw-prose-headings': 'var(--paper)',
+    '--tw-prose-lead': 'var(--paper-dim)',
+    '--tw-prose-links': 'var(--red-bright)',
+    '--tw-prose-bold': 'var(--paper)',
+    '--tw-prose-counters': 'var(--paper-dim)',
+    '--tw-prose-bullets': 'var(--red)',
+    '--tw-prose-hr': 'var(--line)',
+    '--tw-prose-quotes': 'var(--paper)',
+    '--tw-prose-quote-borders': 'var(--red)',
+    '--tw-prose-captions': 'var(--paper-dim)',
+    '--tw-prose-code': 'var(--paper)',
+    '--tw-prose-pre-code': 'var(--paper)',
+    '--tw-prose-pre-bg': 'var(--ink-2)',
+    '--tw-prose-th-borders': 'var(--line)',
+    '--tw-prose-td-borders': 'var(--line-soft)',
   },
 });

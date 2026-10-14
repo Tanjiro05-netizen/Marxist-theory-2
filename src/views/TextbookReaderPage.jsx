@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { supabase } from '../supabaseClient';
 import { ArrowLeft, Download, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Maximize, Minimize } from 'lucide-react';
+import { useReaderChrome } from '../components/EditorialReader/readerChrome';
+import * as chrome from '../components/EditorialReader/ReaderChrome.css.ts';
 import * as s from './TextbookReaderPage.css.ts';
 import 'katex/dist/katex.min.css';
 
@@ -13,11 +15,17 @@ const TextbookReaderPage = () => {
   const [textbook, setTextbook] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [zoom, setZoom] = useState(100);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(() => {
+    if (typeof window === 'undefined') return 1;
+    const fromUrl = Number(new URLSearchParams(window.location.search).get('page'));
+    return Number.isFinite(fromUrl) && fromUrl > 0 ? fromUrl : 1;
+  });
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const { toolbarHidden } = useReaderChrome();
 
   useEffect(() => {
     fetchTextbook();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchTextbook = async () => {
@@ -37,6 +45,26 @@ const TextbookReaderPage = () => {
       setIsLoading(false);
     }
   };
+
+  /* Keep the page number in the URL so a reload or shared link reopens the
+     textbook where the reader left it. */
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const current = params.get('page');
+    if (currentPage > 1) {
+      if (current !== String(currentPage)) {
+        params.set('page', String(currentPage));
+        window.history.replaceState(window.history.state, '', `${window.location.pathname}?${params.toString()}`);
+      }
+    } else if (current) {
+      params.delete('page');
+      const qs = params.toString();
+      window.history.replaceState(window.history.state, '', qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
+    }
+  }, [currentPage]);
+
+  const clampPage = (page) => Math.min(Math.max(1, page), textbook?.page_count || Infinity);
 
   const handleZoomIn = () => {
     setZoom(prev => Math.min(prev + 25, 200));
@@ -77,125 +105,106 @@ const TextbookReaderPage = () => {
     );
   }
 
+  const pageCount = textbook.page_count;
+
   return (
-    <div className={s.page} style={{display:'flex',flexDirection:'column'}}>
-      
-      {/* Top Bar */}
-      <div className="fixed top-16 left-0 right-0 z-10 bg-[#0b0d12]/95 backdrop-blur-sm border-b border-red-900/30">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            {/* Left - Back & Title */}
-            <div className="flex items-center gap-4">
-              <Link href="/science-tech"
-                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-                aria-label={t('science.backToScience')}
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </Link>
-              <div>
-                <h1 className="text-white font-semibold text-sm md:text-base line-clamp-1">
-                  {textbook.title}
-                </h1>
-                {textbook.author && (
-                  <p className="text-gray-500 text-xs">{textbook.author}</p>
-                )}
-              </div>
-            </div>
+    <div className={s.page}>
 
-            {/* Center - Page Navigation */}
-            {textbook.page_count && (
-              <div className="hidden md:flex items-center gap-2">
-                <button 
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  className="p-1.5 text-gray-400 hover:text-white transition-colors"
-                  aria-label={t('science.previousPage')}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <span className="text-gray-400 text-sm">
-                  {t('science.pageProgress', { current: currentPage, total: textbook.page_count })}
-                </span>
-                <button 
-                  onClick={() => setCurrentPage(p => Math.min(textbook.page_count, p + 1))}
-                  className="p-1.5 text-gray-400 hover:text-white transition-colors"
-                  aria-label={t('science.nextPage')}
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-
-            {/* Right - Controls */}
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={handleZoomOut}
-                className="p-2 text-gray-400 hover:text-white transition-colors"
-                title={t('science.zoomOut')}
-              >
-                <ZoomOut className="w-4 h-4" />
-              </button>
-              <span className="text-gray-500 text-xs w-12 text-center">{zoom}%</span>
-              <button 
-                onClick={handleZoomIn}
-                className="p-2 text-gray-400 hover:text-white transition-colors"
-                title={t('science.zoomIn')}
-              >
-                <ZoomIn className="w-4 h-4" />
-              </button>
-              <button 
-                onClick={toggleFullscreen}
-                className="p-2 text-gray-400 hover:text-white transition-colors"
-                title={t('science.toggleFullscreen')}
-              >
-                {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
-              </button>
-              {textbook.file_url && (
-                <a
-                  href={textbook.file_url}
-                  download
-                  className="p-2 text-gray-400 hover:text-white transition-colors"
-                  title={t('science.downloadPdf')}
-                >
-                  <Download className="w-4 h-4" />
-                </a>
-              )}
-            </div>
+      {/* Reader toolbar — the only sticky chrome on this surface. The page
+          controls are available on phones too: flipping pages is the primary
+          action in a paginated PDF. */}
+      <div className={`${s.toolbar}${toolbarHidden ? ` ${chrome.toolbarHidden}` : ''}`}>
+        <div className={s.titleGroup}>
+          <Link
+            href="/science-tech"
+            className={s.backBtn}
+            aria-label={t('science.backToScience')}
+          >
+            <ArrowLeft size={16} />
+          </Link>
+          <div className={s.titleBlock}>
+            <h1 className={s.title}>{textbook.title}</h1>
+            {textbook.author && <p className={s.author}>{textbook.author}</p>}
           </div>
+        </div>
+
+        <div className={s.controls}>
+          {pageCount && (
+            <div className={s.pageGroup}>
+              <button
+                onClick={() => setCurrentPage(p => clampPage(p - 1))}
+                className={s.ctrlBtn}
+                aria-label={t('science.previousPage')}
+                disabled={currentPage <= 1}
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <span className={s.pageValue}>
+                {t('science.pageProgress', { current: currentPage, total: pageCount })}
+              </span>
+              <button
+                onClick={() => setCurrentPage(p => clampPage(p + 1))}
+                className={s.ctrlBtn}
+                aria-label={t('science.nextPage')}
+                disabled={currentPage >= pageCount}
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          )}
+
+          <button onClick={handleZoomOut} className={s.ctrlBtn} aria-label={t('science.zoomOut')} title={t('science.zoomOut')}>
+            <ZoomOut size={16} />
+          </button>
+          <span className={s.zoomValue}>{zoom}%</span>
+          <button onClick={handleZoomIn} className={s.ctrlBtn} aria-label={t('science.zoomIn')} title={t('science.zoomIn')}>
+            <ZoomIn size={16} />
+          </button>
+          <button onClick={toggleFullscreen} className={s.ctrlBtn} aria-label={t('science.toggleFullscreen')} title={t('science.toggleFullscreen')}>
+            {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
+          </button>
+          {textbook.file_url && (
+            <a
+              href={textbook.file_url}
+              download
+              className={s.ctrlBtn}
+              aria-label={t('science.downloadPdf')}
+              title={t('science.downloadPdf')}
+            >
+              <Download size={16} />
+            </a>
+          )}
         </div>
       </div>
 
       {/* PDF Viewer */}
-      <div className="flex-1 pt-32 pb-8 px-4 overflow-auto">
-        <div className="max-w-4xl mx-auto">
+      <div className={s.viewer}>
+        <div className={s.frameMax}>
           {textbook.file_url ? (
-            <div 
-              className="bg-white rounded-none shadow-none overflow-hidden"
+            <div
+              className={s.frame}
               style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'top center' }}
             >
               <iframe
                 src={`${textbook.file_url}#page=${currentPage}`}
                 title={textbook.title}
-                className="w-full"
-                style={{ height: '85vh' }}
+                className={s.pdfFrame}
               />
             </div>
           ) : (
-            <div className="text-center py-20">
-              <p className="text-gray-400">{t('science.noTextbookPdf')}</p>
+            <div className={s.emptyWrap}>
+              <p>{t('science.noTextbookPdf')}</p>
+            </div>
+          )}
+
+          {textbook.description && (
+            <div className={s.about}>
+              <h3 className={s.aboutTitle}>{t('science.aboutTextbook')}</h3>
+              <p className={s.aboutText}>{textbook.description}</p>
             </div>
           )}
         </div>
       </div>
-
-      {/* Textbook Info Sidebar (optional) */}
-      {textbook.description && (
-        <div className="fixed bottom-4 right-4 max-w-xs">
-          <div className="bg-black/80 backdrop-blur-lg rounded-none p-4 border border-red-900/30">
-            <h3 className="text-white font-semibold text-sm mb-2">{t('science.aboutTextbook')}</h3>
-            <p className="text-gray-400 text-xs line-clamp-3">{textbook.description}</p>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

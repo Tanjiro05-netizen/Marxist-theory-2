@@ -5,6 +5,7 @@ node_modules/
 build/
 .next/
 .next-dev/
+.next-e2e-*/
 dist/
 npm-debug.log*
 yarn-debug.log*
@@ -35,3 +36,9 @@ supabase/migrations/20260828140000_remove_duplicate_capital_ingesets.sql
 
 # Supabase CLI local state
 supabase/.temp/
+
+# Local data snapshots (kept on disk, not in git)
+scripts/.text-edition-*.json
+
+# Local test recordings
+tmp-vids/

@@ -275,6 +275,15 @@ const EpubReader = ({ url, title, onProgressChange, onToggleFullscreen, isFullsc
 
     await Promise.all(assetTasks);
 
+    /* The page already carries the book title as its h1 — embedded title-page
+       headings step down one level so the document keeps a single h1. */
+    body?.querySelectorAll('h1').forEach((h1) => {
+      const h2 = document.createElement('h2');
+      h2.innerHTML = h1.innerHTML;
+      [...h1.attributes].forEach((attr) => h2.setAttribute(attr.name, attr.value));
+      h1.replaceWith(h2);
+    });
+
     return sanitizeEpubHtml(body?.innerHTML || html);
   }, []);
 

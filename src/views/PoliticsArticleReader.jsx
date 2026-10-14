@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ArrowLeft, CalendarDays, ChevronLeft, ChevronRight, Newspaper, Tag } from 'lucide-react';
 import { supabase } from '../supabaseClient';
+import { proseTheme } from '../styles/obsidianTheme.css.ts';
 import { useAuth } from '../context/AuthContext';
 import * as s from './PoliticsArticleReader.css.ts';
 
@@ -171,7 +172,7 @@ const PoliticsArticleReader = () => {
     const renderedContent = useMemo(() => {
         if (!article?.content) return null;
         return (
-            <div className="prose prose-invert prose-red max-w-none leading-relaxed">
+            <div className={`proseTheme prose prose-invert prose-red max-w-none leading-relaxed`}>
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {article.content}
                 </ReactMarkdown>

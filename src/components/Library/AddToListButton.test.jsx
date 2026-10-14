@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AddToListButton from './AddToListButton';
 
@@ -38,5 +38,21 @@ describe('AddToListButton', () => {
       }),
     ]);
     expect(screen.getByText('Theory')).toBeInTheDocument();
+  });
+
+  test('exposes expanded state and closes on Escape', async () => {
+    render(<AddToListButton bookId="book-1" />);
+
+    const trigger = screen.getByRole('button', { name: 'Add to list' });
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
+
+    await userEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
 });

@@ -70,3 +70,34 @@ export const submitAssurance = style({ display: 'flex', alignItems: 'center', ga
 globalStyle(`${submitAssurance} svg`, { flexShrink: 0, color: vars.color.success });
 export const submitBtn = style({ display: 'inline-flex', minWidth: '190px', minHeight: '46px', alignItems: 'center', justifyContent: 'center', gap: vars.space.xs, padding: '12px 22px', background: vars.color.accent, color: '#fff', border: '1px solid transparent', fontSize: '12px', fontWeight: 600, fontFamily: vars.font.label, textTransform: 'uppercase', letterSpacing: '0.13em', cursor: 'pointer', transition: 'background 160ms ease, border-color 160ms ease', selectors: { '&:hover:not(:disabled)': { background: vars.color.accentHover }, '&:disabled': { background: vars.color.surfaceSoft, borderColor: vars.color.borderStrong, color: vars.color.textFaint, cursor: 'not-allowed' } } });
 export const spinner = style({ animation: `${rotate} 0.8s linear infinite` });
+
+const mobile = (className, rules) => globalStyle(`.${className}`, {
+  '@media': { 'screen and (max-width: 620px)': rules },
+});
+mobile(hero, { minHeight: '240px' });
+mobile(heroContent, { minHeight: '240px', padding: '40px 16px 64px' });
+mobile(heroTitle, { fontSize: 'clamp(34px, 9vw, 48px)', lineHeight: 1.05 });
+mobile(heroQuote, { fontSize: '16px', lineHeight: 1.5 });
+mobile(formSection, { marginTop: '-24px', padding: '0 12px 40px' });
+mobile(contextPanel, { padding: '24px 16px' });
+mobile(contextText, { fontSize: '15px', lineHeight: 1.55 });
+mobile(formCard, { padding: '24px 16px' });
+mobile(formHeader, { flexWrap: 'wrap', gap: '12px', paddingBottom: '20px' });
+mobile(formTitle, { fontSize: '28px' });
+mobile(draftBadge, { marginLeft: 'auto' });
+mobile(form, { gap: '24px' });
+mobile(topActions, { justifyContent: 'flex-start', gap: '8px' });
+mobile(guidelineBtn, { minHeight: '44px', textAlign: 'left', fontSize: '10px' });
+mobile(selectInput, { fontSize: '16px', minHeight: '48px' });
+mobile(textInput, { fontSize: '16px', minHeight: '48px' });
+mobile(textArea, { fontSize: '16px' });
+mobile(uploadZone, { minHeight: '190px', padding: '24px 16px' });
+mobile(chooseFileBtn, { minHeight: '44px' });
+mobile(fileCard, { gridTemplateColumns: '32px minmax(0, 1fr) 44px', gap: '10px', padding: '12px' });
+mobile(fileIcon, { width: '32px', height: '44px' });
+mobile(removeFileBtn, { width: '44px', height: '44px' });
+mobile(uploadHint, { lineHeight: 1.6, letterSpacing: '0.06em' });
+mobile(turnstile, { justifyContent: 'center', minWidth: 0 });
+mobile(errorBox, { fontSize: '15px', alignItems: 'flex-start', overflowWrap: 'anywhere' });
+mobile(submitRow, { gap: '16px', paddingTop: '20px' });
+mobile(submitBtn, { minHeight: '48px', minWidth: 0, width: '100%', letterSpacing: '0.08em' });

@@ -10,7 +10,6 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    theme.css — global tokens & base
    Ink page, warm paper text, crimson accent, hairline rules, paper navband.
-   Flat colour fields only — no gradients, no glow, no texture but the grain.
    ───────────────────────────────────────────────────────────────────────────── */
 
 :root {
@@ -25,12 +24,13 @@
 
   /* Warm paper text ramp */
   --paper: #ece9e0;
+  --paper-soft: #c9c5b8;
   --paper-dim: #a5a194;
   --paper-faint: #6f6c61;
 
-  /* Crimson */
-  --red: #b3122e;
-  --red-bright: #d41f3d;
+  /* Crimson — deep oxblood, a shade darker than the reference sites' bright red */
+  --red: #9b1022;
+  --red-bright: #c11730;
 
   /* Paper band (the inverted navband) & sand accent */
   --paper-band: #f4f2ec;
@@ -44,13 +44,88 @@
   --text-secondary: var(--paper-dim);
   --text-tertiary: var(--paper-faint);
   --accent-primary: var(--red);
-  --accent-secondary: rgba(179, 18, 46, 0.2);
-  --border-color: rgba(179, 18, 46, 0.3);
+  --accent-secondary: rgba(155, 16, 34, 0.2);
+  --border-color: rgba(155, 16, 34, 0.3);
+}
+
+/* ── Light mode — the same warm palette, printed the other way up.
+   Set by the pre-paint script on <html data-theme="light">. ── */
+html[data-theme='light'] {
+  color-scheme: light;
+
+  /* Ink ladder becomes the paper ground */
+  --ink: #f3f0e7;
+  --ink-2: #faf8f2;
+  --ink-3: #e9e5d8;
+
+  /* Hairlines darken */
+  --line: #c8c1af;
+  --line-soft: #e2dccd;
+
+  /* Text becomes ink */
+  --paper: #1c1a14;
+  --paper-soft: #453f33;
+  --paper-dim: #6b6455;
+  --paper-faint: #948b76;
+
+  /* The crimson holds; bright red only shifts a step for contrast */
+  --sand: #8a6f3f;
 }
 
 html {
   color-scheme: dark;
   scroll-behavior: smooth;
+  /* Reserve the viewport scrollbar's gutter so hiding the scrollbar
+     (scroll-lock behind modals and the nav drawer) never shifts the
+     page sideways. No effect where scrollbars overlay the content. */
+  scrollbar-gutter: stable;
+  /* No horizontal panning, anywhere. `clip` is preferred over `hidden`
+     because it does not turn the element into a scroll container, so
+     position: sticky keeps working. */
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* The grain reads lighter on paper — pull it back */
+html[data-theme='light'] body::after {
+  opacity: 0.03;
+}
+
+@supports not (overflow: clip) {
+  html, body { overflow-x: hidden; }
+}
+
+body {
+  overflow-x: clip;
+}
+
+@media (max-width: 1399px) {
+  .language-switcher-trigger,
+  .language-switcher-option {
+    min-height: 44px;
+  }
+}
+
+/* 16px form text avoids Safari's automatic focus zoom without disabling
+   users' own pinch zoom. Do not shrink the entire site to hide overflow. */
+@media (max-width: 768px) {
+  .reading-list-panel { padding-bottom: env(safe-area-inset-bottom); }
+  .reading-list-panel button { min-height: 44px; min-width: 44px; }
+  input:not([type='checkbox']):not([type='radio']), select, textarea {
+    font-size: 16px;
+  }
+  /* Safari's native select skin can ignore min-height. Keep its native
+     picker, but draw the control so the touch target is reliably 44px. */
+  select {
+    -webkit-appearance: none;
+    appearance: none;
+    min-height: 44px;
+    padding-right: 28px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='m2 4 4 4 4-4' fill='none' stroke='%23a5a194' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
 }
 
 body {
@@ -73,7 +148,7 @@ body::after {
   pointer-events: none;
   opacity: 0.05;
   mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 ::selection {

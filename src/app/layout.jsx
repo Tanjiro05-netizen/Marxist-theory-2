@@ -42,12 +42,11 @@ const SUPABASE_HOST = (() => {
 })();
 
 
-const description =
-  'An independent collective dedicated to the critique of political economy and the renaissance of genuine Marxist analysis.';
+const description = 'Marxist texts, articles, and discussion.';
 
 export const metadata = {
   metadataBase: new URL('https://www.marxist.info'),
-  title: 'The Marxist Research Collective',
+  title: 'Marxist.info',
   description,
   manifest: '/manifest.json',
   icons: {
@@ -61,14 +60,14 @@ export const metadata = {
   openGraph: {
     type: 'website',
     url: 'https://www.marxist.info/',
-    title: 'The Marxist Research Collective',
+    title: 'Marxist.info',
     description,
     images: ['https://www.marxist.info/marx.png'],
   },
   twitter: {
     card: 'summary_large_image',
     url: 'https://www.marxist.info/',
-    title: 'The Marxist Research Collective',
+    title: 'Marxist.info',
     description,
     images: ['https://www.marxist.info/marx.png'],
   },
@@ -77,7 +76,7 @@ export const metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#10131b',
+  themeColor: '#0b0d12',
 };
 
 export default function RootLayout({ children }) {
@@ -87,8 +86,13 @@ export default function RootLayout({ children }) {
   const initialAuth = { user: null, profile: null, resolved: false };
 
   return (
-    <html lang="en" className={`${cormorant.variable} ${outfit.variable} ${jetbrains.variable}`}>
+    <html lang="en" className={`${cormorant.variable} ${outfit.variable} ${jetbrains.variable}`} suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}})()`,
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="stylesheet" href={NEWSREADER_HREF} />

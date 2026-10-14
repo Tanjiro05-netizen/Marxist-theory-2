@@ -95,6 +95,7 @@ export const navActions = style({
 });
 
 export const sourceLink = style({
+  position: 'relative',
   display: 'inline-flex',
   alignItems: 'center',
   gap: '5px',
@@ -107,6 +108,12 @@ export const sourceLink = style({
   selectors: {
     '&:hover': {
       color: vars.color.text,
+    },
+    /* 44px tap area around the compact uppercase label */
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      inset: '-13px -10px',
     },
   },
 });
@@ -485,6 +492,7 @@ export const sectionTitle = style({
 });
 
 export const viewAllLink = style({
+  position: 'relative',
   color: vars.color.textSoft,
   fontSize: '12px',
   fontWeight: 800,
@@ -493,6 +501,12 @@ export const viewAllLink = style({
   selectors: {
     '&:hover': {
       color: vars.color.text,
+    },
+    /* 44px tap area around the compact uppercase label */
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      inset: '-13px -10px',
     },
   },
 });

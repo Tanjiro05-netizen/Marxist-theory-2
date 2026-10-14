@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { ChevronDown, ExternalLink, MapPin, X, Calendar, Tag, ArrowRight } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
+import { lockPageScroll } from '../../utils/scrollLock';
 import * as s from './Timeline.css.ts';
 
 const CATEGORY_LABELS = {
@@ -148,14 +149,10 @@ const Timeline = () => {
         return () => window.removeEventListener('keydown', onKey);
     }, [modalEvent]);
 
-    // Lock body scroll when modal is open
+    // Lock page scroll while the event modal is open
     useEffect(() => {
-        if (modalEvent) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = '';
-        }
-        return () => { document.body.style.overflow = ''; };
+        if (!modalEvent) return undefined;
+        return lockPageScroll();
     }, [modalEvent]);
 
     const categories = [

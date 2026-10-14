@@ -17,7 +17,8 @@ import * as s from './ArticleReaderPage.css.ts';
 import PassageFinder from '../components/Reader/PassageFinder';
 import ConceptMapPanel from '../components/Reader/ConceptMapPanel';
 import { extractPassages, buildPassageResults, buildConceptGraphData } from '../utils/readerInsights';
-import { Loader, Bookmark, MessageSquare, List, Check, Share2, Search, X, ChevronUp, ChevronDown, Download, BarChart3, BookOpen } from 'lucide-react';
+import { Loader, Bookmark, MessageSquare, List, Check, Share2, Search, X, ChevronUp, ChevronDown, Download, BarChart3 } from 'lucide-react';
+import { vars, proseTheme } from '../styles/obsidianTheme.css.ts';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -438,7 +439,7 @@ const ArticleReaderPage = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
+            <div className={s.loadingWrap}>
                 <Loader size={48} className="animate-spin" />
             </div>
         );
@@ -447,9 +448,10 @@ const ArticleReaderPage = () => {
     if (error) {
         return (
             <div className={s.page}>
-                <div className="flex flex-col items-center justify-center pt-8 px-4">
-                    <p className="text-red-400 text-lg mb-4">{error}</p>
-                    <a href="/theory" className="px-5 py-2.5 bg-red-600 hover:bg-red-700 rounded-none text-sm font-medium transition-colors">
+                <div className={s.errorWrap}>
+                    <h1 className={s.errorTitle}>Something went wrong</h1>
+                    <p className={s.errorText}>{error}</p>
+                    <a href="/theory" className={s.errorLink}>
                         Browse Theory Articles
                     </a>
                 </div>
@@ -459,7 +461,7 @@ const ArticleReaderPage = () => {
 
     if (!article) {
         return (
-            <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
+            <div className={s.loadingWrap}>
                 <p>Article not found.</p>
             </div>
         );
@@ -467,104 +469,90 @@ const ArticleReaderPage = () => {
 
     return (
         <>
-            <div className="fixed top-0 left-0 w-full h-1 z-50 bg-black/30">
-                <div
-                    className="h-full bg-red-600 transition-all duration-150 ease-linear"
-                    style={{ width: `${scrollProgress}%` }}
-                ></div>
+            <div className={s.progressTrack} aria-hidden="true">
+                <div className={s.progressFill} style={{ width: `${scrollProgress}%` }}></div>
             </div>
 
-            <main className={`container mx-auto px-4 py-8 ${!isStudyMode ? 'max-w-5xl' : ''}`}>
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+            <main className={s.stage}>
+                <div className={`${s.readerGrid} ${!isStudyMode ? s.readerGridFocus : ''}`}>
                     {isStudyMode && (
-                        <div className={`lg:col-span-2 transition-all duration-300 ${isTocOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
+                        <aside className={s.sideRail}>
                             {isTocOpen && article && <TableOfContents contentRef={contentRef} content={article.content} />}
-                        </div>
+                        </aside>
                     )}
 
-                    <div className={`${isStudyMode ? 'lg:col-span-7' : 'lg:col-span-12'} min-w-0`}>
-                        {/* Mode indicator banner */}
-                        <div className="flex items-center justify-between mb-4 px-4 py-2.5 bg-emerald-900/30 border border-emerald-700/40 rounded-none no-pdf">
-                            <div className="flex items-center gap-2">
-                                <BookOpen size={16} className="text-emerald-400" />
-                                <span className="text-sm font-medium text-emerald-300">Reading Mode</span>
-                                <span className="text-xs text-emerald-500/70 hidden sm:inline">— focused reading with study tools</span>
-                            </div>
-                            <button
-                                onClick={() => router.push(`/analysis/text/${slug}`)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-none bg-gray-700/60 text-gray-300 hover:bg-gray-600 hover:text-white transition-colors"
-                            >
-                                <BarChart3 size={14} />
-                                Switch to Analysis
-                            </button>
-                        </div>
-
-                        <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-4 border-b border-gray-700 no-pdf">
-                            <div className="flex items-center gap-2">
+                    <div className={s.readingColumn}>
+                        <div className={s.toolbar}>
+                            <div className={s.toolGroup}>
                                 {isStudyMode && (
-                                    <button onClick={() => setIsTocOpen(!isTocOpen)} className="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Table of Contents">
-                                        <List size={20} />
+                                    <button onClick={() => setIsTocOpen(!isTocOpen)} className={`${s.toolButton} ${isTocOpen ? s.toolButtonOn : ''}`} title="Table of Contents">
+                                        <List size={18} />
                                     </button>
                                 )}
-                                <button onClick={handleToggleBookmark} className="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Bookmark">
-                                    <Bookmark size={20} className={isBookmarked ? 'text-red-500 fill-current' : ''} />
+                                <button onClick={handleToggleBookmark} className={s.toolButton} title="Bookmark">
+                                    <Bookmark size={18} className={isBookmarked ? 'text-red-500 fill-current' : ''} />
                                 </button>
-                                <button onClick={() => setIsSearchVisible(!isSearchVisible)} className="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Search">
-                                    <Search size={20} />
+                                <button onClick={() => setIsSearchVisible(!isSearchVisible)} className={`${s.toolButton} ${isSearchVisible ? s.toolButtonOn : ''}`} title="Search">
+                                    <Search size={18} />
                                 </button>
-                                <button onClick={() => setIsPassageFinderOpen((prev) => !prev)} className="px-3 py-1.5 text-xs rounded-full bg-gray-800 hover:bg-gray-700">
+                                <button onClick={() => setIsPassageFinderOpen((prev) => !prev)} className={`${s.toolTextButton} ${isPassageFinderOpen ? s.toolButtonOn : ''}`}>
                                     Passage Finder
                                 </button>
-                                <button onClick={() => setIsConceptMapOpen((prev) => !prev)} className="px-3 py-1.5 text-xs rounded-full bg-gray-800 hover:bg-gray-700">
+                                <button onClick={() => setIsConceptMapOpen((prev) => !prev)} className={`${s.toolTextButton} ${isConceptMapOpen ? s.toolButtonOn : ''}`}>
                                     Concept Map
                                 </button>
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div className={s.toolGroup}>
                                 <button
                                     onClick={() => setReadingMode((prev) => (prev === 'study' ? 'focus' : 'study'))}
-                                    className="px-3 py-1.5 text-xs rounded-full bg-red-600/20 text-red-300 hover:bg-red-600/30"
+                                    className={s.toolTextButton}
                                 >
-                                    {isStudyMode ? 'Deep Focus Mode' : 'Study Mode'}
+                                    {isStudyMode ? 'Focus Mode' : 'Study Mode'}
+                                </button>
+                                <button
+                                    onClick={() => router.push(`/analysis/text/${slug}`)}
+                                    className={s.toolTextButton}
+                                >
+                                    <BarChart3 size={13} />
+                                    Analysis
                                 </button>
                                 {isStudyMode && (
-                                    <button onClick={() => setIsHighlightsOpen(!isHighlightsOpen)} className="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Highlights & Comments">
-                                        <MessageSquare size={20} />
+                                    <button onClick={() => setIsHighlightsOpen(!isHighlightsOpen)} className={`${s.toolButton} ${isHighlightsOpen ? s.toolButtonOn : ''}`} title="Highlights & Comments">
+                                        <MessageSquare size={18} />
                                     </button>
                                 )}
-                                <button onClick={handleShare} className="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Share">
-                                    <Share2 size={20} />
+                                <button onClick={handleShare} className={s.toolButton} title="Share">
+                                    <Share2 size={18} />
                                 </button>
-                                <button onClick={handleDownloadPdf} className="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Download PDF">
-                                    {isGeneratingPdf ? <Loader size={20} className="animate-spin" /> : <Download size={20} />}
+                                <button onClick={handleDownloadPdf} className={s.toolButton} title="Download PDF">
+                                    {isGeneratingPdf ? <Loader size={18} className="animate-spin" /> : <Download size={18} />}
                                 </button>
                             </div>
                         </div>
 
                         {!isStudyMode && (
-                            <div className="mb-4 no-pdf">
-                                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800/70 border border-gray-700 text-xs text-gray-300">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                                    Progress milestone: {progressMilestone}
-                                </div>
-                            </div>
+                            <p className={s.milestone}>
+                                <span className={s.milestoneDot} aria-hidden="true" />
+                                Progress · {progressMilestone}
+                            </p>
                         )}
 
                         {isSearchVisible && (
-                            <div className="bg-gray-800 border border-gray-700 rounded-none p-2 flex items-center space-x-2 mb-4 no-pdf">
+                            <div className={s.searchRow}>
                                 <input
                                     type="text"
                                     placeholder="Find in page..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="bg-transparent w-full focus:outline-none"
+                                    className={s.searchInput}
                                 />
                                 {searchResults.length > 0 && (
-                                    <span className="text-sm text-gray-400">{currentResultIndex + 1} / {searchResults.length}</span>
+                                    <span className={s.searchCount}>{currentResultIndex + 1} / {searchResults.length}</span>
                                 )}
-                                <button onClick={handlePrevResult} disabled={searchResults.length === 0} className="p-1 rounded-full hover:bg-gray-700 disabled:opacity-50"><ChevronUp size={16} /></button>
-                                <button onClick={handleNextResult} disabled={searchResults.length === 0} className="p-1 rounded-full hover:bg-gray-700 disabled:opacity-50"><ChevronDown size={16} /></button>
-                                <button onClick={() => setIsSearchVisible(false)} className="p-1 rounded-full hover:bg-gray-700"><X size={16} /></button>
+                                <button onClick={handlePrevResult} disabled={searchResults.length === 0} className={s.toolButton}><ChevronUp size={16} /></button>
+                                <button onClick={handleNextResult} disabled={searchResults.length === 0} className={s.toolButton}><ChevronDown size={16} /></button>
+                                <button onClick={() => setIsSearchVisible(false)} className={s.toolButton}><X size={16} /></button>
                             </div>
                         )}
 
@@ -578,19 +566,19 @@ const ArticleReaderPage = () => {
                         />
 
                         {isConceptMapOpen && (
-                            <div className="mb-4">
+                            <div className={s.toolPanels}>
                                 <ConceptMapPanel graphData={conceptGraphData} onNodeClick={handleConceptNodeClick} />
                             </div>
                         )}
 
-                        <div className="mb-8 text-center">
-                            <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.32em] text-red-500">Digital Library</p>
-                            <h1 className="font-display mb-4 text-4xl font-medium tracking-[0.01em] text-white md:text-5xl">{article.title}</h1>
-                            <div className="mx-auto mb-4 h-[2px] w-11 bg-[#b3122e]" aria-hidden="true" />
-                            <p className="text-sm text-gray-400">{article.author}</p>
-                        </div>
+                        <header className={s.titleBand}>
+                            <p className={s.kicker}>Digital Library</p>
+                            <h1 className={s.title}>{article.title}</h1>
+                            <div className={s.titleRule} aria-hidden="true" />
+                            <p className={s.byline}>{article.author}</p>
+                        </header>
 
-                        <div ref={contentRef} className={`reader-dropcap prose prose-invert max-w-none prose-p:leading-relaxed prose-a:text-red-400 hover:prose-a:text-red-500 ${!isStudyMode ? 'prose-lg' : ''}`}>
+                        <div ref={contentRef} className={`${s.proseWrap} proseTheme reader-dropcap prose prose-invert max-w-none prose-p:leading-relaxed prose-a:text-red-400 hover:prose-a:text-red-500 ${!isStudyMode ? 'prose-lg' : ''}`}>
                             <HighlightHandler
                                 highlights={highlights}
                                 onAddHighlight={handleAddHighlight}
@@ -606,31 +594,35 @@ const ArticleReaderPage = () => {
                         <ArticleComments articleId={article.id} />
                     </div>
 
-                    {isStudyMode && isHighlightsOpen && (
-                        <div className="lg:col-span-3 space-y-4">
-                            <StudySidebar
-                                concepts={studyConcepts}
-                                highlights={highlights}
-                                onSelectConcept={handleStudyConceptSelect}
-                                onSelectHighlight={(highlight) => {
-                                    setSearchQuery(highlight.selected_text || '');
-                                    setIsSearchVisible(true);
-                                }}
-                            />
-                            {user && (
-                                <HighlightsSidebar
-                                    highlights={highlights}
-                                    onDeleteHighlight={handleDeleteHighlight}
-                                />
+                    {isStudyMode && (
+                        <aside className={s.sideRail}>
+                            {isHighlightsOpen && (
+                                <div style={{ display: 'grid', gap: vars.space.lg }}>
+                                    <StudySidebar
+                                        concepts={studyConcepts}
+                                        highlights={highlights}
+                                        onSelectConcept={handleStudyConceptSelect}
+                                        onSelectHighlight={(highlight) => {
+                                            setSearchQuery(highlight.selected_text || '');
+                                            setIsSearchVisible(true);
+                                        }}
+                                    />
+                                    {user && (
+                                        <HighlightsSidebar
+                                            highlights={highlights}
+                                            onDeleteHighlight={handleDeleteHighlight}
+                                        />
+                                    )}
+                                </div>
                             )}
-                        </div>
+                        </aside>
                     )}
                 </div>
             </main>
             {showCopied && (
-                <div className="fixed bottom-5 right-5 bg-green-500 text-white px-4 py-2 rounded-none shadow-none flex items-center space-x-2">
-                    <Check size={20} />
-                    <span>Link copied to clipboard!</span>
+                <div className={s.toast}>
+                    <Check size={16} />
+                    <span>Link copied to clipboard</span>
                 </div>
             )}
         </>
