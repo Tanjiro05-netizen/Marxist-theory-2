@@ -321,11 +321,6 @@
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .marxbot-particle,
-    .marxbot-orbit,
-    .marxbot-orbit-2,
-    .marxbot-status-dot {
-        animation: none;
-    }
-}
+/* Reduced motion is handled centrally in styles/theme.css — the particles,
+   orbits and status dot are stood down there with everything else that is
+   decorative, so this file no longer keeps its own list. */

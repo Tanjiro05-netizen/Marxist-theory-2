@@ -16,6 +16,7 @@ export default function Loading() {
       }}
     >
       <div
+        className="motion-loop"
         style={{
           width: 26,
           height: 26,

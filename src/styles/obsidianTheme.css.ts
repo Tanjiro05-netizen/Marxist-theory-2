@@ -634,7 +634,7 @@ export const loadingState = style({
   minHeight: '160px',
 });
 
-export const loadingSpinner = style({
+const loadingSpinnerBase = style({
   width: '26px',
   height: '26px',
   borderRadius: '50%',
@@ -642,6 +642,10 @@ export const loadingSpinner = style({
   borderTopColor: vars.color.accentHover,
   animation: `${spin} var(--dur-spin) linear infinite`,
 });
+
+/* The marker rides on the class rather than on the ten call sites: it tells
+   the reduced-motion rule in styles/theme.css to leave this one turning. */
+export const loadingSpinner = `${loadingSpinnerBase} motion-loop`;
 
 /* ── Centered page header — the publication masthead pattern for every page ── */
 

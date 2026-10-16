@@ -100,14 +100,17 @@ export const loadingWrap = style({
   background: 'radial-gradient(ellipse at center, #0b0d12 0%, #08090d 100%)',
 });
 
-export const spinner = style({
+const spinnerBase = style({
   width: '32px',
   height: '32px',
   border: '2px solid rgba(179, 18, 46,0.2)',
   borderTopColor: vars.color.accent,
   borderRadius: '50%',
-  animation: 'spin 0.8s linear infinite',
+  animation: 'spin var(--dur-spin) linear infinite',
 });
+
+/* motion-loop: keeps turning under reduced motion — see styles/theme.css. */
+export const spinner = `${spinnerBase} motion-loop`;
 
 export const loadingText = style({
   fontFamily: vars.font.label,

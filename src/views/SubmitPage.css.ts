@@ -69,7 +69,9 @@ export const submitRow = style({ display: 'flex', justifyContent: 'space-between
 export const submitAssurance = style({ display: 'flex', alignItems: 'center', gap: '9px', maxWidth: '280px', color: vars.color.textFaint, fontSize: '12px', lineHeight: 1.4 });
 globalStyle(`${submitAssurance} svg`, { flexShrink: 0, color: vars.color.success });
 export const submitBtn = style({ display: 'inline-flex', minWidth: '190px', minHeight: '46px', alignItems: 'center', justifyContent: 'center', gap: vars.space.xs, padding: '12px 22px', background: vars.color.accent, color: '#fff', border: '1px solid transparent', fontSize: '12px', fontWeight: 600, fontFamily: vars.font.label, textTransform: 'uppercase', letterSpacing: '0.13em', cursor: 'pointer', transition: 'background var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)', selectors: { '&:hover:not(:disabled)': { background: vars.color.accentHover }, '&:disabled': { background: vars.color.surfaceSoft, borderColor: vars.color.borderStrong, color: vars.color.textFaint, cursor: 'not-allowed' } } });
-export const spinner = style({ animation: `${rotate} 0.8s linear infinite` });
+const spinnerBase = style({ animation: `${rotate} var(--dur-spin) linear infinite` });
+/* motion-loop: keeps turning under reduced motion — see styles/theme.css. */
+export const spinner = `${spinnerBase} motion-loop`;
 
 const mobile = (className, rules) => globalStyle(`.${className}`, {
   '@media': { 'screen and (max-width: 620px)': rules },

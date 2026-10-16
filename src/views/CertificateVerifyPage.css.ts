@@ -5,7 +5,9 @@ export const page = style({ minHeight: '100vh', background: vars.color.backgroun
 export const inner = style({ maxWidth: '640px', margin: '0 auto', padding: `${vars.space.xl} ${vars.space.md} ${vars.space.hero}` });
 
 export const loadingWrap = style({ textAlign: 'center', padding: `${vars.space.hero} 0` });
-export const spinner = style({ width: '48px', height: '48px', border: `4px solid ${vars.color.accent}`, borderTopColor: 'transparent', borderRadius: '50%', margin: `0 auto ${vars.space.md}`, animation: 'spin var(--dur-spin) linear infinite' });
+const spinnerBase = style({ width: '48px', height: '48px', border: `4px solid ${vars.color.accent}`, borderTopColor: 'transparent', borderRadius: '50%', margin: `0 auto ${vars.space.md}`, animation: 'spin var(--dur-spin) linear infinite' });
+/* motion-loop: keeps turning under reduced motion — see styles/theme.css. */
+export const spinner = `${spinnerBase} motion-loop`;
 export const loadingText = style({ color: vars.color.textMuted, fontSize: '14px' });
 
 export const errorWrap = style({ textAlign: 'center', padding: `${vars.space.hero} 0` });

@@ -246,12 +246,30 @@ body::after {
    the ~330 hover, colour and size changes that make up most of the movement
    here.
 
-   Keyframe animations are deliberately left alone. Neutralising them from
-   here would need !important, and that would freeze the loading spinners
-   along with everything else — a spinner that has stopped reads as a hung
-   page, which is worse than the movement it was meant to spare. The 34
-   @keyframes in the codebase still need deciding one at a time: a reveal
-   should be skipped, an indicator should keep turning. ── */
+   Keyframe animations go the same way, with the one exception carved out of
+   the selector rather than restored after the fact. Everything animated runs
+   for 1ms and once. animation-fill-mode is deliberately left alone, and that
+   is what makes skipping safe: a reveal written with `forwards` or `both`
+   lands on its last frame, so the titles, console lines and chart bars that
+   sit at opacity 0 until their animation puts them right still end up
+   visible. A loop carries no fill mode, so it drops back to its base style —
+   the breathing rules, drifting particles and pulsing dots stay drawn where
+   they are, simply still.
+
+   The exception is the looping indicators. A spinner that has stopped reads
+   as a hung page, which is worse than the movement it was meant to spare, so
+   they are excluded by :not() instead of being switched off and turned back
+   on. Nothing bids against them, and no duration has to be invented here for
+   them to turn at — they keep the timing they were written with. Two class
+   names mark one thing: Tailwind's .animate-spin, already on the fifty-odd
+   icon spinners and so free, and .motion-loop for the rest — the route
+   spinner in app/loading.jsx, and appended to the spinner classes in
+   obsidianTheme, Globe, CertificateVerifyPage and SubmitPage. Anything new
+   that must keep turning takes .motion-loop too.
+
+   The page cross-fade is outside all of this: ::view-transition-* pseudo
+   elements are not in the document tree, so * never reaches them, and
+   styles/view-transitions.css stands them down itself. ── */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -259,5 +277,13 @@ body::after {
     transition-duration: 1ms !important;
     transition-delay: 0ms !important;
     scroll-behavior: auto !important;
+  }
+
+  *:not(.motion-loop):not(.animate-spin),
+  *:not(.motion-loop):not(.animate-spin)::before,
+  *:not(.motion-loop):not(.animate-spin)::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
