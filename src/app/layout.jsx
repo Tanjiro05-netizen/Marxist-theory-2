@@ -1,5 +1,6 @@
 import '@/src/index.css';
 import '@/src/styles/theme.css';
+import '@/src/styles/view-transitions.css';
 import { Cormorant_Garamond, Outfit, JetBrains_Mono } from 'next/font/google';
 import Providers from './providers.jsx';
 

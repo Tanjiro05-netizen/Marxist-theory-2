@@ -7,8 +7,10 @@ import { style } from '@vanilla-extract/css';
    (dark) position because dark is the site's default, mirroring the
    experimental reader's switch. */
 
-const SLIDE = 'transform 550ms cubic-bezier(0.3, 1.4, 0.35, 1)';
-const FADE = 'opacity 300ms ease';
+/* The one deliberate spring on the site: a switch should feel like it
+   snaps over, so this curve overshoots where everything else eases out. */
+const SLIDE = 'transform var(--dur-element) cubic-bezier(0.3, 1.4, 0.35, 1)';
+const FADE = 'opacity var(--dur-element) var(--ease-standard)';
 
 export const switchBtn = style({
   display: 'inline-flex',
@@ -28,7 +30,7 @@ export const track = style({
   borderRadius: '999px',
   border: '1px solid var(--line)',
   background: 'var(--line-soft)',
-  transition: 'background-color 300ms ease, border-color 300ms ease',
+  transition: 'background-color var(--dur-element) var(--ease-standard), border-color var(--dur-element) var(--ease-standard)',
 });
 
 export const knob = style({
@@ -44,7 +46,7 @@ export const knob = style({
   placeItems: 'center',
   transform: 'translateY(-50%)',
   boxShadow: '0 1px 3px rgba(11, 13, 18, 0.25)',
-  transition: `${SLIDE}, background-color 300ms ease`,
+  transition: `${SLIDE}, background-color var(--dur-element) var(--ease-standard)`,
   selectors: {
     'html:not([data-theme="light"]) &': {
       transform: 'translateY(-50%) translateX(20px)',
@@ -102,7 +104,7 @@ export const targetIcon = style({
   height: '10px',
   marginTop: '-5px',
   color: 'var(--text-tertiary)',
-  transition: 'opacity 300ms ease 120ms, transform 400ms ease',
+  transition: 'opacity var(--dur-element) var(--ease-standard) var(--dur-micro), transform var(--dur-element) var(--ease-standard)',
   '@media': {
     '(prefers-reduced-motion: reduce)': {
       transition: 'none',

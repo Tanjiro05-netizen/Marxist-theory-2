@@ -20,7 +20,7 @@ export const toolCard = style({
   padding: vars.space.md,
   background: vars.color.surface,
   cursor: 'pointer',
-  transition: 'all 200ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   textAlign: 'left',
   fontFamily: vars.font.body,
   selectors: { '&:hover': { background: vars.color.surfaceSoft, borderColor: vars.color.borderStrong, transform: 'scale(1.02)' } },
@@ -41,7 +41,7 @@ export const toolNameActive = style({ color: vars.color.text });
 
 export const toolDesc = style({ fontSize: '13px', color: vars.color.textMuted, lineHeight: 1.5 });
 
-export const toolAccent = style({ position: 'absolute', bottom: 0, left: 0, height: '2px', background: vars.color.accent, transition: 'width 300ms ease', width: 0 });
+export const toolAccent = style({ position: 'absolute', bottom: 0, left: 0, height: '2px', background: vars.color.accent, transition: 'width var(--dur-element) var(--ease-standard)', width: 0 });
 export const toolAccentActive = style({ width: '100%' });
 
 export const timelineBtn = style({
@@ -53,7 +53,7 @@ export const timelineBtn = style({
   padding: vars.space.md,
   background: vars.color.surface,
   cursor: 'pointer',
-  transition: 'all 200ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   fontFamily: vars.font.body,
   display: 'flex',
   alignItems: 'center',

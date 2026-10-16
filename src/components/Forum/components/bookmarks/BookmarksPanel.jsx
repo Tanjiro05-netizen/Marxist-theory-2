@@ -21,7 +21,7 @@ function BookmarkItem({ bookmark, onView, onRemove }) {
         display: 'flex',
         gap: spacing.md,
         cursor: 'pointer',
-        transition: 'background-color 0.15s ease',
+        transition: 'background-color var(--dur-micro) var(--ease-standard)',
       }}
       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'}
       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
@@ -69,7 +69,7 @@ function BookmarkItem({ bookmark, onView, onRemove }) {
           padding: '4px',
           fontSize: '11px',
           alignSelf: 'flex-start',
-          transition: 'color 0.15s ease',
+          transition: 'color var(--dur-micro) var(--ease-standard)',
         }}
         onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
         onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.3)'}
@@ -171,7 +171,7 @@ function BookmarksPanel({ apiService, userId, onViewThread, onClose }) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              transition: 'background-color 0.15s ease',
+              transition: 'background-color var(--dur-micro) var(--ease-standard)',
             }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}

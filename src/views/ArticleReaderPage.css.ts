@@ -14,12 +14,12 @@ export const errorLink = style({
   display: 'inline-flex', alignItems: 'center', minHeight: '44px', padding: `0 ${vars.space.lg}`,
   border: `1px solid ${vars.color.borderStrong}`, color: vars.color.text, textDecoration: 'none',
   fontFamily: vars.font.label, fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase',
-  transition: 'color 160ms ease, border-color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: { '&:hover': { color: vars.color.accentHover, borderColor: vars.color.accentHover } },
 });
 
 export const progressTrack = style({ position: 'fixed', top: 0, left: 0, width: '100%', height: '3px', zIndex: 60, background: 'rgba(0, 0, 0, 0.35)' });
-export const progressFill = style({ height: '100%', background: vars.color.accent, transition: 'width 150ms linear' });
+export const progressFill = style({ height: '100%', background: vars.color.accent, transition: 'width var(--dur-micro) linear' });
 
 export const stage = style({ minWidth: 0, padding: `${vars.space.lg} max(24px, env(safe-area-inset-right)) 0 max(24px, env(safe-area-inset-left))` });
 
@@ -62,7 +62,7 @@ export const toolButton = style({
   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
   width: '38px', height: '38px',
   background: 'transparent', border: '1px solid transparent', color: vars.color.textSoft,
-  cursor: 'pointer', transition: 'color 150ms ease, border-color 150ms ease',
+  cursor: 'pointer', transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.text, borderColor: vars.color.borderStrong },
     '&:focus-visible': { color: vars.color.text, borderColor: vars.color.accentHover },
@@ -74,7 +74,7 @@ export const toolTextButton = style({
   minHeight: '34px', padding: `0 ${vars.space.sm}`,
   background: 'transparent', border: `1px solid ${vars.color.borderStrong}`, color: vars.color.textSoft,
   fontFamily: vars.font.label, fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase',
-  cursor: 'pointer', textDecoration: 'none', transition: 'color 150ms ease, border-color 150ms ease',
+  cursor: 'pointer', textDecoration: 'none', transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.accentHover, borderColor: vars.color.accentHover },
     '&:focus-visible': { color: vars.color.accentHover, borderColor: vars.color.accentHover },

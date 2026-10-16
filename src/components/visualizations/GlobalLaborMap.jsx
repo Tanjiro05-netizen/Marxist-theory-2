@@ -86,7 +86,7 @@ const GlobalLaborMap = ({ strikes, movements }) => {
                       hover: { 
                         fill: hasEvents ? "#234876" : "#262a35", 
                         outline: 'none',
-                        transition: 'all 250ms' 
+                        transition: 'all var(--dur-element)' 
                       },
                       pressed: { outline: 'none' },
                     }}

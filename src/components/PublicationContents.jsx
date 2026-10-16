@@ -31,6 +31,9 @@ export default function PublicationContents({ user, columns = false, onRestricte
                 event.preventDefault();
                 onRestrictedClick();
               } : undefined}
+              /* This one opens the members dialog instead of navigating —
+                 keep the page cross-fade off it. */
+              data-no-transition={restricted && onRestrictedClick ? '' : undefined}
             >
               <span className={s.number} aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
               <span className={s.iconFrame} aria-hidden="true"><Icon size={17} strokeWidth={1.75} /></span>

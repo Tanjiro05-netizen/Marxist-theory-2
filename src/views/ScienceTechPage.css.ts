@@ -29,7 +29,7 @@ export const tabBtn = style({
   fontSize: '13px',
   fontWeight: 500,
   cursor: 'pointer',
-  transition: 'all 180ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   background: vars.color.surfaceSoft,
   color: vars.color.textMuted,
   selectors: { '&:hover': { background: vars.color.overlay, color: vars.color.text } },

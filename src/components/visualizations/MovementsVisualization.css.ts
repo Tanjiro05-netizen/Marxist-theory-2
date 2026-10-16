@@ -39,7 +39,7 @@ export const modeBtn = style({
   letterSpacing: '0.16em',
   textTransform: 'uppercase',
   cursor: 'pointer',
-  transition: 'all 140ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover:not(:disabled)': { color: vars.color.text, background: vars.color.surfaceSoft },
     '&:disabled': { opacity: 0.35, cursor: 'not-allowed' },
@@ -126,7 +126,7 @@ export const playBtn = style({
   background: vars.color.surface,
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'all 140ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { background: vars.color.surfaceSoft, color: vars.color.text },
   },
@@ -153,7 +153,7 @@ export const legendItem = style({
   letterSpacing: '0.06em',
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'all 140ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { borderColor: vars.color.borderStrong, color: vars.color.text },
   },
@@ -293,7 +293,7 @@ export const statsClose = style({
   padding: 0,
   color: vars.color.textFaint,
   cursor: 'pointer',
-  transition: 'color 140ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.text },
   },
@@ -452,7 +452,7 @@ export const country = style({
   strokeWidth: 0.5,
   vectorEffect: 'non-scaling-stroke',
   cursor: 'pointer',
-  transition: 'fill 160ms ease',
+  transition: 'fill var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { fill: '#2c3242' },
   },

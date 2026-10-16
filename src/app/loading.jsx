@@ -22,7 +22,7 @@ export default function Loading() {
           borderRadius: '50%',
           border: '2px solid #262a35',
           borderTopColor: '#d41f3d',
-          animation: 'app-route-spin 800ms linear infinite',
+          animation: 'app-route-spin var(--dur-spin) linear infinite',
         }}
       />
       <style>{`@keyframes app-route-spin { to { transform: rotate(360deg); } }`}</style>

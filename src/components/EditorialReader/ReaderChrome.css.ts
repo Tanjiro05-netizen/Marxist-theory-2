@@ -37,7 +37,7 @@ export const tocBtn = style({
   background: 'transparent',
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'color 160ms ease, border-color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.accentHover, borderColor: vars.color.accentHover },
   },
@@ -84,7 +84,7 @@ export const tocSheet = style({
   boxShadow: vars.shadow.panel,
   zIndex: 91,
   overscrollBehavior: 'contain',
-  animation: `${readerTocSlideUp} 260ms cubic-bezier(0.32, 0.72, 0, 1)`,
+  animation: `${readerTocSlideUp} var(--dur-element) var(--ease-standard)`,
 });
 
 export const tocHandle = style({
@@ -154,7 +154,7 @@ export const tocItem = style({
   color: vars.color.textMuted,
   textAlign: 'left',
   cursor: 'pointer',
-  transition: 'color 140ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.text },
   },

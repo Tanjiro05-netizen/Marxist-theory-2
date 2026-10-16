@@ -174,7 +174,10 @@ const Header = ({ bandStatic = false }) => {
             {/* Masthead — centered, scrolls away */}
             <div className={s.masthead}>
                 <Link href="/home" className={s.mastheadLink}>
-                    <span className={s.mastheadWord}>
+                    {/* The landing page's wordmark travels into this one on
+                        the way in; NavTransition waits for this to be on
+                        screen before it snapshots. */}
+                    <span className={s.mastheadWord} data-site-wordmark>
                         Marxist<span className={s.mastheadDot}>.</span>info
                     </span>
                     <span className={s.mastheadRule} aria-hidden="true" />

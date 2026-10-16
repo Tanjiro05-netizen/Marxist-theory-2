@@ -39,6 +39,12 @@ export const mastheadWord = style({
   letterSpacing: '0.06em',
   lineHeight: 1,
   color: vars.color.text,
+  /* Paired with the landing page's <h1> so the wordmark travels in from
+     there rather than appearing — see src/styles/view-transitions.css.
+     inline-block because an inline box can fragment, and a fragmented box
+     can't be captured. */
+  display: 'inline-block',
+  viewTransitionName: 'site-wordmark',
 });
 
 export const mastheadDot = style({
@@ -51,7 +57,9 @@ export const mastheadRule = style({
   height: '2px',
   background: vars.color.accent,
   margin: '12px auto 0',
-  transition: 'width 300ms cubic-bezier(0.22, 1, 0.36, 1)',
+  /* Travels with the wordmark. */
+  viewTransitionName: 'site-rule',
+  transition: 'width var(--dur-element) var(--ease-standard)',
   selectors: {
     [`${mastheadLink}:hover &`]: {
       width: '52px',
@@ -74,7 +82,7 @@ export const navband = style({
   WebkitBackdropFilter: 'blur(18px) saturate(150%)',
   borderTop: `1px solid ${bandHairline}`,
   borderBottom: `1px solid ${bandHairline}`,
-  transition: 'box-shadow 280ms ease, background 280ms ease',
+  transition: 'box-shadow var(--dur-element) var(--ease-standard), background var(--dur-element) var(--ease-standard)',
   selectors: {
     'html[data-theme="light"] &': {
       background: 'rgba(244, 242, 236, 0.8)',
@@ -165,7 +173,7 @@ export const navIndicator = style({
   background: 'rgba(224, 204, 170, 0.5)',
   opacity: 0,
   pointerEvents: 'none',
-  transition: 'transform 360ms cubic-bezier(0.22, 1, 0.36, 1), width 360ms cubic-bezier(0.22, 1, 0.36, 1), height 360ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease, background-color 280ms ease',
+  transition: 'transform var(--dur-element) var(--ease-standard), width var(--dur-element) var(--ease-standard), height var(--dur-element) var(--ease-standard), opacity var(--dur-element) var(--ease-standard), background-color var(--dur-element) var(--ease-standard)',
   selectors: {
     'html:not([data-theme="light"]) &': {
       background: 'rgba(193, 23, 48, 0.18)',
@@ -195,7 +203,7 @@ export const navLink = style({
   letterSpacing: '0.12em',
   color: bandInk,
   whiteSpace: 'nowrap',
-  transition: 'color 180ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   '@media': {
     'screen and (max-width: 1599px)': {
       fontSize: '9px',
@@ -286,7 +294,7 @@ export const dropdownMenu = style({
   padding: `${vars.space.xxs} 0`,
   opacity: 0,
   visibility: 'hidden' as any,
-  transition: 'opacity 180ms ease, visibility 180ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1)',
+  transition: 'opacity var(--dur-micro) var(--ease-standard), visibility var(--dur-micro) var(--ease-standard), transform var(--dur-element) var(--ease-standard)',
   transform: 'translateY(-4px)',
   zIndex: 60,
   selectors: {
@@ -309,7 +317,7 @@ export const dropdownItem = style({
   fontFamily: vars.font.body,
   fontSize: '14px',
   color: bandInk,
-  transition: 'color 140ms ease, background 140ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       background: 'rgba(155, 16, 34, 0.06)',
@@ -363,7 +371,7 @@ export const bandIconButton = style({
   cursor: 'pointer',
   color: bandInk,
   opacity: 0.65,
-  transition: 'color 180ms ease, opacity 180ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), opacity var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: bandAccent,
@@ -399,7 +407,7 @@ export const iconButton = style({
   color: bandInk,
   opacity: 0.7,
   cursor: 'pointer',
-  transition: 'color 180ms ease, opacity 180ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), opacity var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: bandAccent,
@@ -553,7 +561,7 @@ export const loginButton = style({
   borderRadius: vars.radius.tiny,
   cursor: 'pointer',
   whiteSpace: 'nowrap',
-  transition: 'background 200ms ease, border-color 200ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: bandAccent,
@@ -631,7 +639,7 @@ export const mobileLink = style({
   letterSpacing: '0.2em',
   color: vars.color.text,
   borderBottom: vars.border.subtle,
-  transition: 'color 180ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.accentHover,
@@ -675,7 +683,7 @@ export const mobileSubLink = style({
   fontFamily: vars.font.body,
   fontSize: '16px',
   color: vars.color.textSoft,
-  transition: 'color 180ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.accentHover,
@@ -747,7 +755,7 @@ export const mobileLogout = style({
   background: 'none',
   border: 'none',
   cursor: 'pointer',
-  transition: 'color 180ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.accentHover,

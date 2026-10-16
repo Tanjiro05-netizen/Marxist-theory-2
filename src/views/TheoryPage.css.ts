@@ -47,7 +47,7 @@ export const searchInput = style({
   fontSize: '14px',
   fontFamily: vars.font.body,
   outline: 'none',
-  transition: 'border-color 180ms ease',
+  transition: 'border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:focus': { borderColor: vars.color.accent },
     '&::placeholder': { color: vars.color.textFaint },
@@ -110,7 +110,7 @@ export const catButton = style({
   fontWeight: 500,
   fontFamily: vars.font.body,
   cursor: 'pointer',
-  transition: 'all 140ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
@@ -170,7 +170,7 @@ export const card = style({
   padding: vars.space.md,
   display: 'flex',
   flexDirection: 'column',
-  transition: 'background 180ms ease, border-color 180ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { background: vars.color.overlay, borderColor: vars.color.borderStrong },
   },
@@ -240,7 +240,7 @@ export const bookmarkBtn = style({
   padding: 0,
   cursor: 'pointer',
   color: vars.color.textFaint,
-  transition: 'color 140ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: { '&:hover': { color: vars.color.accent } },
 });
 
@@ -300,7 +300,7 @@ export const uploadBtn = style({
   fontWeight: 500,
   fontFamily: vars.font.body,
   cursor: 'pointer',
-  transition: 'background 180ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard)',
   selectors: { '&:hover': { background: vars.color.accentHover } },
 });
 
@@ -321,7 +321,7 @@ export const communityCard = style({
   padding: vars.space.md,
   display: 'flex',
   flexDirection: 'column',
-  transition: 'background 180ms ease, border-color 180ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { background: vars.color.overlay, borderColor: vars.color.borderStrong },
   },
@@ -382,7 +382,7 @@ export const saveBtn = style({
   fontWeight: 500,
   fontFamily: vars.font.body,
   cursor: 'pointer',
-  transition: 'all 140ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   background: vars.color.surfaceSoft,
   color: vars.color.textSoft,
   selectors: {

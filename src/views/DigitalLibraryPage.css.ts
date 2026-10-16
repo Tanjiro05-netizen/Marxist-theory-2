@@ -112,7 +112,7 @@ export const localLists = style({
   textTransform: 'uppercase',
   whiteSpace: 'nowrap',
   cursor: 'pointer',
-  transition: 'border-color 160ms ease, color 160ms ease',
+  transition: 'border-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { borderColor: vars.color.accentHover, color: vars.color.text },
   },
@@ -146,7 +146,7 @@ export const sheetOverlay = style({
   background: 'rgba(6, 5, 4, 0.72)',
   opacity: 0,
   pointerEvents: 'none',
-  transition: 'opacity 250ms ease',
+  transition: 'opacity var(--dur-element) var(--ease-standard)',
   zIndex: 40,
   selectors: {
     '&.open': { opacity: 1, pointerEvents: 'auto' },
@@ -187,7 +187,7 @@ export const side = style({
       boxShadow: vars.shadow.panel,
       zIndex: 41,
       transform: 'translateY(100%)',
-      transition: 'transform 320ms cubic-bezier(0.32, 0.72, 0, 1)',
+      transition: 'transform var(--dur-element) var(--ease-standard)',
     },
   },
 });
@@ -308,7 +308,7 @@ export const sortChip = style({
   letterSpacing: '0.04em',
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'color 140ms ease, border-color 140ms ease, background-color 140ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard), background-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.text },
   },
@@ -363,7 +363,7 @@ export const catRow = style({
   color: vars.color.textMuted,
   textAlign: 'left',
   cursor: 'pointer',
-  transition: 'background-color 140ms ease, color 140ms ease',
+  transition: 'background-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.text },
   },
@@ -506,7 +506,7 @@ export const fmtRow = style({
   color: vars.color.textMuted,
   textAlign: 'left',
   cursor: 'pointer',
-  transition: 'color 140ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.text },
   },
@@ -609,7 +609,7 @@ export const sheetCta = style({
   letterSpacing: '0.06em',
   textTransform: 'uppercase',
   cursor: 'pointer',
-  transition: 'background-color 160ms ease',
+  transition: 'background-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { background: vars.color.accentHover },
   },
@@ -740,7 +740,7 @@ export const viewBtn = style({
   background: 'transparent',
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'background-color 180ms ease, border-color 180ms ease, color 180ms ease',
+  transition: 'background-color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.text },
   },
@@ -830,7 +830,7 @@ export const catChip = style({
   cursor: 'pointer',
   flex: 'none',
   scrollSnapAlign: 'start',
-  transition: 'color 140ms ease, border-color 140ms ease, background-color 140ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard), background-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.text },
   },
@@ -960,7 +960,7 @@ export const uploadAction = style({
   textTransform: 'uppercase',
   color: vars.color.textMuted,
   whiteSpace: 'nowrap',
-  transition: 'border-color 160ms ease, color 160ms ease',
+  transition: 'border-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { borderColor: vars.color.accentHover, color: vars.color.accentHover },
   },
@@ -990,7 +990,7 @@ export const card = style({
      picking one up (hover) squares it. */
   transform: 'rotate(var(--dl-tilt, 0deg)) translateY(var(--dl-lift, 0px))',
   transition:
-    'transform 250ms cubic-bezier(0.2, 0.7, 0.3, 1), border-color 250ms ease, box-shadow 250ms ease',
+    'transform var(--dur-element) var(--ease-standard), border-color var(--dur-element) var(--ease-standard), box-shadow var(--dur-element) var(--ease-standard)',
   '@media': {
     [hoverable]: {
       selectors: {
@@ -1007,7 +1007,7 @@ export const card = style({
       border: 'none',
       borderBottom: vars.border.strong,
       background: 'transparent',
-      transition: 'background-color 180ms ease',
+      transition: 'background-color var(--dur-micro) var(--ease-standard)',
       /* Long "Load more" lists stay cheap: off-screen rows skip layout/paint
          while staying in the DOM for find-in-page and screen readers. */
       contentVisibility: 'auto',
@@ -1176,7 +1176,7 @@ export const adminActions = style({
   display: 'flex',
   gap: '6px',
   opacity: 0,
-  transition: 'opacity 180ms ease',
+  transition: 'opacity var(--dur-micro) var(--ease-standard)',
 });
 
 globalStyle(`.${card}:hover .${adminActions}`, {
@@ -1285,7 +1285,7 @@ export const cardActions = style({
   marginTop: 'auto',
   paddingTop: '12px',
   opacity: 0,
-  transition: 'opacity 180ms ease',
+  transition: 'opacity var(--dur-micro) var(--ease-standard)',
   '@media': {
     [mobile]: { display: 'none' },
   },
@@ -1323,7 +1323,7 @@ export const actionRead = style({
   letterSpacing: '0.14em',
   textTransform: 'uppercase',
   cursor: 'pointer',
-  transition: 'background-color 160ms ease, border-color 160ms ease',
+  transition: 'background-color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { background: vars.color.accentHover, borderColor: vars.color.accentHover },
   },
@@ -1345,7 +1345,7 @@ export const actionPdf = style({
   letterSpacing: '0.14em',
   textTransform: 'uppercase',
   cursor: 'pointer',
-  transition: 'border-color 160ms ease, color 160ms ease',
+  transition: 'border-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { borderColor: vars.color.accentHover, color: vars.color.accentHover },
   },
@@ -1380,7 +1380,7 @@ export const lvRow = style({
   padding: '13px 6px',
   borderBottom: vars.border.strong,
   color: 'inherit',
-  transition: 'background-color 180ms ease',
+  transition: 'background-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { background: vars.color.surface },
   },
@@ -1475,7 +1475,7 @@ export const pageBtn = style({
   fontSize: '11px',
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'background-color 160ms ease, border-color 160ms ease, color 160ms ease',
+  transition: 'background-color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.text },
     '&:disabled': { opacity: 0.35, cursor: 'default', pointerEvents: 'none' },

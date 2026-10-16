@@ -129,7 +129,7 @@ const ReadingListPanel = ({ onClose, onNavigateToBook }) => {
                     style={{
                       color: 'rgba(255,255,255,0.2)',
                       transform: expandedList === list.id ? 'rotate(90deg)' : 'none',
-                      transition: 'transform 150ms',
+                      transition: 'transform var(--dur-micro)',
                     }}
                   />
                 </div>

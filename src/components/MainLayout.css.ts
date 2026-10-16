@@ -50,7 +50,7 @@ export const fabCircle = style({
   background: vars.color.surface,
   border: vars.border.accent,
   color: vars.color.accentHover,
-  transition: 'border-color 240ms ease, background 240ms ease',
+  transition: 'border-color var(--dur-element) var(--ease-standard), background var(--dur-element) var(--ease-standard)',
   selectors: {
     '&:hover': {
       borderColor: vars.color.accentHover,
@@ -80,7 +80,7 @@ export const fabTooltip = style({
   color: vars.color.textMuted,
   whiteSpace: 'nowrap',
   opacity: 0,
-  transition: 'opacity 180ms ease',
+  transition: 'opacity var(--dur-micro) var(--ease-standard)',
   selectors: {
     [`${fab}:hover &`]: {
       opacity: 1,

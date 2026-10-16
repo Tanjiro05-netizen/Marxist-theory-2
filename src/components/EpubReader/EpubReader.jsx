@@ -32,7 +32,7 @@ const ToolbarBtn = ({ icon: Icon, active, onClick, title }) => (
       color: active ? '#d41f3d' : 'rgba(255,255,255,0.6)',
       border: 'none',
       cursor: 'pointer',
-      transition: 'color 0.2s',
+      transition: 'color var(--dur-micro)',
     }}
   >
     <Icon size={18} />
@@ -68,7 +68,7 @@ const NavButtonArea = ({ direction, onClick, disabled }) => (
         display: 'flex', alignItems: 'center', justifyContent: 'center', 
         color: '#fff', border: '1px solid #262a35',
         boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
-        transition: 'background 0.2s'
+        transition: 'background var(--dur-micro)'
       }}
     >
       {direction === 'left' ? <ChevronLeft size={28} /> : <ChevronRight size={28} />}
@@ -895,14 +895,14 @@ const EpubReader = ({ url, title, onProgressChange, onToggleFullscreen, isFullsc
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={() => { setViewMode('paginated'); localStorage.setItem('epub-viewmode', 'paginated'); }}
-                  style={{ flex: 1, padding: '10px 8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: viewMode === 'paginated' ? 'rgba(255,255,255,0.1)' : 'transparent', color: viewMode === 'paginated' ? '#fff' : 'rgba(255,255,255,0.5)', border: 'none', borderRadius: '0px', cursor: 'pointer', transition: 'all 0.2s', fontSize: '13px', fontWeight: 500 }}
+                  style={{ flex: 1, padding: '10px 8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: viewMode === 'paginated' ? 'rgba(255,255,255,0.1)' : 'transparent', color: viewMode === 'paginated' ? '#fff' : 'rgba(255,255,255,0.5)', border: 'none', borderRadius: '0px', cursor: 'pointer', transition: 'all var(--dur-micro)', fontSize: '13px', fontWeight: 500 }}
                 >
                   <MoveHorizontal size={16} /> {t('book.pagesLayout')}
                 </motion.button>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={() => { setViewMode(SCROLLED_VIEW_MODE); localStorage.setItem('epub-viewmode', SCROLLED_VIEW_MODE); }}
-                  style={{ flex: 1, padding: '10px 8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: isScrolledMode ? 'rgba(255,255,255,0.1)' : 'transparent', color: isScrolledMode ? '#fff' : 'rgba(255,255,255,0.5)', border: 'none', borderRadius: '0px', cursor: 'pointer', transition: 'all 0.2s', fontSize: '13px', fontWeight: 500 }}
+                  style={{ flex: 1, padding: '10px 8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: isScrolledMode ? 'rgba(255,255,255,0.1)' : 'transparent', color: isScrolledMode ? '#fff' : 'rgba(255,255,255,0.5)', border: 'none', borderRadius: '0px', cursor: 'pointer', transition: 'all var(--dur-micro)', fontSize: '13px', fontWeight: 500 }}
                 >
                   <MoveVertical size={16} /> {t('book.scrollLayout')}
                 </motion.button>
@@ -1000,7 +1000,7 @@ const EpubReader = ({ url, title, onProgressChange, onToggleFullscreen, isFullsc
                           fontWeight: isActive ? 600 : depth === 0 ? 500 : 400,
                           fontSize: depth === 0 ? '14px' : '12.5px',
                           lineHeight: '1.5', cursor: 'pointer',
-                          transition: 'color 0.2s, background 0.2s',
+                          transition: 'color var(--dur-micro), background var(--dur-micro)',
                           marginBottom: '2px',
                         }}
                       >
@@ -1230,7 +1230,7 @@ const EpubReader = ({ url, title, onProgressChange, onToggleFullscreen, isFullsc
       {/* Reading progress bar */}
       {readingProgress > 0 && (
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'rgba(255,255,255,0.04)', zIndex: 30 }}>
-          <div style={{ height: '100%', width: `${readingProgress}%`, background: '#b3122e', transition: 'width 0.5s ease' }} />
+          <div style={{ height: '100%', width: `${readingProgress}%`, background: '#b3122e', transition: 'width 0.5s var(--ease-standard)' }} />
         </div>
       )}
     </div>

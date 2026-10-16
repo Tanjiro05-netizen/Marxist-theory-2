@@ -15,7 +15,7 @@ export const backLink = style({
   display: 'inline-flex', alignItems: 'center', gap: vars.space.xs, minHeight: '44px',
   fontSize: '12px', fontFamily: vars.font.label, letterSpacing: '0.14em', textTransform: 'uppercase',
   color: vars.color.textMuted, marginBottom: vars.space.md, textDecoration: 'none',
-  transition: 'color 140ms ease', selectors: { '&:hover': { color: vars.color.accentHover } },
+  transition: 'color var(--dur-micro) var(--ease-standard)', selectors: { '&:hover': { color: vars.color.accentHover } },
 });
 export const loadingWrap = style({ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: `${vars.space.hero} 0` });
 export const errorWrap = style({ textAlign: 'center', padding: `${vars.space.hero} 0`, color: vars.color.textMuted });
@@ -74,7 +74,7 @@ export const navSection = style({
 });
 export const navTitle = style({ fontSize: '12px', fontFamily: vars.font.label, fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: vars.color.textMuted, marginBottom: vars.space.sm });
 export const navGrid = style({ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: vars.space.sm, '@media': { 'screen and (max-width: 640px)': { gridTemplateColumns: '1fr' } } });
-export const navCard = style({ padding: vars.space.sm, border: `1px solid ${vars.color.borderStrong}`, transition: 'border-color 140ms ease', selectors: { '&:hover': { borderColor: vars.color.accentHover } } });
+export const navCard = style({ padding: vars.space.sm, border: `1px solid ${vars.color.borderStrong}`, transition: 'border-color var(--dur-micro) var(--ease-standard)', selectors: { '&:hover': { borderColor: vars.color.accentHover } } });
 export const navCardEmpty = style({ padding: vars.space.sm, border: `1px solid ${vars.color.border}`, fontSize: '11px', color: vars.color.textFaint });
 export const navLabel = style({ fontSize: '11px', color: vars.color.textFaint, display: 'inline-flex', alignItems: 'center', gap: vars.space.xxs, fontFamily: vars.font.label, letterSpacing: '0.08em', textTransform: 'uppercase' });
 export const navCardTitle = style({ fontSize: '14px', color: vars.color.text, marginTop: vars.space.xxs, lineHeight: 1.4 });

@@ -24,7 +24,7 @@ export const backLink = style({
   color: vars.color.textMuted,
   marginBottom: vars.space.xs,
   textDecoration: 'none',
-  transition: 'color 140ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: { '&:hover': { color: vars.color.accentHover } },
 });
 
@@ -141,7 +141,7 @@ export const progressLabel = style({
 });
 
 export const progressTrack = style({ flex: 1, height: '2px', background: vars.color.surfaceSoft, overflow: 'hidden' });
-export const progressFill = style({ height: '100%', background: vars.color.accent, transition: 'width 0.4s ease' });
+export const progressFill = style({ height: '100%', background: vars.color.accent, transition: 'width 0.4s var(--ease-standard)' });
 
 /* ── Toolbar: view toggle + actions ── */
 
@@ -169,7 +169,7 @@ const tabUnderline = {
   background: vars.color.accent,
   transform: 'scaleX(0)',
   transformOrigin: 'left center',
-  transition: 'transform 240ms cubic-bezier(0.22, 1, 0.36, 1)',
+  transition: 'transform var(--dur-element) var(--ease-standard)',
 };
 
 export const viewTab = style({
@@ -187,7 +187,7 @@ export const viewTab = style({
   textTransform: 'uppercase',
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&::after': tabUnderline,
     '&:hover': { color: vars.color.text },
@@ -220,7 +220,7 @@ export const toolBtn = style({
   textTransform: 'uppercase',
   cursor: 'pointer',
   textDecoration: 'none',
-  transition: 'color 160ms ease, border-color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.accentHover, borderColor: vars.color.accentHover },
   },
@@ -287,7 +287,7 @@ export const suggestedCover = style({
   border: `1px solid ${vars.color.borderStrong}`,
   background: vars.color.surface,
   overflow: 'hidden',
-  transition: 'border-color 180ms ease, box-shadow 180ms ease',
+  transition: 'border-color var(--dur-micro) var(--ease-standard), box-shadow var(--dur-micro) var(--ease-standard)',
   selectors: {
     [`${suggestedCard}:hover &`]: {
       borderColor: 'rgba(155, 16, 34, 0.55)',
@@ -307,7 +307,7 @@ export const suggestedBookTitle = style({
   fontWeight: 500,
   lineHeight: 1.3,
   color: vars.color.text,
-  transition: 'color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     [`${suggestedCard}:hover &`]: { color: vars.color.accentHover },
   },

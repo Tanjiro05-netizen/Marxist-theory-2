@@ -38,7 +38,7 @@ function NotificationItem({ notification, onView, onMarkRead, onDelete }) {
         display: 'flex',
         gap: spacing.sm,
         cursor: 'pointer',
-        transition: 'background-color 0.15s ease',
+        transition: 'background-color var(--dur-micro) var(--ease-standard)',
       }}
       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'}
       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = is_read ? 'transparent' : 'rgba(255, 255, 255, 0.03)'}
@@ -109,7 +109,7 @@ function NotificationItem({ notification, onView, onMarkRead, onDelete }) {
             padding: '4px',
             fontSize: '11px',
             lineHeight: 1,
-            transition: 'color 0.15s ease',
+            transition: 'color var(--dur-micro) var(--ease-standard)',
           }}
           onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
           onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.3)'}
@@ -253,7 +253,7 @@ function NotificationsPanel({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              transition: 'background-color 0.15s ease',
+              transition: 'background-color var(--dur-micro) var(--ease-standard)',
             }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}

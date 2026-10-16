@@ -535,7 +535,7 @@ export const feedCard = style({
   borderRadius: '0px',
   border: vars.border.subtle,
   background: vars.color.surface,
-  transition: 'border-color 160ms ease, background 160ms ease',
+  transition: 'border-color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       borderColor: vars.color.borderStrong,

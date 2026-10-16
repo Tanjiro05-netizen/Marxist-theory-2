@@ -37,7 +37,7 @@ const tabUnderline = {
   background: vars.color.accent,
   transform: 'scaleX(0)',
   transformOrigin: 'left center',
-  transition: 'transform 240ms cubic-bezier(0.22, 1, 0.36, 1)',
+  transition: 'transform var(--dur-element) var(--ease-standard)',
 };
 
 export const filterBtn = style({
@@ -52,7 +52,7 @@ export const filterBtn = style({
   textTransform: 'uppercase',
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'color 180ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&::after': tabUnderline,
     '&:hover': { color: vars.color.text },
@@ -82,7 +82,7 @@ export const scrollBtn = style({
   border: vars.border.strong,
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'opacity 200ms ease, color 180ms ease, border-color 180ms ease',
+  transition: 'opacity var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.accentHover,
@@ -153,7 +153,7 @@ export const nodeDot = style({
   background: vars.color.background,
   border: `1px solid ${vars.color.accent}`,
   transform: 'rotate(45deg)',
-  transition: 'background 200ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard)',
 });
 
 export const nodeDotActive = style({
@@ -222,7 +222,7 @@ export const title = style({
 export const titleIcon = style({
   color: vars.color.textFaint,
   flexShrink: 0,
-  transition: 'color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     [`${title}:hover &`]: { color: vars.color.accentHover },
   },
@@ -266,7 +266,7 @@ export const personTag = style({
   textTransform: 'uppercase',
   color: vars.color.textMuted,
   textDecoration: 'none',
-  transition: 'color 160ms ease, border-color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.accentHover,
@@ -343,7 +343,7 @@ export const modalClose = style({
   border: vars.border.subtle,
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'color 160ms ease, border-color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.accentHover,
@@ -504,7 +504,7 @@ export const glossaryCardLink = style({
   textTransform: 'uppercase',
   color: vars.color.accentHover,
   textDecoration: 'none',
-  transition: 'color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.text },
   },

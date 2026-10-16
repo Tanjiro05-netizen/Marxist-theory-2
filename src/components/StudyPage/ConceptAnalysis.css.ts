@@ -20,7 +20,7 @@ export const card = style([panelInset, {
   gap: vars.space.lg,
   minHeight: '250px',
   overflow: 'hidden',
-  transition: 'transform 180ms ease, border-color 180ms ease, background 180ms ease',
+  transition: 'transform var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       transform: 'translateY(-3px)',

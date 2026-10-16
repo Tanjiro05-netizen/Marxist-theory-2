@@ -241,7 +241,7 @@ export const socialTopicPill = style({
   fontWeight: 700,
   letterSpacing: '0.07em',
   textTransform: 'uppercase',
-  transition: 'color 140ms ease, border-color 140ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.text,

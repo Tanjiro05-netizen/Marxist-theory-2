@@ -28,7 +28,7 @@ export const overlay = style({
   left: vars.space.lg,
   zIndex: 10,
   pointerEvents: 'none',
-  animation: `${fadeIn} 800ms ease both`,
+  animation: `${fadeIn} 800ms var(--ease-standard) both`,
 });
 
 export const overlayTitle = style({
@@ -56,7 +56,7 @@ export const controls = style({
   display: 'flex',
   flexDirection: 'column',
   gap: vars.space.xs,
-  animation: `${fadeIn} 800ms ease 200ms both`,
+  animation: `${fadeIn} 800ms var(--ease-standard) var(--dur-micro) both`,
 });
 
 export const controlBtn = style({
@@ -72,7 +72,7 @@ export const controlBtn = style({
   border: vars.border.subtle,
   color: vars.color.textSoft,
   cursor: 'pointer',
-  transition: 'all 180ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       background: 'rgba(20,20,28,0.85)',
@@ -126,7 +126,7 @@ export const hint = style({
   fontSize: '10px',
   letterSpacing: '0.06em',
   color: vars.color.textFaint,
-  animation: `${fadeIn} 800ms ease 400ms both`,
+  animation: `${fadeIn} 800ms var(--ease-standard) 400ms both`,
 });
 
 /* ── Legend / category filter ── */
@@ -139,7 +139,7 @@ export const legend = style({
   display: 'flex',
   flexDirection: 'column',
   gap: vars.space.xxs,
-  animation: `${fadeIn} 800ms ease 200ms both`,
+  animation: `${fadeIn} 800ms var(--ease-standard) var(--dur-micro) both`,
 });
 
 export const legendItem = style({
@@ -158,7 +158,7 @@ export const legendItem = style({
   letterSpacing: '0.06em',
   textTransform: 'uppercase',
   cursor: 'pointer',
-  transition: 'all 180ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       borderColor: vars.color.borderStrong,
@@ -192,7 +192,7 @@ export const infoPanel = style({
   backdropFilter: 'blur(14px)',
   WebkitBackdropFilter: 'blur(14px)',
   border: vars.border.subtle,
-  animation: `${fadeIn} 200ms ease both`,
+  animation: `${fadeIn} var(--dur-micro) var(--ease-standard) both`,
   pointerEvents: 'none',
 });
 

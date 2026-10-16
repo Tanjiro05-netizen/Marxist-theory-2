@@ -24,7 +24,7 @@ function CatalogCard({ thread, onView, onBookmark, isBookmarked }) {
         flexDirection: 'column',
         height: '200px',
         overflow: 'hidden',
-        transition: 'border-color 0.15s',
+        transition: 'border-color var(--dur-micro)',
       }}
       onMouseEnter={(e) => e.currentTarget.style.borderColor = colors.border.secondary}
       onMouseLeave={(e) => e.currentTarget.style.borderColor = colors.border.primary}
@@ -55,7 +55,7 @@ function CatalogCard({ thread, onView, onBookmark, isBookmarked }) {
             padding: '2px 4px',
             color: isBookmarked ? colors.accent.green : colors.text.faded,
             fontSize: '10px',
-            transition: 'color 0.15s ease',
+            transition: 'color var(--dur-micro) var(--ease-standard)',
           }}
           title={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
         >

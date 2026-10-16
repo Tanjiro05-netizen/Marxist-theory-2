@@ -459,7 +459,7 @@ export const teaserItem = style([panelInset, {
   fontSize: 'inherit',
   color: 'inherit',
   width: '100%',
-  transition: 'border-color 180ms ease, transform 180ms ease, background 180ms ease',
+  transition: 'border-color var(--dur-micro) var(--ease-standard), transform var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       transform: 'translateX(3px)',
@@ -536,7 +536,7 @@ export const lectureCard = style([panelInset, {
   flexDirection: 'column',
   gap: vars.space.md,
   padding: vars.space.sm,
-  transition: 'transform 180ms ease, border-color 180ms ease, background 180ms ease',
+  transition: 'transform var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       transform: 'translateY(-3px)',
@@ -680,7 +680,7 @@ export const playerClose = style({
   alignItems: 'center',
   justifyContent: 'center',
   cursor: 'pointer',
-  transition: 'border-color 150ms ease, color 150ms ease',
+  transition: 'border-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       borderColor: vars.color.borderAccent,
@@ -720,7 +720,7 @@ export const playerChapterBtn = style({
   fontWeight: 300,
   color: vars.color.textMuted,
   borderRadius: vars.radius.md,
-  transition: 'background 150ms ease, color 150ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard)',
   display: 'flex',
   alignItems: 'center',
   gap: vars.space.xs,

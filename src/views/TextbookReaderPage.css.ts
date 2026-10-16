@@ -25,7 +25,7 @@ export const toolbar = style({
   borderBottom: `1px solid ${vars.color.borderStrong}`,
   '@media': {
     'screen and (max-width: 780px)': {
-      transition: 'transform 240ms ease',
+      transition: 'transform var(--dur-element) var(--ease-standard)',
     },
   },
 });
@@ -52,7 +52,7 @@ export const backBtn = style({
   background: 'transparent',
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'color 160ms ease, border-color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.accentHover, borderColor: vars.color.accentHover },
   },
@@ -114,7 +114,7 @@ export const ctrlBtn = style({
   background: 'transparent',
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'color 160ms ease, border-color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.accentHover, borderColor: vars.color.accentHover },
     '&:disabled': { opacity: 0.35, cursor: 'default', pointerEvents: 'none' },

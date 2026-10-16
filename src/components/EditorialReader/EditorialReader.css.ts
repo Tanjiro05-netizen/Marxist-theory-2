@@ -57,7 +57,7 @@ export const railItem = style({
   lineHeight: 1.45,
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'color 160ms ease, border-color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.text,
@@ -100,7 +100,7 @@ export const progressTrack = style({
 export const progressFill = style({
   height: '100%',
   background: vars.color.accent,
-  transition: 'width 300ms ease',
+  transition: 'width var(--dur-element) var(--ease-standard)',
 });
 
 /* The reading toolbar is the only sticky chrome on /book/* — the site
@@ -121,7 +121,7 @@ export const toolbar = style({
   marginBottom: vars.space.xl,
   '@media': {
     'screen and (max-width: 780px)': {
-      transition: 'transform 240ms ease',
+      transition: 'transform var(--dur-element) var(--ease-standard)',
     },
   },
 });
@@ -179,7 +179,7 @@ export const sizeBtn = style({
   border: vars.border.subtle,
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'color 160ms ease, border-color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.accentHover,
@@ -265,7 +265,7 @@ export const fallbackLink = style({
   letterSpacing: '0.2em',
   textTransform: 'uppercase',
   textDecoration: 'none',
-  transition: 'background 200ms ease, color 200ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       background: vars.color.accent,

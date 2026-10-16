@@ -11,7 +11,7 @@ const StarRating = ({ rating, onRate, interactive = false, size = 16 }) => (
         size={size}
         fill={star <= rating ? '#c8860a' : 'transparent'}
         color={star <= rating ? '#c8860a' : 'rgba(255,255,255,0.2)'}
-        style={{ cursor: interactive ? 'pointer' : 'default', transition: 'all 120ms' }}
+        style={{ cursor: interactive ? 'pointer' : 'default', transition: 'all var(--dur-micro)' }}
         onClick={() => interactive && onRate && onRate(star)}
       />
     ))}

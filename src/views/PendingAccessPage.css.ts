@@ -105,7 +105,7 @@ export const loginLink = style({
   borderRadius: vars.radius.md,
   fontWeight: 600,
   fontSize: '14px',
-  transition: 'background 180ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       background: vars.color.accentHover,
@@ -132,7 +132,7 @@ export const input = style({
   textTransform: 'uppercase',
   textAlign: 'center',
   outline: 'none',
-  transition: 'border-color 180ms ease',
+  transition: 'border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:focus': {
       borderColor: vars.color.warning,
@@ -164,7 +164,7 @@ export const submitBtn = style({
   fontSize: '14px',
   fontFamily: vars.font.body,
   cursor: 'pointer',
-  transition: 'background 180ms ease, opacity 180ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard), opacity var(--dur-micro) var(--ease-standard)',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -192,7 +192,7 @@ export const backBtn = style({
   fontSize: '14px',
   fontFamily: vars.font.body,
   cursor: 'pointer',
-  transition: 'color 180ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.text,

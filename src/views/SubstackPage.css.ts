@@ -67,7 +67,7 @@ export const sectionTab = style({
   fontSize: '14px',
   fontWeight: 700,
   whiteSpace: 'nowrap',
-  transition: 'color 160ms ease, border-color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.text,
@@ -104,7 +104,7 @@ export const sourceLink = style({
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.05em',
-  transition: 'color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.text,
@@ -207,7 +207,7 @@ export const outlineLink = style({
   background: vars.color.surface,
   fontSize: '13px',
   fontWeight: 600,
-  transition: 'border-color 160ms ease, color 160ms ease, background 160ms ease',
+  transition: 'border-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       borderColor: vars.color.borderAccent,
@@ -283,7 +283,7 @@ export const filterButton = style({
   cursor: 'pointer',
   fontSize: '12px',
   fontWeight: 600,
-  transition: 'all 160ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.text,
@@ -416,7 +416,7 @@ export const sideStory = style({
   gap: vars.space.lg,
   alignItems: 'start',
   minHeight: '118px',
-  transition: 'opacity 160ms ease',
+  transition: 'opacity var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       opacity: 0.78,
@@ -533,7 +533,7 @@ export const popularItem = style({
   minWidth: 0,
   paddingRight: vars.space.md,
   borderRight: vars.border.subtle,
-  transition: 'opacity 160ms ease',
+  transition: 'opacity var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       opacity: 0.78,
@@ -606,7 +606,7 @@ export const archiveCard = style({
   flexDirection: 'column',
   gap: vars.space.sm,
   minWidth: 0,
-  transition: 'opacity 160ms ease',
+  transition: 'opacity var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       opacity: 0.8,
@@ -676,7 +676,7 @@ export const card = style({
   borderRadius: vars.radius.md,
   border: vars.border.subtle,
   background: vars.color.surface,
-  transition: 'border-color 180ms ease, transform 180ms ease',
+  transition: 'border-color var(--dur-micro) var(--ease-standard), transform var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       borderColor: vars.color.borderAccent,
@@ -800,7 +800,7 @@ export const backLink = style({
   color: vars.color.textMuted,
   fontSize: '13px',
   fontWeight: 600,
-  transition: 'color 160ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.text,

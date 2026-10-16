@@ -40,13 +40,13 @@ export const fieldBlock = style({ minWidth: 0 });
 export const fieldLabel = style({ display: 'flex', alignItems: 'center', gap: '9px', fontFamily: vars.font.label, fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.16em', color: vars.color.textMuted, marginBottom: '10px' });
 globalStyle(`${fieldLabel} span`, { color: vars.color.accentHover });
 
-const inputBase = { width: '100%', padding: '13px 14px', background: '#0d1017', border: vars.border.strong, borderRadius: vars.radius.tiny, color: vars.color.text, fontSize: '15px', fontFamily: vars.font.body, outline: 'none', transition: 'border-color 160ms ease, background 160ms ease', selectors: { '&:focus': { borderColor: vars.color.accent, background: '#10131b' }, '&::placeholder': { color: vars.color.textFaint } } };
+const inputBase = { width: '100%', padding: '13px 14px', background: '#0d1017', border: vars.border.strong, borderRadius: vars.radius.tiny, color: vars.color.text, fontSize: '15px', fontFamily: vars.font.body, outline: 'none', transition: 'border-color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard)', selectors: { '&:focus': { borderColor: vars.color.accent, background: '#10131b' }, '&::placeholder': { color: vars.color.textFaint } } };
 export const selectInput = style(inputBase);
 export const textInput = style(inputBase);
 export const textArea = style({ ...inputBase, resize: 'vertical', minHeight: '142px', lineHeight: 1.55 });
 export const fieldMeta = style({ display: 'flex', justifyContent: 'space-between', gap: vars.space.md, marginTop: '8px', color: vars.color.textFaint, fontSize: '11px', lineHeight: 1.4, '@media': { 'screen and (max-width: 560px)': { flexDirection: 'column', gap: '3px' } } });
 
-export const uploadZone = style({ minHeight: '210px', border: '1px dashed #343947', background: '#0d1017', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '9px', padding: '28px', color: vars.color.textFaint, textAlign: 'center', transition: 'border-color 160ms ease, background 160ms ease, color 160ms ease', selectors: { '&:hover': { borderColor: vars.color.accent, color: vars.color.accentHover } } });
+export const uploadZone = style({ minHeight: '210px', border: '1px dashed #343947', background: '#0d1017', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '9px', padding: '28px', color: vars.color.textFaint, textAlign: 'center', transition: 'border-color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard)', selectors: { '&:hover': { borderColor: vars.color.accent, color: vars.color.accentHover } } });
 globalStyle(`${uploadZone} strong`, { marginTop: '4px', color: vars.color.text, fontSize: '16px', fontWeight: 500 });
 globalStyle(`${uploadZone} > span`, { fontSize: '13px' });
 export const uploadZoneActive = style({ borderColor: vars.color.accentHover, background: vars.color.accentWash, color: vars.color.accentHover });
@@ -59,7 +59,7 @@ globalStyle(`${fileInfo} strong`, { overflow: 'hidden', textOverflow: 'ellipsis'
 globalStyle(`${fileInfo} > span`, { color: vars.color.textFaint, fontFamily: vars.font.label, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' });
 export const removeFileBtn = style({ width: '34px', height: '34px', display: 'grid', placeItems: 'center', border: vars.border.subtle, background: 'transparent', color: vars.color.textFaint, cursor: 'pointer', selectors: { '&:hover:not(:disabled)': { color: vars.color.accentHover, borderColor: vars.color.accent }, '&:disabled': { opacity: 0.4, cursor: 'not-allowed' } } });
 export const progressTrack = style({ height: '3px', marginTop: '5px', background: vars.color.surfaceSoft, overflow: 'hidden' });
-globalStyle(`${progressTrack} span`, { display: 'block', height: '100%', background: vars.color.accentHover, transition: 'width 180ms ease' });
+globalStyle(`${progressTrack} span`, { display: 'block', height: '100%', background: vars.color.accentHover, transition: 'width var(--dur-micro) var(--ease-standard)' });
 export const uploadHint = style({ fontFamily: vars.font.label, fontSize: '9px', color: vars.color.textFaint, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.12em', margin: '9px 0 0' });
 export const turnstile = style({ minHeight: '1px', width: '100%', display: 'flex', justifyContent: 'flex-end', color: vars.color.textFaint, fontSize: '12px' });
 
@@ -68,7 +68,7 @@ export const successBox = style({ display: 'flex', alignItems: 'center', padding
 export const submitRow = style({ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: vars.space.lg, paddingTop: '28px', borderTop: vars.border.subtle, '@media': { 'screen and (max-width: 660px)': { flexDirection: 'column', alignItems: 'stretch' } } });
 export const submitAssurance = style({ display: 'flex', alignItems: 'center', gap: '9px', maxWidth: '280px', color: vars.color.textFaint, fontSize: '12px', lineHeight: 1.4 });
 globalStyle(`${submitAssurance} svg`, { flexShrink: 0, color: vars.color.success });
-export const submitBtn = style({ display: 'inline-flex', minWidth: '190px', minHeight: '46px', alignItems: 'center', justifyContent: 'center', gap: vars.space.xs, padding: '12px 22px', background: vars.color.accent, color: '#fff', border: '1px solid transparent', fontSize: '12px', fontWeight: 600, fontFamily: vars.font.label, textTransform: 'uppercase', letterSpacing: '0.13em', cursor: 'pointer', transition: 'background 160ms ease, border-color 160ms ease', selectors: { '&:hover:not(:disabled)': { background: vars.color.accentHover }, '&:disabled': { background: vars.color.surfaceSoft, borderColor: vars.color.borderStrong, color: vars.color.textFaint, cursor: 'not-allowed' } } });
+export const submitBtn = style({ display: 'inline-flex', minWidth: '190px', minHeight: '46px', alignItems: 'center', justifyContent: 'center', gap: vars.space.xs, padding: '12px 22px', background: vars.color.accent, color: '#fff', border: '1px solid transparent', fontSize: '12px', fontWeight: 600, fontFamily: vars.font.label, textTransform: 'uppercase', letterSpacing: '0.13em', cursor: 'pointer', transition: 'background var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)', selectors: { '&:hover:not(:disabled)': { background: vars.color.accentHover }, '&:disabled': { background: vars.color.surfaceSoft, borderColor: vars.color.borderStrong, color: vars.color.textFaint, cursor: 'not-allowed' } } });
 export const spinner = style({ animation: `${rotate} 0.8s linear infinite` });
 
 const mobile = (className, rules) => globalStyle(`.${className}`, {

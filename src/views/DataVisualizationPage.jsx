@@ -245,7 +245,7 @@ const DataVisualizationPage = () => {
                 </div>
 
                 {/* Visualization Content Area */}
-                <div ref={chartRef} className={s.chartWrap} style={showTransition ? {opacity:0,transition:'opacity 300ms'} : {opacity:1,transition:'opacity 300ms'}}>
+                <div ref={chartRef} className={s.chartWrap} style={showTransition ? {opacity:0,transition:'opacity var(--dur-element)'} : {opacity:1,transition:'opacity var(--dur-element)'}}>
                     {/* Split View Mode */}
                     {viewMode === 'split' ? (
                         <SplitView 

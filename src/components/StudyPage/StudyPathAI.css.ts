@@ -48,7 +48,7 @@ export const tabButton = styleVariants({
     alignItems: 'center',
     justifyContent: 'center',
     gap: vars.space.xs,
-    transition: 'all 180ms ease',
+    transition: 'all var(--dur-micro) var(--ease-standard)',
     selectors: {
       '&:hover': {
         color: vars.color.text,
@@ -153,7 +153,7 @@ export const pathCard = style([panelInset, {
   display: 'flex',
   flexDirection: 'column',
   gap: vars.space.sm,
-  transition: 'transform 180ms ease, border-color 180ms ease, background 180ms ease',
+  transition: 'transform var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       transform: 'translateX(3px)',
@@ -346,7 +346,7 @@ export const sourceChip = style({
   fontSize: '10px',
   lineHeight: 1,
   textDecoration: 'none',
-  transition: 'border-color 160ms ease, color 160ms ease, background 160ms ease',
+  transition: 'border-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       borderColor: vars.color.borderAccent,

@@ -37,6 +37,35 @@
   --band-ink: #14161d;
   --sand: #d8c79f;
 
+  /* ── Motion ───────────────────────────────────────────────────────────────
+     One vocabulary for time and easing. These are deliberately few: before
+     this, 23 different durations and ~330 bare `ease` keywords were each
+     deciding for themselves, and the result read as noise rather than a
+     house style.
+
+     Reach for a duration by what is moving, not by how long you want it:
+       micro    a state change in place — colour, opacity, a small nudge
+       element  something that changes size or travels across its container
+       place    the page itself changing (see styles/view-transitions.css)
+       spin     one turn of a looping indicator
+
+     Both curves are ease-out: things should leave quickly and arrive gently.
+       standard  the default, and what the site had already settled on
+       travel    symmetric, for something crossing the screen and back
+
+     These are not theme-dependent — motion stays the same in light and dark,
+     so they live here and not in the per-theme blocks below. Plain CSS and
+     vanilla-extract both read them as var(--dur-micro) etc.; there is no
+     second spelling to keep in step.
+     ───────────────────────────────────────────────────────────────────── */
+  --dur-micro: 160ms;
+  --dur-element: 300ms;
+  --dur-place: 860ms;
+  --dur-spin: 800ms;
+
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-travel: cubic-bezier(0.4, 0, 0.2, 1);
+
   /* Legacy aliases — kept so older references resolve to the new palette */
   --bg-primary: var(--ink);
   --bg-secondary: rgba(0, 0, 0, 0.3);
@@ -209,4 +238,26 @@ body::after {
 .current-search-highlight {
   background-color: rgba(212, 31, 61, 0.55);
   border: 1px solid var(--red-bright);
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────────
+   Honoured in one place rather than remembered in each of the 70-odd files
+   that animate something. Every transition collapses to nothing, which covers
+   the ~330 hover, colour and size changes that make up most of the movement
+   here.
+
+   Keyframe animations are deliberately left alone. Neutralising them from
+   here would need !important, and that would freeze the loading spinners
+   along with everything else — a spinner that has stopped reads as a hung
+   page, which is worse than the movement it was meant to spare. The 34
+   @keyframes in the codebase still need deciding one at a time: a reveal
+   should be skipped, an indicator should keep turning. ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
 }

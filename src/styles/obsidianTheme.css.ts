@@ -395,7 +395,7 @@ export const textLink = style({
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'left bottom',
   backgroundSize: '0% 1px',
-  transition: 'background-size 240ms ease, color 240ms ease',
+  transition: 'background-size var(--dur-element) var(--ease-standard), color var(--dur-element) var(--ease-standard)',
   selectors: {
     '&:hover': {
       color: vars.color.text,
@@ -418,7 +418,7 @@ export const ruleWipe = style({
       background: vars.color.accent,
       transform: 'scaleX(0)',
       transformOrigin: 'left center',
-      transition: 'transform 260ms cubic-bezier(0.22, 1, 0.36, 1)',
+      transition: 'transform var(--dur-element) var(--ease-standard)',
       pointerEvents: 'none',
     },
     '&:hover::after': {
@@ -438,7 +438,7 @@ export const actionButton = recipe({
     border: 'none',
     cursor: 'pointer',
     overflow: 'hidden',
-    transition: 'background-size 240ms cubic-bezier(0.22, 1, 0.36, 1), color 200ms ease, border-color 200ms ease, background-color 200ms ease',
+    transition: 'background-size var(--dur-element) var(--ease-standard), color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard), background-color var(--dur-micro) var(--ease-standard)',
     fontFamily: vars.font.label,
     fontSize: '11px',
     fontWeight: 500,
@@ -525,7 +525,7 @@ export const filterPill = recipe({
     fontWeight: 500,
     letterSpacing: '0.2em',
     textTransform: 'uppercase',
-    transition: 'color 200ms ease',
+    transition: 'color var(--dur-micro) var(--ease-standard)',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
     selectors: {
@@ -539,7 +539,7 @@ export const filterPill = recipe({
         background: vars.color.accentHover,
         transform: 'scaleX(0)',
         transformOrigin: 'left center',
-        transition: 'transform 240ms cubic-bezier(0.22, 1, 0.36, 1)',
+        transition: 'transform var(--dur-element) var(--ease-standard)',
       },
       '&:hover': {
         color: vars.color.text,
@@ -640,7 +640,7 @@ export const loadingSpinner = style({
   borderRadius: '50%',
   border: `2px solid ${vars.color.borderStrong}`,
   borderTopColor: vars.color.accentHover,
-  animation: `${spin} 800ms linear infinite`,
+  animation: `${spin} var(--dur-spin) linear infinite`,
 });
 
 /* ── Centered page header — the publication masthead pattern for every page ── */

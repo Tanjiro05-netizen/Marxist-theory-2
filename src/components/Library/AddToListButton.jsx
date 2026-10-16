@@ -66,7 +66,7 @@ const AddToListButton = ({ bookId }) => {
           border: `1px solid ${bookLists.length > 0 ? 'rgba(179, 18, 46,0.25)' : 'rgba(127,127,127,0.16)'}`,
           borderRadius: '6px',
           color: bookLists.length > 0 ? redText : textDim,
-          cursor: 'pointer', transition: 'all 120ms',
+          cursor: 'pointer', transition: 'all var(--dur-micro)',
         }}
         title={t('library.addToList')}
       >
@@ -104,7 +104,7 @@ const AddToListButton = ({ bookId }) => {
                 width: '100%', minHeight: '40px', padding: '10px 8px', background: 'none', border: 'none',
                 color: isInList(list.id) ? redText : textDim,
                 fontSize: '12.5px', cursor: 'pointer', borderRadius: '5px',
-                textAlign: 'left', transition: 'background 100ms',
+                textAlign: 'left', transition: 'background var(--dur-micro)',
               }}
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(127,127,127,0.08)'}
               onMouseLeave={e => e.currentTarget.style.background = 'none'}

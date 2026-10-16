@@ -9,7 +9,7 @@ export const columns = style({
 export const item = style({ minWidth: 0, borderBottom: '1px solid var(--line)' });
 export const link = style({
   display: 'flex', alignItems: 'center', gap: '14px', minHeight: '48px', padding: '12px 12px', margin: '0 -12px',
-  color: 'var(--paper)', textDecoration: 'none', transition: 'color 180ms ease, background 180ms ease',
+  color: 'var(--paper)', textDecoration: 'none', transition: 'color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover, &:focus-visible': { color: '#c11730', background: 'rgba(155, 16, 34, 0.07)' },
   },
@@ -18,7 +18,7 @@ export const link = style({
 export const iconFrame = style({
   flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
   width: '34px', height: '34px', border: '1px solid var(--line)', color: 'var(--paper-dim)',
-  transition: 'color 180ms ease, border-color 180ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     [`${link}:hover &, ${link}:focus-visible &`]: { color: '#c11730', borderColor: 'rgba(155, 16, 34, 0.5)' },
   },
@@ -32,7 +32,7 @@ export const title = style({
   fontWeight: 400, lineHeight: 1.2, overflowWrap: 'anywhere',
   textDecoration: 'underline', textDecorationColor: 'transparent',
   textDecorationThickness: '1px', textUnderlineOffset: '5px',
-  transition: 'text-decoration-color 180ms ease',
+  transition: 'text-decoration-color var(--dur-micro) var(--ease-standard)',
   selectors: { [`${link}:hover &, ${link}:focus-visible &`]: { textDecorationColor: '#c11730' } },
 });
 export const access = style({

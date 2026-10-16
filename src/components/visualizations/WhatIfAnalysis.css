@@ -8,7 +8,7 @@
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s ease;
+    transition: all var(--dur-element) var(--ease-standard);
     z-index: 100;
     overflow: hidden;
     max-height: 60px;
@@ -22,7 +22,7 @@
 .what-if-analysis-inline {
     width: 100%;
     background-color: transparent;
-    transition: all 0.3s ease;
+    transition: all var(--dur-element) var(--ease-standard);
 }
 
 .toggle-button {
@@ -37,7 +37,7 @@
     font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--dur-micro) var(--ease-standard);
     text-align: left;
 }
 
@@ -73,7 +73,7 @@
     cursor: pointer;
     padding: 5px;
     border-radius: 4px;
-    transition: all 0.2s ease;
+    transition: all var(--dur-micro) var(--ease-standard);
 }
 
 .reset-button:hover {
@@ -139,7 +139,7 @@
     border-radius: 2px;
     background: rgba(255, 255, 255, 0.1);
     outline: none;
-    transition: background 0.2s ease;
+    transition: background var(--dur-micro) var(--ease-standard);
 }
 
 .variable-slider::-webkit-slider-thumb {
@@ -150,7 +150,7 @@
     border-radius: 50%;
     background: #c9c5b8;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--dur-micro) var(--ease-standard);
 }
 
 .variable-slider::-moz-range-thumb {
@@ -160,7 +160,7 @@
     background: #c9c5b8;
     cursor: pointer;
     border: none;
-    transition: all 0.2s ease;
+    transition: all var(--dur-micro) var(--ease-standard);
 }
 
 .variable-slider:hover::-webkit-slider-thumb {
@@ -205,7 +205,7 @@
     padding: 8px 15px;
     border-radius: 20px;
     background-color: rgba(255, 255, 255, 0.05);
-    transition: all 0.3s ease;
+    transition: all var(--dur-element) var(--ease-standard);
 }
 
 .outcome-indicator.positive {

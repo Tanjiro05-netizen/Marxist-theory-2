@@ -19,7 +19,7 @@
     pointer-events: none;
     z-index: 9999;
     transform: translate(-50%, -50%);
-    transition: width 0.15s, height 0.15s, border-color 0.15s;
+    transition: width var(--dur-micro), height var(--dur-micro), border-color var(--dur-micro);
     mix-blend-mode: difference;
 }
 
@@ -167,7 +167,7 @@
 /* Title animations */
 .maintenance-title {
     opacity: 0;
-    animation: titleReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+    animation: titleReveal 1.2s var(--ease-standard) var(--dur-element) forwards;
 }
 
 @keyframes titleReveal {
@@ -177,7 +177,7 @@
 
 .maintenance-subtitle {
     opacity: 0;
-    animation: subtitleReveal 1s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+    animation: subtitleReveal 1s var(--ease-standard) 0.8s forwards;
 }
 
 @keyframes subtitleReveal {
@@ -187,7 +187,7 @@
 
 .maintenance-message {
     opacity: 0;
-    animation: messageReveal 1s cubic-bezier(0.16, 1, 0.3, 1) 1.3s forwards;
+    animation: messageReveal 1s var(--ease-standard) 1.3s forwards;
 }
 
 @keyframes messageReveal {
@@ -197,7 +197,7 @@
 
 .maintenance-divider {
     opacity: 0;
-    animation: dividerReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) 1.0s forwards;
+    animation: dividerReveal 1.2s var(--ease-standard) 1.0s forwards;
 }
 
 @keyframes dividerReveal {
@@ -207,7 +207,7 @@
 
 .maintenance-footer {
     opacity: 0;
-    animation: footerReveal 1s ease 1.8s forwards;
+    animation: footerReveal 1s var(--ease-standard) 1.8s forwards;
 }
 
 @keyframes footerReveal {
@@ -269,7 +269,7 @@
 /* Download button */
 .maintenance-download {
     opacity: 0;
-    animation: messageReveal 1s cubic-bezier(0.16, 1, 0.3, 1) 1.6s forwards;
+    animation: messageReveal 1s var(--ease-standard) 1.6s forwards;
     margin-top: 2rem;
 }
 
@@ -287,7 +287,7 @@
     border-radius: 12px;
     filter: blur(12px);
     opacity: 0.6;
-    transition: opacity 2s ease;
+    transition: opacity 2s var(--ease-standard);
     animation: downloadAuraPulse 8s ease-in-out infinite;
 }
 
@@ -345,7 +345,7 @@
     inset: 0;
     background: linear-gradient(to top, #0b0d12, transparent, transparent);
     opacity: 0;
-    transition: opacity 0.9s ease;
+    transition: opacity 0.9s var(--ease-standard);
 }
 
 .maintenance-download-link:hover .maintenance-download-hover-fill {
@@ -356,7 +356,7 @@
     position: relative;
     z-index: 1;
     color: #6f0b1d;
-    transition: color 0.9s ease;
+    transition: color 0.9s var(--ease-standard);
 }
 
 .maintenance-download-link:hover .maintenance-download-icon {
@@ -374,7 +374,7 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    transition: all 0.9s ease;
+    transition: all 0.9s var(--ease-standard);
 }
 
 .maintenance-download-link:hover .maintenance-download-text {

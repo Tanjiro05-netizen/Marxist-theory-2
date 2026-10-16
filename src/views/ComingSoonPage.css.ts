@@ -98,7 +98,7 @@ export const backButton = style({
   fontWeight: 500,
   fontFamily: vars.font.body,
   cursor: 'pointer',
-  transition: 'background 180ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       background: vars.color.accentHover,
@@ -141,7 +141,7 @@ export const registerCta = style({
   fontFamily: vars.font.body,
   cursor: 'pointer',
   textDecoration: 'none',
-  transition: 'background 180ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard)',
   marginBottom: vars.space.xxl,
   selectors: {
     '&:hover': {
@@ -216,7 +216,7 @@ export const teaserOverlayCta = style({
   fontWeight: 500,
   fontFamily: vars.font.body,
   textDecoration: 'none',
-  transition: 'background 180ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       background: vars.color.accentHover,

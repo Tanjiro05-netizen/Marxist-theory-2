@@ -28,7 +28,7 @@ export const card = style([panelInset, {
   gap: vars.space.lg,
   alignItems: 'start',
   padding: vars.space.lg,
-  transition: 'transform 180ms ease, border-color 180ms ease, background 180ms ease',
+  transition: 'transform var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       transform: 'translateY(-2px)',

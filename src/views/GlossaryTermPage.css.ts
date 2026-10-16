@@ -30,7 +30,7 @@ export const backLink = style({
   letterSpacing: '0.08em',
   textTransform: 'uppercase',
   textDecoration: 'none',
-  transition: 'color 200ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: { '&:hover': { color: vars.color.accent } },
 });
 
@@ -103,7 +103,7 @@ export const relatedChip = style({
   fontSize: '13px',
   color: vars.color.textSoft,
   textDecoration: 'none',
-  transition: 'all 180ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       borderColor: vars.color.borderAccent,

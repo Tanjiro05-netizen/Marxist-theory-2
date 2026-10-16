@@ -51,7 +51,7 @@ export const backLink = style({
   fontSize: '14px',
   fontWeight: 500,
   fontFamily: vars.font.body,
-  transition: 'background 180ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       background: vars.color.accentHover,

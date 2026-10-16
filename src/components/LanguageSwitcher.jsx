@@ -53,7 +53,7 @@ const LanguageSwitcher = () => {
           fontWeight: 500,
           letterSpacing: '0.14em',
           cursor: 'pointer',
-          transition: 'border-color 150ms ease, color 150ms ease',
+          transition: 'border-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard)',
         }}
         onMouseEnter={e => {
           e.currentTarget.style.borderColor = bandAccent;
@@ -111,7 +111,7 @@ const LanguageSwitcher = () => {
                 fontSize: '13px',
                 cursor: 'pointer',
                 textAlign: 'left',
-                transition: 'color 120ms ease',
+                transition: 'color var(--dur-micro) var(--ease-standard)',
               }}
               onMouseEnter={e => {
                 if (!i18n.language?.startsWith(lang.code)) e.currentTarget.style.color = bandAccent;

@@ -7,6 +7,7 @@ import { AuthProvider } from '@/src/context/AuthContext.jsx';
 import { AudioPlayerProvider } from '@/src/context/AudioPlayerContext.jsx';
 import { ThemeProvider } from '@/src/context/ThemeContext.jsx';
 import ErrorBoundary from '@/src/components/ErrorBoundary.jsx';
+import NavTransition from '@/src/components/NavTransition.jsx';
 import FloatingMiniPlayer from '@/src/components/Library/FloatingMiniPlayer.jsx';
 import MaintenancePage from '@/src/views/MaintenancePage.jsx';
 import i18n from '@/src/i18n';
@@ -147,6 +148,7 @@ export default function Providers({ children, initialAuth }) {
   return (
     <ErrorBoundary>
       <HtmlLangSync />
+      <NavTransition />
       <AuthProvider
         initialUser={initialAuth?.user ?? null}
         initialProfile={initialAuth?.profile ?? null}

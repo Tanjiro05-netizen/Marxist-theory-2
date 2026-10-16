@@ -15,7 +15,7 @@ export const errorLink = style({
   display: 'inline-flex', alignItems: 'center', minHeight: '44px', padding: `0 ${vars.space.lg}`,
   border: `1px solid ${vars.color.borderStrong}`, color: vars.color.text, textDecoration: 'none',
   fontFamily: vars.font.label, fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase',
-  cursor: 'pointer', background: 'transparent', transition: 'color 160ms ease, border-color 160ms ease',
+  cursor: 'pointer', background: 'transparent', transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: { '&:hover': { color: vars.color.accentHover, borderColor: vars.color.accentHover } },
 });
 
@@ -31,7 +31,7 @@ export const modeToggle = style({
   display: 'inline-flex', alignItems: 'center', gap: '6px', minHeight: '34px', padding: `0 ${vars.space.sm}`,
   border: `1px solid ${vars.color.borderStrong}`, background: 'transparent', color: vars.color.textSoft,
   fontFamily: vars.font.label, fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase',
-  cursor: 'pointer', transition: 'color 150ms ease, border-color 150ms ease',
+  cursor: 'pointer', transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: { '&:hover': { color: vars.color.accentHover, borderColor: vars.color.accentHover } },
 });
 
@@ -68,7 +68,7 @@ export const railTab = style({
   padding: `${vars.space.xs} ${vars.space.sm}`, minHeight: '48px',
   background: 'transparent', border: `1px solid ${vars.color.borderStrong}`, color: vars.color.textSoft,
   fontFamily: vars.font.label, fontSize: '9px', letterSpacing: '0.1em', textTransform: 'uppercase',
-  cursor: 'pointer', transition: 'color 150ms ease, border-color 150ms ease',
+  cursor: 'pointer', transition: 'color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard)',
   selectors: { '&:hover': { color: vars.color.text } },
 });
 export const railTabActive = style({ color: vars.color.accentHover, borderColor: 'rgba(155, 16, 34, 0.55)' });
@@ -84,7 +84,7 @@ export const mobileBarBtn = style({
   display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '2px',
   padding: `${vars.space.xs} ${vars.space.md}`, background: 'transparent', border: 'none',
   color: vars.color.textMuted, fontFamily: vars.font.label, fontSize: '9px', letterSpacing: '0.08em',
-  textTransform: 'uppercase', cursor: 'pointer', transition: 'color 150ms ease',
+  textTransform: 'uppercase', cursor: 'pointer', transition: 'color var(--dur-micro) var(--ease-standard)',
 });
 export const mobileBarBtnActive = style({ color: vars.color.accentHover });
 
@@ -92,7 +92,7 @@ export const mobileBarBtnActive = style({ color: vars.color.accentHover });
 globalStyle('.ar-gloss-term', {
   cursor: 'pointer',
   borderBottom: '1px dotted rgba(155, 16, 34, 0.65)',
-  transition: 'background 140ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard)',
 });
 globalStyle('.ar-gloss-term:hover', {
   background: 'rgba(155, 16, 34, 0.12)',

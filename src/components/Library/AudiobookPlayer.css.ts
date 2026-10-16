@@ -160,7 +160,7 @@ export const playerClose = style({
   alignItems: 'center',
   justifyContent: 'center',
   cursor: 'pointer',
-  transition: 'border-color 150ms ease, color 150ms ease, background 150ms ease',
+  transition: 'border-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       borderColor: vars.color.borderAccent,
@@ -237,7 +237,7 @@ export const chapterBtn = style({
   borderRadius: vars.radius.md,
   border: vars.border.subtle,
   background: vars.color.surface,
-  transition: 'background 180ms ease, color 180ms ease, border-color 180ms ease, transform 180ms ease',
+  transition: 'background var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard), transform var(--dur-micro) var(--ease-standard)',
   display: 'flex',
   alignItems: 'center',
   gap: vars.space.sm,

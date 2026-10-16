@@ -43,7 +43,7 @@ export const typeBtn = style({
   background: vars.color.surface,
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'all 140ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { background: vars.color.surfaceSoft, color: vars.color.text },
     '&:disabled': { opacity: 0.4, cursor: 'not-allowed' },
@@ -69,7 +69,7 @@ export const select = style({
   fontSize: '12px',
   letterSpacing: '0.04em',
   cursor: 'pointer',
-  transition: 'border-color 140ms ease',
+  transition: 'border-color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { borderColor: vars.color.borderStrong },
     '&:focus': { outline: 'none', borderColor: vars.color.accentHover },
@@ -103,7 +103,7 @@ export const countryChip = style({
   letterSpacing: '0.06em',
   color: vars.color.textMuted,
   cursor: 'pointer',
-  transition: 'all 140ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { borderColor: vars.color.borderStrong, color: vars.color.text },
   },
@@ -140,7 +140,7 @@ export const countryToggle = style({
   color: vars.color.textFaint,
   cursor: 'pointer',
   marginBottom: vars.space.sm,
-  transition: 'color 140ms ease',
+  transition: 'color var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.accentHover },
   },
@@ -207,7 +207,7 @@ export const zoomReset = style({
   textTransform: 'uppercase',
   letterSpacing: '0.18em',
   cursor: 'pointer',
-  transition: 'all 140ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.accentHover, borderColor: vars.color.borderAccent },
   },
@@ -248,7 +248,7 @@ export const retryBtn = style({
   letterSpacing: '0.2em',
   textTransform: 'uppercase',
   cursor: 'pointer',
-  transition: 'all 140ms ease',
+  transition: 'all var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': { color: vars.color.accentHover, borderColor: vars.color.accentHover },
   },

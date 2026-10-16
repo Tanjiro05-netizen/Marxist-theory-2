@@ -797,7 +797,7 @@ const ScienceAdminPage = () => {
           background: rgba(0, 0, 0, 0.28);
           padding: 0.75rem;
           text-align: left;
-          transition: border-color 120ms ease, background 120ms ease;
+          transition: border-color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard);
         }
         .choice-tile:hover {
           border-color: rgb(75 85 99);
