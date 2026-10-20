@@ -1,0 +1,71 @@
+node_modules/
+.env
+.env.local
+.DS_Store
+build/
+.next/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cache files
+node_modules/.cache
+.eslintcache
+playwright-report/
+test-results/
+
+# Windsurf plans, workflows, and guides
+.windsurf/plans/
+docs/
+
+# Local Claude worktrees
+.claude/worktrees/
+
+# Agent/tool artifacts
+.zcode/
+next-env.d.ts
+HANDOFF.md
+HANDOFF-I18N.md
+
+# Bulk data migration kept local (already applied; 14MB of book text)
+supabase/migrations/20260828130000_ingest_pure_theory.sql
+supabase/migrations/20260828140000_remove_duplicate_capital_ingesets.sql
+
+# Supabase CLI local state
+supabase/.temp/
+
+# Dev/e2e build output and local scratch (present in .gitignore)
+.next-dev
+.next-e2e-*
+scripts/.text-edition-*.json
+tmp-vids
+
+# ===== ↑ 以上同步自 .gitignore（「从 .gitignore 同步」只重写以上部分）=====
+.git/
+.hg/
+.svn/
+bower_components/
+jspm_packages/
+__pycache__/
+site-packages/
+venv/
+coverage/
+htmlcov/
+lcov-report/
+cmakefiles/
+cmake-build-*/
+bazel-*/
+pods/
+deriveddata/
+storybook-static/
+allure-results/
+allure-report/
+cdk.out/
+*.egg-info/
+*.dist-info/
+eggs/
+pip-wheel-metadata/
+wheels/
+# ----- ↑ 以上为 ZCode 默认排除规则（自定义规则请写在本行下方，不会被同步/恢复改动）-----
+# 自定义规则写在下方（本行提示可删除）
