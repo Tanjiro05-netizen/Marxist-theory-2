@@ -21,7 +21,7 @@ const StockMarketCrash = ({ show = true }) => {
                     />
                 ))}
             </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-[#12131A] via-[#12131A]/70 to-transparent" />
+            <div className="absolute inset-0 bg-[#10131b] from-[#0b0d12] via-[#0b0d12]/70 to-transparent" />
         </div>
     ) : null;
 };

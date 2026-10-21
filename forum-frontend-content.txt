@@ -1,0 +1,5748 @@
+Forum frontend source bundle
+Generated from the local workspace.
+Included files: the Next forum route and every non-binary file under src/components/Forum.
+
+================================================================================
+FILE: src/app/forum/[[...slug]]/page.jsx
+================================================================================
+'use client';
+
+import ProtectedRoute from '@/src/components/ProtectedRoute.jsx';
+import MainLayout from '@/src/components/MainLayout.jsx';
+import ForumPage from '@/src/components/Forum/ForumPage.jsx';
+
+export default function Page() {
+  return <ProtectedRoute><MainLayout><ForumPage /></MainLayout></ProtectedRoute>;
+}
+
+================================================================================
+FILE: src/components/Forum/ForumPage.css.ts
+================================================================================
+import { style, globalStyle } from '@vanilla-extract/css';
+import { vars, panelBase, panelInset } from '../../styles/obsidianTheme.css.ts';
+
+/* ── Page shell ─────────────────────────────────────────── */
+
+export const page = style({
+  position: 'relative',
+  minHeight: '100vh',
+  overflow: 'hidden',
+});
+
+export const heroOrbLeft = style({
+  top: '80px',
+  left: '-120px',
+  width: '320px',
+  height: '320px',
+  background: 'radial-gradient(circle, rgba(200,30,30,0.18) 0%, rgba(200,30,30,0.02) 70%)',
+});
+
+export const heroOrbRight = style({
+  top: '200px',
+  right: '-100px',
+  width: '260px',
+  height: '260px',
+  background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 72%)',
+});
+
+/* ── Hero banner ────────────────────────────────────────── */
+
+export const hero = style({
+  position: 'relative',
+  padding: `${vars.space.hero} ${vars.space.gutter} ${vars.space.xxl}`,
+  borderBottom: vars.border.subtle,
+  '@media': {
+    'screen and (max-width: 900px)': {
+      padding: `${vars.space.xxxl} ${vars.space.gutter} ${vars.space.xxl}`,
+    },
+    'screen and (max-width: 640px)': {
+      padding: `${vars.space.xxl} ${vars.space.md} ${vars.space.xl}`,
+    },
+  },
+});
+
+export const heroInner = style({
+  position: 'relative',
+  zIndex: 1,
+  maxWidth: vars.layout.maxWidth,
+  margin: '0 auto',
+});
+
+export const heroTitle = style({
+  margin: 0,
+  fontFamily: vars.font.display,
+  fontSize: 'clamp(3.2rem, 7vw, 5.8rem)',
+  lineHeight: 0.9,
+  letterSpacing: '-0.05em',
+  fontWeight: 500,
+  color: vars.color.text,
+});
+
+export const heroLead = style({
+  margin: `${vars.space.lg} 0 0`,
+  maxWidth: '600px',
+  fontSize: '15px',
+  lineHeight: 1.85,
+  fontWeight: 300,
+  color: vars.color.textMuted,
+});
+
+/* ── Content container ──────────────────────────────────── */
+
+export const content = style({
+  position: 'relative',
+  zIndex: 1,
+  maxWidth: vars.layout.maxWidth,
+  margin: '0 auto',
+  padding: `${vars.space.xxxl} ${vars.space.gutter} ${vars.space.xxxl}`,
+  '@media': {
+    'screen and (max-width: 640px)': {
+      padding: `${vars.space.xxl} ${vars.space.md} ${vars.space.xxxl}`,
+    },
+  },
+});
+
+/* ── Board listing ──────────────────────────────────────── */
+
+export const boardList = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 0,
+});
+
+export const boardRow = style({
+  display: 'grid',
+  gridTemplateColumns: '1fr auto',
+  gap: vars.space.lg,
+  alignItems: 'center',
+  padding: `${vars.space.xl} 0`,
+  borderBottom: vars.border.subtle,
+  cursor: 'pointer',
+  transition: 'background 180ms ease',
+  selectors: {
+    '&:first-child': {
+      paddingTop: 0,
+    },
+    '&:hover': {
+      background: vars.color.surfaceSoft,
+    },
+  },
+  '@media': {
+    'screen and (max-width: 640px)': {
+      gridTemplateColumns: '1fr',
+      gap: vars.space.sm,
+    },
+  },
+});
+
+export const boardInfo = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: vars.space.xs,
+  minWidth: 0,
+});
+
+export const boardNameRow = style({
+  display: 'flex',
+  alignItems: 'baseline',
+  gap: vars.space.sm,
+  flexWrap: 'wrap',
+});
+
+export const boardName = style({
+  margin: 0,
+  fontFamily: vars.font.display,
+  fontSize: '28px',
+  fontWeight: 600,
+  lineHeight: 1.1,
+  color: vars.color.text,
+  '@media': {
+    'screen and (max-width: 640px)': {
+      fontSize: '22px',
+    },
+  },
+});
+
+export const boardSlug = style({
+  fontFamily: vars.font.mono,
+  fontSize: '14px',
+  letterSpacing: '0.04em',
+  color: vars.color.textFaint,
+});
+
+export const boardDescription = style({
+  margin: 0,
+  fontSize: '14px',
+  lineHeight: 1.6,
+  fontWeight: 300,
+  color: vars.color.textMuted,
+});
+
+export const boardMeta = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: vars.space.md,
+  flexShrink: 0,
+});
+
+export const boardStat = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: vars.space.xxs,
+  fontFamily: vars.font.mono,
+  fontSize: '12px',
+  letterSpacing: '0.06em',
+  color: vars.color.textFaint,
+});
+
+/* ── Breadcrumb / back nav ──────────────────────────────── */
+
+export const breadcrumb = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: vars.space.xs,
+  marginBottom: vars.space.xl,
+  fontFamily: vars.font.mono,
+  fontSize: '12px',
+  letterSpacing: '0.06em',
+  color: vars.color.textFaint,
+});
+
+export const breadcrumbLink = style({
+  color: vars.color.accent,
+  cursor: 'pointer',
+  transition: 'color 180ms ease',
+  selectors: {
+    '&:hover': {
+      color: vars.color.text,
+    },
+  },
+});
+
+/* ── Thread list view ───────────────────────────────────── */
+
+export const threadListHeader = style({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  gap: vars.space.md,
+  marginBottom: vars.space.xl,
+  flexWrap: 'wrap',
+});
+
+export const threadListTitle = style({
+  margin: 0,
+  fontFamily: vars.font.display,
+  fontSize: '34px',
+  lineHeight: 1,
+  fontWeight: 500,
+  letterSpacing: '-0.03em',
+  color: vars.color.text,
+  '@media': {
+    'screen and (max-width: 640px)': {
+      fontSize: '26px',
+    },
+  },
+});
+
+export const threadListActions = style({
+  display: 'flex',
+  gap: vars.space.sm,
+});
+
+/* ── Thread cards (Obsidian-styled overrides) ───────────── */
+
+export const threadCard = style([panelInset, {
+  padding: vars.space.lg,
+  marginBottom: vars.space.md,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: vars.space.sm,
+  transition: 'border-color 180ms ease, background 180ms ease',
+  cursor: 'pointer',
+  selectors: {
+    '&:hover': {
+      borderColor: vars.color.borderAccent,
+      background: vars.color.accentWash,
+    },
+  },
+}]);
+
+export const threadTitle = style({
+  margin: 0,
+  fontFamily: vars.font.display,
+  fontSize: '20px',
+  lineHeight: 1.2,
+  fontWeight: 500,
+  color: vars.color.text,
+});
+
+export const threadExcerpt = style({
+  margin: 0,
+  fontSize: '13px',
+  lineHeight: 1.7,
+  fontWeight: 300,
+  color: vars.color.textMuted,
+  display: '-webkit-box',
+  WebkitLineClamp: 3,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+});
+
+export const threadMetaRow = style({
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: vars.space.md,
+  alignItems: 'center',
+  fontFamily: vars.font.mono,
+  fontSize: '11px',
+  letterSpacing: '0.06em',
+  color: vars.color.textFaint,
+});
+
+export const threadMetaStat = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: vars.space.xxs,
+});
+
+export const threadAuthor = style({
+  color: vars.color.accent,
+});
+
+export const threadPinned = style({
+  color: vars.color.warning,
+});
+
+export const threadLocked = style({
+  color: vars.color.accent,
+});
+
+/* ── Thread detail wrapper ──────────────────────────────── */
+
+export const threadDetailPanel = style([panelBase, {
+  padding: vars.space.xxl,
+  '@media': {
+    'screen and (max-width: 640px)': {
+      padding: vars.space.lg,
+    },
+  },
+}]);
+
+export const threadDetailHeader = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: vars.space.sm,
+  paddingBottom: vars.space.md,
+  marginBottom: vars.space.lg,
+  borderBottom: vars.border.subtle,
+});
+
+export const threadDetailAuthor = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: vars.space.sm,
+});
+
+export const threadDetailTitle = style({
+  margin: 0,
+  fontFamily: vars.font.display,
+  fontSize: '32px',
+  lineHeight: 1.1,
+  fontWeight: 500,
+  letterSpacing: '-0.02em',
+  color: vars.color.text,
+  marginBottom: vars.space.lg,
+  '@media': {
+    'screen and (max-width: 640px)': {
+      fontSize: '24px',
+    },
+  },
+});
+
+export const threadDetailContent = style({
+  fontSize: '15px',
+  lineHeight: 1.8,
+  fontWeight: 300,
+  color: vars.color.textSoft,
+  marginBottom: vars.space.xl,
+});
+
+globalStyle(`${threadDetailContent} .greentext`, {
+  color: '#88cc88',
+});
+
+export const threadDetailActions = style({
+  display: 'flex',
+  gap: vars.space.md,
+  paddingTop: vars.space.md,
+  borderTop: vars.border.subtle,
+  fontFamily: vars.font.mono,
+  fontSize: '11px',
+  letterSpacing: '0.06em',
+});
+
+export const threadDetailAction = style({
+  color: vars.color.textFaint,
+  cursor: 'pointer',
+  transition: 'color 180ms ease',
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: vars.space.xxs,
+  background: 'none',
+  border: 'none',
+  padding: 0,
+  fontFamily: vars.font.mono,
+  fontSize: '11px',
+  letterSpacing: '0.06em',
+  selectors: {
+    '&:hover': {
+      color: vars.color.text,
+    },
+  },
+});
+
+export const threadDetailActionActive = style({
+  color: vars.color.accent,
+});
+
+/* ── Comment section ────────────────────────────────────── */
+
+export const commentSection = style({
+  marginTop: vars.space.xxl,
+});
+
+export const commentSectionTitle = style({
+  margin: 0,
+  fontFamily: vars.font.display,
+  fontSize: '24px',
+  fontWeight: 500,
+  color: vars.color.text,
+  marginBottom: vars.space.lg,
+});
+
+export const commentCard = style([panelInset, {
+  padding: vars.space.md,
+  marginBottom: vars.space.sm,
+}]);
+
+export const commentHeader = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: vars.space.sm,
+  marginBottom: vars.space.xs,
+  fontFamily: vars.font.mono,
+  fontSize: '11px',
+  letterSpacing: '0.06em',
+  color: vars.color.textFaint,
+});
+
+export const commentAuthorName = style({
+  color: vars.color.accent,
+  fontWeight: 500,
+});
+
+export const commentBody = style({
+  fontSize: '14px',
+  lineHeight: 1.7,
+  fontWeight: 300,
+  color: vars.color.textSoft,
+});
+
+export const commentActions = style({
+  display: 'flex',
+  gap: vars.space.md,
+  marginTop: vars.space.xs,
+  fontFamily: vars.font.mono,
+  fontSize: '10px',
+  letterSpacing: '0.06em',
+  color: vars.color.textFaint,
+});
+
+export const nestedComment = style({
+  marginLeft: vars.space.xl,
+  borderLeft: vars.border.subtle,
+  paddingLeft: vars.space.md,
+});
+
+/* ── Create thread form ─────────────────────────────────── */
+
+export const formPanel = style([panelBase, {
+  padding: vars.space.xxl,
+  marginBottom: vars.space.xl,
+  '@media': {
+    'screen and (max-width: 640px)': {
+      padding: vars.space.lg,
+    },
+  },
+}]);
+
+export const formTitle = style({
+  margin: `0 0 ${vars.space.lg}`,
+  fontFamily: vars.font.display,
+  fontSize: '24px',
+  fontWeight: 500,
+  color: vars.color.text,
+});
+
+export const formField = style({
+  marginBottom: vars.space.lg,
+});
+
+export const formLabel = style({
+  display: 'block',
+  marginBottom: vars.space.xs,
+  fontFamily: vars.font.mono,
+  fontSize: '10px',
+  letterSpacing: '0.12em',
+  textTransform: 'uppercase',
+  color: vars.color.textFaint,
+});
+
+export const formInput = style({
+  width: '100%',
+  minHeight: '42px',
+  padding: `${vars.space.sm} ${vars.space.md}`,
+  background: vars.color.surfaceSoft,
+  border: vars.border.subtle,
+  borderRadius: vars.radius.sm,
+  color: vars.color.text,
+  fontSize: '14px',
+  fontFamily: vars.font.body,
+  outline: 'none',
+  transition: 'border-color 180ms ease',
+  selectors: {
+    '&:focus': {
+      borderColor: vars.color.borderAccent,
+    },
+    '&::placeholder': {
+      color: vars.color.textFaint,
+    },
+  },
+});
+
+export const formTextarea = style([formInput, {
+  minHeight: '160px',
+  resize: 'vertical',
+  lineHeight: 1.7,
+}]);
+
+export const formSelect = style([formInput, {
+  appearance: 'none',
+  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.28)'/%3E%3C/svg%3E")`,
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 12px center',
+  paddingRight: vars.space.xl,
+  cursor: 'pointer',
+}]);
+
+export const formError = style({
+  color: vars.color.accent,
+  fontSize: '12px',
+  marginBottom: vars.space.md,
+});
+
+export const formActions = style({
+  display: 'flex',
+  gap: vars.space.sm,
+});
+
+export const charCount = style({
+  fontFamily: vars.font.mono,
+  fontSize: '10px',
+  color: vars.color.textFaint,
+  marginTop: vars.space.xxs,
+});
+
+/* ── Empty / loading states ─────────────────────────────── */
+
+export const emptyBoard = style({
+  padding: `${vars.space.xxl} ${vars.space.lg}`,
+  textAlign: 'center',
+  color: vars.color.textMuted,
+  fontSize: '14px',
+  lineHeight: 1.7,
+  border: vars.border.subtle,
+  borderRadius: vars.radius.lg,
+  background: vars.color.surface,
+});
+
+export const loadingWrap = style({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  minHeight: '200px',
+});
+
+/* ── Comment form ───────────────────────────────────────── */
+
+export const commentFormWrap = style([panelInset, {
+  padding: vars.space.lg,
+  marginBottom: vars.space.xl,
+}]);
+
+export const commentFormTextarea = style([formInput, {
+  minHeight: '100px',
+  resize: 'vertical',
+  lineHeight: 1.7,
+  marginBottom: vars.space.sm,
+}]);
+
+export const commentFormActions = style({
+  display: 'flex',
+  gap: vars.space.sm,
+  alignItems: 'center',
+});
+
+// ── Theory References (Qdrant corpus cross-refs) ────────────
+
+export const theoryRefsPanel = style({
+  marginTop: vars.space.xl,
+  marginBottom: vars.space.xl,
+  border: vars.border.subtle,
+  borderRadius: vars.radius.lg,
+  overflow: 'hidden',
+});
+
+export const theoryRefsToggle = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: vars.space.sm,
+  width: '100%',
+  padding: `${vars.space.md} ${vars.space.lg}`,
+  background: 'none',
+  border: 'none',
+  color: vars.color.textMuted,
+  fontFamily: vars.font.mono,
+  fontSize: '11px',
+  letterSpacing: '0.08em',
+  textTransform: 'uppercase' as const,
+  cursor: 'pointer',
+  transition: 'color 0.2s',
+  ':hover': {
+    color: vars.color.text,
+  },
+});
+
+export const theoryRefsList = style({
+  padding: `0 ${vars.space.lg} ${vars.space.lg}`,
+  display: 'flex',
+  flexDirection: 'column' as const,
+  gap: vars.space.md,
+});
+
+export const theoryRefCard = style({
+  padding: vars.space.md,
+  borderRadius: vars.radius.md,
+  background: vars.color.surfaceSoft,
+  border: vars.border.subtle,
+  transition: 'border-color 0.2s',
+  ':hover': {
+    borderColor: vars.color.borderAccent,
+  },
+});
+
+export const theoryRefSource = style({
+  fontFamily: vars.font.mono,
+  fontSize: '11px',
+  color: vars.color.accent,
+  letterSpacing: '0.04em',
+  marginBottom: vars.space.xs,
+});
+
+export const theoryRefExcerpt = style({
+  fontSize: '13px',
+  lineHeight: '1.65',
+  color: vars.color.textSoft,
+});
+
+export const theoryRefTags = style({
+  display: 'flex',
+  flexWrap: 'wrap' as const,
+  gap: vars.space.xs,
+  marginTop: vars.space.sm,
+});
+
+export const theoryRefTag = style({
+  fontFamily: vars.font.mono,
+  fontSize: '10px',
+  letterSpacing: '0.06em',
+  padding: `2px ${vars.space.sm}`,
+  borderRadius: vars.radius.sm,
+  background: vars.color.surfaceRaised,
+  color: vars.color.textFaint,
+});
+
+================================================================================
+FILE: src/components/Forum/ForumPage.jsx
+================================================================================
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { FileText, Users, Wifi, MessageSquare, Heart, Repeat2, Pin, Lock, Send, BookOpen, ChevronDown } from 'lucide-react'
+import { useAuth } from '../../context/AuthContext'
+import { forumApiService } from './api'
+import { BOARDS, getBoardBySlug } from './constants'
+import { formatRelativeTime, truncateText } from './utils/formatters'
+import { parseContent } from './utils/helpers'
+import { useThreads } from './hooks/useThreads'
+import { useComments } from './hooks/useComments'
+import { useLikes } from './hooks/useLikes'
+import { useBookmarks } from './hooks/useBookmarks'
+import { useReposts } from './hooks/useReposts'
+import { useForumPresence } from './hooks/useForumPresence'
+import { useRateLimit } from './hooks/useRateLimit'
+import { useCorpusReferences } from './hooks/useCorpusReferences'
+import { sanitizeInput } from './utils/sanitize'
+import * as s from './ForumPage.css.ts'
+import {
+  ambientOrb,
+  sectionEyebrow,
+  actionButton,
+  loadingState,
+  loadingSpinner,
+  emptyState,
+  monoMeta,
+} from '../../styles/obsidianTheme.css.ts'
+
+// ── Route helpers ──────────────────────────────────────────
+
+function parseForumPath(pathname) {
+  const parts = pathname.replace(/^\/forum\/?/, '').split('/').filter(Boolean)
+  if (parts[0] === 'thread' && parts[1]) return { view: 'thread', threadId: parts[1] }
+  if (parts[0]) return { view: 'threads', boardSlug: parts[0] }
+  return { view: 'boards' }
+}
+
+// ── Board Listing ──────────────────────────────────────────
+
+function BoardListing({ stats, onlineCounts, onSelectBoard }) {
+  return (
+    <div className={s.boardList}>
+      {BOARDS.map((board) => {
+        const st = stats[board.slug] || { threadCount: 0, uniquePostersWeek: 0 }
+        const online = onlineCounts[board.slug] || 0
+        return (
+          <div
+            key={board.slug}
+            className={s.boardRow}
+            onClick={() => onSelectBoard(board.slug)}
+          >
+            <div className={s.boardInfo}>
+              <div className={s.boardNameRow}>
+                <h2 className={s.boardName}>{board.name}</h2>
+                <span className={s.boardSlug}>/{board.slug}/</span>
+              </div>
+              <p className={s.boardDescription}>{board.description}</p>
+            </div>
+            <div className={s.boardMeta}>
+              <span className={s.boardStat}>
+                <FileText size={13} /> {st.threadCount}
+              </span>
+              <span className={s.boardStat}>
+                <Users size={13} /> {st.uniquePostersWeek} this week
+              </span>
+              <span className={s.boardStat}>
+                <Wifi size={13} /> {online} online
+              </span>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// ── Thread List (Obsidian-styled) ──────────────────────────
+
+function ObsidianThreadCard({ thread, onClick }) {
+  const displayName = thread.author?.username || 'Anonymous'
+  return (
+    <div className={s.threadCard} onClick={() => onClick(thread)}>
+      <h3 className={s.threadTitle}>{thread.title}</h3>
+      <p className={s.threadExcerpt}>{truncateText(thread.content, 240)}</p>
+      <div className={s.threadMetaRow}>
+        <span className={`${s.threadMetaStat} ${s.threadAuthor}`}>{displayName}</span>
+        <span className={s.threadMetaStat}>{formatRelativeTime(thread.created_at)}</span>
+        <span className={s.threadMetaStat}>
+          <MessageSquare size={11} /> {thread.comment_count || 0}
+        </span>
+        <span className={s.threadMetaStat}>
+          <Heart size={11} /> {thread.like_count || 0}
+        </span>
+        {thread.is_pinned && (
+          <span className={`${s.threadMetaStat} ${s.threadPinned}`}>
+            <Pin size={11} /> pinned
+          </span>
+        )}
+        {thread.is_locked && (
+          <span className={`${s.threadMetaStat} ${s.threadLocked}`}>
+            <Lock size={11} /> locked
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function ThreadListView({ boardSlug, onBack, onSelectThread, onCreateThread, user }) {
+  const board = getBoardBySlug(boardSlug)
+  const [page, setPage] = useState(1)
+  const { threads, loading, error, pagination, refetch } = useThreads(
+    forumApiService,
+    { category: boardSlug, page, limit: 20, sortBy: 'created_at' },
+    user?.id,
+  )
+
+  if (!board) {
+    return (
+      <div className={s.content}>
+        <div className={s.breadcrumb}>
+          <span className={s.breadcrumbLink} onClick={onBack}>boards</span>
+          <span>/</span>
+          <span>unknown</span>
+        </div>
+        <div className={emptyState}>Board not found.</div>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <div className={s.breadcrumb}>
+        <span className={s.breadcrumbLink} onClick={onBack}>boards</span>
+        <span>{'>'}</span>
+        <span>/{board.slug}/ — {board.name}</span>
+      </div>
+
+      <div className={s.threadListHeader}>
+        <h2 className={s.threadListTitle}>{board.name}</h2>
+        <div className={s.threadListActions}>
+          {user && (
+            <button
+              className={actionButton({ tone: 'accent', size: 'sm' })}
+              onClick={onCreateThread}
+            >
+              New Thread
+            </button>
+          )}
+        </div>
+      </div>
+
+      {loading ? (
+        <div className={loadingState}><div className={loadingSpinner} /></div>
+      ) : error ? (
+        <div className={emptyState}>
+          Error: {error}
+          <br />
+          <button
+            className={actionButton({ tone: 'ghost', size: 'sm' })}
+            onClick={refetch}
+            style={{ marginTop: 12 }}
+          >
+            Retry
+          </button>
+        </div>
+      ) : threads.length === 0 ? (
+        <div className={emptyState}>
+          No threads yet. Be the first to start a discussion.
+        </div>
+      ) : (
+        <>
+          {threads.map((t) => (
+            <ObsidianThreadCard key={t.id} thread={t} onClick={onSelectThread} />
+          ))}
+          {pagination.totalPages > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 24 }}>
+              {page > 1 && (
+                <button
+                  className={actionButton({ tone: 'ghost', size: 'sm' })}
+                  onClick={() => setPage((p) => p - 1)}
+                >
+                  Prev
+                </button>
+              )}
+              <span className={monoMeta} style={{ alignSelf: 'center' }}>
+                {page} / {pagination.totalPages}
+              </span>
+              {page < pagination.totalPages && (
+                <button
+                  className={actionButton({ tone: 'ghost', size: 'sm' })}
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  Next
+                </button>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
+// ── Create Thread Form (Obsidian-styled) ───────────────────
+
+function CreateThreadView({ boardSlug, onBack, onCreated, user }) {
+  const [title, setTitle] = useState('')
+  const [content, setContent] = useState('')
+  const [selectedSlug, setSelectedSlug] = useState(boardSlug || BOARDS[0].slug)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [honeypot, setHoneypot] = useState('')
+  const mountTime = useRef(Date.now())
+  const { checkLimit } = useRateLimit()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (honeypot) return // bot trap
+    if (Date.now() - mountTime.current < 3000) {
+      setError('Please take a moment before posting.')
+      return
+    }
+    const rl = checkLimit('thread')
+    if (!rl.ok) {
+      setError(`Too many posts. Try again in ${Math.ceil(rl.retryAfterMs / 1000)}s.`)
+      return
+    }
+    if (title.trim().length < 3) { setError('Title must be at least 3 characters.'); return }
+    if (content.trim().length < 10) { setError('Content must be at least 10 characters.'); return }
+
+    setLoading(true)
+    setError('')
+    try {
+      await forumApiService.createThread(
+        { title: sanitizeInput(title.trim()), content: sanitizeInput(content.trim()), category_slug: selectedSlug },
+        user.id,
+      )
+      onCreated()
+    } catch (err) {
+      setError(err.message || 'Failed to create thread.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div>
+      <div className={s.breadcrumb}>
+        <span className={s.breadcrumbLink} onClick={onBack}>/{boardSlug}/</span>
+        <span>{'>'}</span>
+        <span>new thread</span>
+      </div>
+
+      <form className={s.formPanel} onSubmit={handleSubmit}>
+        <h2 className={s.formTitle}>Start a New Thread</h2>
+
+        {/* Honeypot — hidden from real users, bots auto-fill it */}
+        <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }} aria-hidden="true">
+          <label htmlFor="forum_website">Website</label>
+          <input id="forum_website" name="website" type="text" tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
+        </div>
+
+        <div className={s.formField}>
+          <label className={s.formLabel}>Board</label>
+          <select
+            className={s.formSelect}
+            value={selectedSlug}
+            onChange={(e) => setSelectedSlug(e.target.value)}
+            disabled={loading}
+          >
+            {BOARDS.map((b) => (
+              <option key={b.slug} value={b.slug}>
+                /{b.slug}/ — {b.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={s.formField}>
+          <label className={s.formLabel}>Title</label>
+          <input
+            className={s.formInput}
+            type="text"
+            value={title}
+            onChange={(e) => { setTitle(e.target.value); setError('') }}
+            placeholder="Thread title…"
+            maxLength={200}
+            disabled={loading}
+          />
+        </div>
+
+        <div className={s.formField}>
+          <label className={s.formLabel}>Content</label>
+          <textarea
+            className={s.formTextarea}
+            value={content}
+            onChange={(e) => { setContent(e.target.value); setError('') }}
+            placeholder="Write your post…"
+            disabled={loading}
+          />
+          <div className={s.charCount}>{content.length} characters</div>
+        </div>
+
+        {error && <div className={s.formError}>{error}</div>}
+
+        <div className={s.formActions}>
+          <button
+            type="submit"
+            className={actionButton({ tone: 'accent', size: 'md' })}
+            disabled={loading}
+          >
+            {loading ? 'Posting…' : 'Post Thread'}
+          </button>
+          <button
+            type="button"
+            className={actionButton({ tone: 'ghost', size: 'md' })}
+            onClick={onBack}
+            disabled={loading}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+// ── Theory References (Qdrant corpus cross-refs) ──────────
+
+function TheoryReferences({ text }) {
+  const { passages, loading } = useCorpusReferences(text)
+  const [open, setOpen] = useState(false)
+
+  if (loading || (!passages.length && !loading)) return null
+
+  return (
+    <div className={s.theoryRefsPanel}>
+      <button className={s.theoryRefsToggle} onClick={() => setOpen((v) => !v)}>
+        <BookOpen size={13} />
+        Theory References ({passages.length})
+        <ChevronDown size={13} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+      </button>
+      {open && (
+        <div className={s.theoryRefsList}>
+          {passages.map((p, i) => (
+            <div key={i} className={s.theoryRefCard}>
+              <div className={s.theoryRefSource}>
+                {p.author}, <em>{p.work}</em>{p.year ? ` (${p.year})` : ''}
+                {p.section ? ` — ${p.section}` : ''}
+              </div>
+              <div className={s.theoryRefExcerpt}>{p.text}</div>
+              {p.concept_tags?.length > 0 && (
+                <div className={s.theoryRefTags}>
+                  {p.concept_tags.map((tag) => (
+                    <span key={tag} className={s.theoryRefTag}>{tag}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Thread Detail ──────────────────────────────────────────
+
+function ThreadDetailView({ threadId, onBack, user }) {
+  const [thread, setThread] = useState(null)
+  const [threadLoading, setThreadLoading] = useState(true)
+  const [threadError, setThreadError] = useState(null)
+
+  const {
+    flatComments,
+    loading: commentsLoading,
+    createComment,
+  } = useComments(forumApiService, threadId, user?.id)
+
+  const { isLiked, toggleLike, fetchUserLikes } = useLikes(forumApiService, user?.id)
+  const { isBookmarked, toggleBookmark } = useBookmarks(forumApiService, user?.id)
+  const { isReposted, toggleRepost } = useReposts(forumApiService, user?.id)
+
+  const [replyContent, setReplyContent] = useState('')
+  const [replyLoading, setReplyLoading] = useState(false)
+  const [replyError, setReplyError] = useState('')
+  const { checkLimit } = useRateLimit()
+
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      setThreadLoading(true)
+      setThreadError(null)
+      try {
+        const data = await forumApiService.getThread(threadId)
+        if (!cancelled) setThread(data)
+      } catch (err) {
+        if (!cancelled) setThreadError(err.message)
+      } finally {
+        if (!cancelled) setThreadLoading(false)
+      }
+    }
+    load()
+    return () => { cancelled = true }
+  }, [threadId])
+
+  useEffect(() => {
+    if (user?.id) fetchUserLikes()
+  }, [user?.id, fetchUserLikes])
+
+  const handleLikeThread = useCallback(() => {
+    if (!thread) return
+    toggleLike('thread', thread.id)
+  }, [thread, toggleLike])
+
+  const handleRepost = useCallback(() => {
+    if (!thread) return
+    toggleRepost(thread.id)
+  }, [thread, toggleRepost])
+
+  const handleReply = async (e) => {
+    e.preventDefault()
+    if (!replyContent.trim()) return
+    const rl = checkLimit('comment')
+    if (!rl.ok) {
+      setReplyError(`Too many replies. Try again in ${Math.ceil(rl.retryAfterMs / 1000)}s.`)
+      return
+    }
+    setReplyLoading(true)
+    setReplyError('')
+    const result = await createComment(sanitizeInput(replyContent.trim()))
+    if (result.success) {
+      setReplyContent('')
+    } else {
+      setReplyError(result.error?.message || 'Failed to post reply.')
+    }
+    setReplyLoading(false)
+  }
+
+  if (threadLoading) {
+    return <div className={loadingState}><div className={loadingSpinner} /></div>
+  }
+  if (threadError || !thread) {
+    return <div className={emptyState}>{threadError || 'Thread not found.'}</div>
+  }
+
+  const displayName = thread.author?.username || 'Anonymous'
+  const contentSegments = parseContent(thread.content)
+  const threadLiked = isLiked('thread', thread.id)
+  const threadReposted = isReposted(thread.id)
+  const threadBookmarked = isBookmarked(thread.id)
+
+  return (
+    <div>
+      <div className={s.breadcrumb}>
+        <span className={s.breadcrumbLink} onClick={onBack}>
+          /{thread.category_slug}/
+        </span>
+        <span>{'>'}</span>
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {truncateText(thread.title, 40)}
+        </span>
+      </div>
+
+      <div className={s.threadDetailPanel}>
+        <div className={s.threadDetailHeader}>
+          <span className={s.threadAuthor}>{displayName}</span>
+          <span className={monoMeta}>{formatRelativeTime(thread.created_at)}</span>
+          <span className={monoMeta}>/{thread.category_slug}/</span>
+          {thread.is_pinned && <span className={s.threadPinned}><Pin size={12} /> pinned</span>}
+          {thread.is_locked && <span className={s.threadLocked}><Lock size={12} /> locked</span>}
+        </div>
+
+        <h1 className={s.threadDetailTitle}>{thread.title}</h1>
+
+        <div className={s.threadDetailContent}>
+          {contentSegments.map((seg) => {
+            if (seg.type === 'greentext') {
+              return <div key={seg.key} className="greentext">{seg.text}</div>
+            }
+            return <div key={seg.key}>{seg.text || <br />}</div>
+          })}
+        </div>
+
+        <div className={s.threadDetailActions}>
+          <button
+            className={`${s.threadDetailAction} ${threadLiked ? s.threadDetailActionActive : ''}`}
+            onClick={handleLikeThread}
+          >
+            <Heart size={13} /> {thread.like_count || 0}
+          </button>
+          <button
+            className={`${s.threadDetailAction} ${threadReposted ? s.threadDetailActionActive : ''}`}
+            onClick={handleRepost}
+          >
+            <Repeat2 size={13} /> {thread.repost_count || 0}
+          </button>
+          <button
+            className={`${s.threadDetailAction} ${threadBookmarked ? s.threadDetailActionActive : ''}`}
+            onClick={() => toggleBookmark(thread.id)}
+          >
+            {threadBookmarked ? 'saved' : 'save'}
+          </button>
+        </div>
+      </div>
+
+      {/* Corpus cross-references from Qdrant */}
+      <TheoryReferences text={thread.content} />
+
+      {/* Comments */}
+      <div className={s.commentSection}>
+        <h3 className={s.commentSectionTitle}>
+          Replies ({flatComments?.length || 0})
+        </h3>
+
+        {commentsLoading ? (
+          <div className={loadingState}><div className={loadingSpinner} /></div>
+        ) : flatComments && flatComments.length > 0 ? (
+          flatComments.map((c) => (
+            <div
+              key={c.id}
+              className={`${s.commentCard} ${c.parent_id ? s.nestedComment : ''}`}
+            >
+              <div className={s.commentHeader}>
+                <span className={s.commentAuthorName}>
+                  {c.author?.username || 'Anonymous'}
+                </span>
+                <span>{formatRelativeTime(c.created_at)}</span>
+              </div>
+              <div className={s.commentBody}>
+                {c.is_deleted ? '[deleted]' : c.content}
+              </div>
+              <div className={s.commentActions}>
+                <button
+                  className={s.threadDetailAction}
+                  onClick={() => toggleLike('comment', c.id)}
+                >
+                  <Heart size={11} /> {c.like_count || 0}
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className={emptyState}>No replies yet.</div>
+        )}
+
+        {/* Reply form */}
+        {user && !thread.is_locked && (
+          <form className={s.commentFormWrap} onSubmit={handleReply}>
+            <textarea
+              className={s.commentFormTextarea}
+              value={replyContent}
+              onChange={(e) => { setReplyContent(e.target.value); setReplyError('') }}
+              placeholder="Write a reply…"
+              disabled={replyLoading}
+            />
+            {replyError && <div className={s.formError}>{replyError}</div>}
+            <div className={s.commentFormActions}>
+              <button
+                type="submit"
+                className={actionButton({ tone: 'accent', size: 'sm' })}
+                disabled={replyLoading || !replyContent.trim()}
+              >
+                <Send size={13} /> {replyLoading ? 'Posting…' : 'Reply'}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── Main ForumPage ─────────────────────────────────────────
+
+function ForumPage() {
+  const pathname = usePathname()
+  const router = useRouter()
+  const { user } = useAuth()
+
+  const { view, boardSlug, threadId } = useMemo(
+    () => parseForumPath(pathname),
+    [pathname],
+  )
+
+  const [boardStats, setBoardStats] = useState({})
+  const [showCreateForm, setShowCreateForm] = useState(false)
+  const { onlineCounts, totalOnline } = useForumPresence(user?.id, boardSlug || null)
+
+  useEffect(() => {
+    forumApiService.getBoardStats().then(setBoardStats).catch(() => {})
+  }, [])
+
+  const goToBoards = useCallback(() => {
+    router.push('/forum')
+    setShowCreateForm(false)
+  }, [router])
+
+  const goToBoard = useCallback(
+    (slug) => {
+      router.push(`/forum/${slug}`)
+      setShowCreateForm(false)
+    },
+    [router],
+  )
+
+  const goToThread = useCallback(
+    (thread) => router.push(`/forum/thread/${thread.id}`),
+    [router],
+  )
+
+  const refreshBoardStats = useCallback(() => {
+    forumApiService.getBoardStats().then(setBoardStats).catch(() => {})
+  }, [])
+
+  const handleCreated = useCallback(() => {
+    setShowCreateForm(false)
+    refreshBoardStats()
+    router.push(`/forum/${boardSlug}`)
+  }, [router, boardSlug, refreshBoardStats])
+
+  return (
+    <div className={s.page}>
+      {/* Ambient orbs */}
+      <div className={`${ambientOrb} ${s.heroOrbLeft}`} />
+      <div className={`${ambientOrb} ${s.heroOrbRight}`} />
+
+      {/* Hero */}
+      <div className={s.hero}>
+        <div className={s.heroInner}>
+          <p className={sectionEyebrow}>Community</p>
+          <h1 className={s.heroTitle}>Forum</h1>
+          <p className={s.heroLead}>
+            Discuss theory, share analysis, organise study groups, and connect with comrades.
+          </p>
+          {totalOnline > 0 && (
+            <p className={s.heroLead} style={{ marginTop: 8 }}>
+              <Wifi size={13} style={{ verticalAlign: '-2px', marginRight: 4 }} />
+              {totalOnline} {totalOnline === 1 ? 'comrade' : 'comrades'} online now
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className={s.content}>
+        {view === 'boards' && (
+          <BoardListing stats={boardStats} onlineCounts={onlineCounts} onSelectBoard={goToBoard} />
+        )}
+
+        {view === 'threads' && !showCreateForm && (
+          <ThreadListView
+            boardSlug={boardSlug}
+            onBack={goToBoards}
+            onSelectThread={goToThread}
+            onCreateThread={() => setShowCreateForm(true)}
+            user={user}
+          />
+        )}
+
+        {view === 'threads' && showCreateForm && (
+          <CreateThreadView
+            boardSlug={boardSlug}
+            onBack={() => setShowCreateForm(false)}
+            onCreated={handleCreated}
+            user={user}
+          />
+        )}
+
+        {view === 'thread' && (
+          <ThreadDetailView
+            threadId={threadId}
+            onBack={() => {
+              // Try to go back to the board the thread belongs to
+              window.history.back()
+            }}
+            user={user}
+          />
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default ForumPage
+
+================================================================================
+FILE: src/components/Forum/api/index.js
+================================================================================
+import { supabase } from '../../../supabaseClient'
+
+const AUTHOR_SELECT = 'id, username, avatar_url, ideology'
+
+export const forumApiService = {
+  // ── Threads ──────────────────────────────────────────────
+
+  async getThreads({ category, page = 1, limit = 20, sortBy = 'created_at' } = {}) {
+    let query = supabase
+      .from('forum_threads')
+      .select('*, author:profiles!author_id(' + AUTHOR_SELECT + ')', { count: 'exact' })
+      .order(sortBy, { ascending: false })
+
+    if (category) {
+      query = query.eq('category_slug', category)
+    }
+
+    const from = (page - 1) * limit
+    const to = from + limit - 1
+    query = query.range(from, to)
+
+    const { data, error, count } = await query
+    if (error) throw error
+
+    return {
+      data: data || [],
+      page,
+      totalPages: Math.ceil((count || 0) / limit),
+      total: count || 0,
+    }
+  },
+
+  async getThread(threadId) {
+    const { data, error } = await supabase
+      .from('forum_threads')
+      .select('*, author:profiles!author_id(' + AUTHOR_SELECT + ')')
+      .eq('id', threadId)
+      .single()
+
+    if (error) throw error
+    return data
+  },
+
+  async createThread(threadData, userId) {
+    const { data, error } = await supabase
+      .from('forum_threads')
+      .insert({
+        title: threadData.title,
+        content: threadData.content,
+        category_slug: threadData.category_slug,
+        author_id: userId,
+        anonymous_name: threadData.anonymous_name || null,
+      })
+      .select('*, author:profiles!author_id(' + AUTHOR_SELECT + ')')
+      .single()
+
+    if (error) throw error
+    return data
+  },
+
+  async updateThread(threadId, updates) {
+    const { data, error } = await supabase
+      .from('forum_threads')
+      .update(updates)
+      .eq('id', threadId)
+      .select('*, author:profiles!author_id(' + AUTHOR_SELECT + ')')
+      .single()
+
+    if (error) throw error
+    return data
+  },
+
+  async deleteThread(threadId) {
+    const { error } = await supabase
+      .from('forum_threads')
+      .delete()
+      .eq('id', threadId)
+
+    if (error) throw error
+  },
+
+  // ── Board aggregates ─────────────────────────────────────
+
+  async getBoardStats() {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+
+    const [threadsRes, recentCommentsRes] = await Promise.all([
+      supabase
+        .from('forum_threads')
+        .select('category_slug, created_at, author_id'),
+      supabase
+        .from('forum_comments')
+        .select('author_id, thread:forum_threads!thread_id(category_slug)')
+        .gte('created_at', sevenDaysAgo),
+    ])
+
+    if (threadsRes.error) throw threadsRes.error
+
+    const stats = {}
+    const now = Date.now()
+    const dayMs = 24 * 60 * 60 * 1000
+
+    ;(threadsRes.data || []).forEach((t) => {
+      if (!stats[t.category_slug]) {
+        stats[t.category_slug] = { threadCount: 0, activeCount: 0, recentPosters: new Set() }
+      }
+      stats[t.category_slug].threadCount += 1
+      if (now - new Date(t.created_at).getTime() < 7 * dayMs) {
+        stats[t.category_slug].activeCount += 1
+        if (t.author_id) stats[t.category_slug].recentPosters.add(t.author_id)
+      }
+    })
+
+    ;(recentCommentsRes.data || []).forEach((c) => {
+      const slug = c.thread?.category_slug
+      if (!slug) return
+      if (!stats[slug]) {
+        stats[slug] = { threadCount: 0, activeCount: 0, recentPosters: new Set() }
+      }
+      if (c.author_id) stats[slug].recentPosters.add(c.author_id)
+    })
+
+    const result = {}
+    for (const [slug, s] of Object.entries(stats)) {
+      result[slug] = {
+        threadCount: s.threadCount,
+        activeCount: s.activeCount,
+        uniquePostersWeek: s.recentPosters.size,
+      }
+    }
+    return result
+  },
+
+  // ── Comments ─────────────────────────────────────────────
+
+  async getComments(threadId) {
+    const { data, error } = await supabase
+      .from('forum_comments')
+      .select('*, author:profiles!author_id(' + AUTHOR_SELECT + ')')
+      .eq('thread_id', threadId)
+      .order('created_at', { ascending: true })
+
+    if (error) throw error
+    return data || []
+  },
+
+  async createComment(commentData, userId) {
+    const { data, error } = await supabase
+      .from('forum_comments')
+      .insert({
+        thread_id: commentData.thread_id,
+        content: commentData.content,
+        parent_id: commentData.parent_id || null,
+        author_id: userId,
+        anonymous_name: commentData.anonymous_name || null,
+      })
+      .select('*, author:profiles!author_id(' + AUTHOR_SELECT + ')')
+      .single()
+
+    if (error) throw error
+    return data
+  },
+
+  async updateComment(commentId, content) {
+    const { data, error } = await supabase
+      .from('forum_comments')
+      .update({ content })
+      .eq('id', commentId)
+      .select('*, author:profiles!author_id(' + AUTHOR_SELECT + ')')
+      .single()
+
+    if (error) throw error
+    return data
+  },
+
+  async deleteComment(commentId) {
+    const { error } = await supabase
+      .from('forum_comments')
+      .delete()
+      .eq('id', commentId)
+
+    if (error) throw error
+  },
+
+  // ── Likes ────────────────────────────────────────────────
+
+  async like(targetType, targetId) {
+    const userId = (await supabase.auth.getUser()).data?.user?.id
+    if (!userId) throw new Error('Not authenticated')
+
+    const { error } = await supabase
+      .from('forum_likes')
+      .insert({ user_id: userId, target_type: targetType, target_id: targetId })
+
+    if (error) throw error
+  },
+
+  async unlike(targetType, targetId) {
+    const userId = (await supabase.auth.getUser()).data?.user?.id
+    if (!userId) throw new Error('Not authenticated')
+
+    const { error } = await supabase
+      .from('forum_likes')
+      .delete()
+      .eq('user_id', userId)
+      .eq('target_type', targetType)
+      .eq('target_id', targetId)
+
+    if (error) throw error
+  },
+
+  async getUserLikes(userId) {
+    const { data, error } = await supabase
+      .from('forum_likes')
+      .select('target_type, target_id')
+      .eq('user_id', userId)
+
+    if (error) throw error
+    return data || []
+  },
+
+  async getUserLikedThreads(userId) {
+    const { data, error } = await supabase
+      .from('forum_likes')
+      .select('target_id, forum_threads:target_id(*, author:profiles!author_id(' + AUTHOR_SELECT + '))')
+      .eq('user_id', userId)
+      .eq('target_type', 'thread')
+
+    if (error) throw error
+    return (data || []).map((d) => d.forum_threads).filter(Boolean)
+  },
+
+  async getUserLikedComments(userId) {
+    const { data, error } = await supabase
+      .from('forum_likes')
+      .select('target_id')
+      .eq('user_id', userId)
+      .eq('target_type', 'comment')
+
+    if (error) throw error
+    return (data || []).map((d) => d.target_id)
+  },
+
+  // ── Bookmarks ────────────────────────────────────────────
+
+  async getUserBookmarkIds(userId) {
+    const { data, error } = await supabase
+      .from('forum_bookmarks')
+      .select('thread_id')
+      .eq('user_id', userId)
+
+    if (error) throw error
+    return (data || []).map((d) => d.thread_id)
+  },
+
+  async addBookmark(threadId) {
+    const userId = (await supabase.auth.getUser()).data?.user?.id
+    if (!userId) throw new Error('Not authenticated')
+
+    const { error } = await supabase
+      .from('forum_bookmarks')
+      .insert({ user_id: userId, thread_id: threadId })
+
+    if (error) throw error
+  },
+
+  async removeBookmark(threadId) {
+    const userId = (await supabase.auth.getUser()).data?.user?.id
+    if (!userId) throw new Error('Not authenticated')
+
+    const { error } = await supabase
+      .from('forum_bookmarks')
+      .delete()
+      .eq('user_id', userId)
+      .eq('thread_id', threadId)
+
+    if (error) throw error
+  },
+
+  // ── Reposts ──────────────────────────────────────────────
+
+  async getUserRepostIds(userId) {
+    const { data, error } = await supabase
+      .from('forum_reposts')
+      .select('thread_id')
+      .eq('user_id', userId)
+
+    if (error) throw error
+    return (data || []).map((d) => d.thread_id)
+  },
+
+  async repost(threadId, quoteContent = null) {
+    const userId = (await supabase.auth.getUser()).data?.user?.id
+    if (!userId) throw new Error('Not authenticated')
+
+    const { error } = await supabase
+      .from('forum_reposts')
+      .insert({ user_id: userId, thread_id: threadId, quote_content: quoteContent })
+
+    if (error) throw error
+    return { success: true }
+  },
+
+  async unrepost(threadId) {
+    const userId = (await supabase.auth.getUser()).data?.user?.id
+    if (!userId) throw new Error('Not authenticated')
+
+    const { error } = await supabase
+      .from('forum_reposts')
+      .delete()
+      .eq('user_id', userId)
+      .eq('thread_id', threadId)
+
+    if (error) throw error
+    return { success: true }
+  },
+
+  // ── Notifications ────────────────────────────────────────
+
+  async getUnreadCount(userId) {
+    const { count, error } = await supabase
+      .from('forum_notifications')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('is_read', false)
+
+    if (error) throw error
+    return count || 0
+  },
+
+  async getNotifications(userId, { limit = 30 } = {}) {
+    const { data, error } = await supabase
+      .from('forum_notifications')
+      .select('*, source_user:profiles!source_user_id(id, username, avatar_url)')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    if (error) throw error
+    return data || []
+  },
+
+  async markNotificationsRead(userId) {
+    const { error } = await supabase
+      .from('forum_notifications')
+      .update({ is_read: true })
+      .eq('user_id', userId)
+      .eq('is_read', false)
+
+    if (error) throw error
+  },
+
+  // ── Profile / User activity ──────────────────────────────
+
+  async getProfile(userId) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, username, avatar_url, ideology, created_at')
+      .eq('id', userId)
+      .single()
+
+    if (error) throw error
+    return data
+  },
+
+  async getUserThreads(userId) {
+    const { data, error } = await supabase
+      .from('forum_threads')
+      .select('*, author:profiles!author_id(' + AUTHOR_SELECT + ')')
+      .eq('author_id', userId)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return data || []
+  },
+
+  async getUserComments(userId) {
+    const { data, error } = await supabase
+      .from('forum_comments')
+      .select('*, author:profiles!author_id(' + AUTHOR_SELECT + '), thread:forum_threads!thread_id(id, title)')
+      .eq('author_id', userId)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return data || []
+  },
+
+  async getUserReposts(userId) {
+    const { data, error } = await supabase
+      .from('forum_reposts')
+      .select('*, thread:forum_threads!thread_id(*, author:profiles!author_id(' + AUTHOR_SELECT + '))')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return data || []
+  },
+}
+
+export default forumApiService
+
+================================================================================
+FILE: src/components/Forum/components/bookmarks/BookmarksPanel.jsx
+================================================================================
+import React, { useState, useEffect, useCallback } from 'react'
+import { spacing } from '../../styles/theme'
+import { formatDate, truncateText } from '../../utils/formatters'
+
+const frostedGlassStyle = {
+  backdropFilter: 'blur(20px)',
+  WebkitBackdropFilter: 'blur(20px)',
+  backgroundColor: 'rgba(18, 18, 18, 0.85)',
+}
+
+function BookmarkItem({ bookmark, onView, onRemove }) {
+  const { thread } = bookmark
+
+  if (!thread) return null
+
+  return (
+    <div 
+      style={{
+        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+        padding: '16px 20px',
+        display: 'flex',
+        gap: spacing.md,
+        cursor: 'pointer',
+        transition: 'background-color 0.15s ease',
+      }}
+      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'}
+      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+      onClick={() => onView?.(thread)}
+    >
+      <div style={{ flex: 1 }}>
+        <h4 style={{
+          color: '#e5e5e5',
+          fontSize: '14px',
+          fontWeight: '500',
+          marginBottom: '6px',
+          lineHeight: 1.3,
+        }}>
+          {thread.title}
+        </h4>
+        <p style={{
+          fontSize: '12px',
+          color: 'rgba(255, 255, 255, 0.45)',
+          marginBottom: '8px',
+          lineHeight: 1.4,
+        }}>
+          {truncateText(thread.content, 100)}
+        </p>
+        <div style={{
+          fontSize: '11px',
+          color: 'rgba(255, 255, 255, 0.35)',
+          display: 'flex',
+          gap: '12px',
+        }}>
+          <span>/{thread.category_slug}/</span>
+          <span>{thread.comment_count} replies</span>
+          <span>saved {formatDate(bookmark.created_at)}</span>
+        </div>
+      </div>
+      <button
+        onClick={(e) => {
+          e.stopPropagation()
+          onRemove?.(thread.id)
+        }}
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'rgba(255, 255, 255, 0.3)',
+          cursor: 'pointer',
+          padding: '4px',
+          fontSize: '11px',
+          alignSelf: 'flex-start',
+          transition: 'color 0.15s ease',
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
+        onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.3)'}
+        title="Remove"
+      >
+        x
+      </button>
+    </div>
+  )
+}
+
+function BookmarksPanel({ apiService, userId, onViewThread, onClose }) {
+  const [bookmarks, setBookmarks] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const fetchBookmarks = useCallback(async () => {
+    if (!userId) return
+    setLoading(true)
+    const data = await apiService.getBookmarks(userId)
+    setBookmarks(data)
+    setLoading(false)
+  }, [apiService, userId])
+
+  useEffect(() => {
+    fetchBookmarks()
+  }, [fetchBookmarks])
+
+  const handleRemove = async (threadId) => {
+    await apiService.removeBookmark(threadId)
+    setBookmarks(prev => prev.filter(b => b.thread?.id !== threadId))
+  }
+
+  return (
+    <>
+      {/* Backdrop overlay */}
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          zIndex: 999,
+        }}
+      />
+      
+      {/* Panel */}
+      <div style={{
+        position: 'fixed',
+        top: '16px',
+        right: '16px',
+        bottom: '16px',
+        width: '380px',
+        maxWidth: 'calc(100vw - 32px)',
+        borderRadius: '12px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 24px 80px rgba(0, 0, 0, 0.5)',
+        zIndex: 1000,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        ...frostedGlassStyle,
+      }}>
+        {/* Header */}
+        <div style={{
+          padding: '16px 20px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+          <h3 style={{ 
+            fontWeight: '500', 
+            color: '#e5e5e5',
+            fontSize: '15px',
+            letterSpacing: '-0.01em',
+          }}>
+            Saved Threads
+            {bookmarks.length > 0 && (
+              <span style={{ 
+                color: 'rgba(255, 255, 255, 0.45)',
+                fontWeight: '400',
+                marginLeft: '8px',
+              }}>
+                {bookmarks.length}
+              </span>
+            )}
+          </h3>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: 'none',
+              color: 'rgba(255, 255, 255, 0.6)',
+              cursor: 'pointer',
+              width: '24px',
+              height: '24px',
+              borderRadius: '6px',
+              fontSize: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background-color 0.15s ease',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+          >
+            x
+          </button>
+        </div>
+
+        {/* Content */}
+        <div style={{ flex: 1, overflow: 'auto' }}>
+          {loading ? (
+            <div style={{
+              padding: '48px 20px',
+              textAlign: 'center',
+              color: 'rgba(255, 255, 255, 0.4)',
+              fontSize: '13px',
+            }}>
+              Loading...
+            </div>
+          ) : bookmarks.length === 0 ? (
+            <div style={{
+              padding: '48px 20px',
+              textAlign: 'center',
+              color: 'rgba(255, 255, 255, 0.35)',
+              fontSize: '13px',
+            }}>
+              No saved threads yet
+            </div>
+          ) : (
+            bookmarks.map(bookmark => (
+              <BookmarkItem
+                key={bookmark.id}
+                bookmark={bookmark}
+                onView={(thread) => {
+                  onViewThread?.(thread)
+                  onClose?.()
+                }}
+                onRemove={handleRemove}
+              />
+            ))
+          )}
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default BookmarksPanel
+
+================================================================================
+FILE: src/components/Forum/components/comments/Comment.jsx
+================================================================================
+import React from 'react'
+import Avatar from '../common/Avatar'
+import IdeologyTag from '../common/IdeologyTag'
+import ProfilePopover from '../common/ProfilePopover'
+import { colors, spacing } from '../../styles/theme'
+import { formatDate, formatPostNumber } from '../../utils/formatters'
+import { parseContent } from '../../utils/helpers'
+
+function Comment({
+  comment,
+  depth = 0,
+  onReply,
+  onLike,
+  isLiked,
+  currentUserId,
+  isAdmin,
+  onDelete,
+}) {
+  const {
+    id,
+    content,
+    created_at,
+    author,
+    anonymous_name,
+    like_count = 0,
+    is_deleted,
+  } = comment
+  
+  const sanitizedAnonName = anonymous_name && !['undefined', 'null'].includes(anonymous_name.toLowerCase().trim()) && anonymous_name.trim() ? anonymous_name.trim() : null
+  const displayName = author?.username || sanitizedAnonName || 'Anonymous'
+
+  const contentSegments = parseContent(content)
+  const maxDepth = 4
+  const indentSize = Math.min(depth, maxDepth) * 20
+
+  if (is_deleted) {
+    return (
+      <div
+        id={`post-${formatPostNumber(id)}`}
+        style={{
+          marginLeft: indentSize,
+          padding: spacing.md,
+          marginBottom: spacing.sm,
+          borderLeft: `2px solid ${colors.border.secondary}`,
+          color: colors.text.muted,
+          fontStyle: 'italic',
+        }}
+      >
+        [deleted]
+      </div>
+    )
+  }
+
+  return (
+    <div
+      id={`post-${formatPostNumber(id)}`}
+      style={{
+        marginLeft: indentSize,
+        marginBottom: spacing.md,
+        borderLeft: depth > 0 ? `2px solid ${colors.border.secondary}` : 'none',
+        paddingLeft: depth > 0 ? spacing.md : 0,
+      }}
+    >
+      <div style={{
+        border: `1px solid ${colors.border.primary}`,
+        backgroundColor: colors.bg.elevated,
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: spacing.sm,
+          padding: `${spacing.xs} ${spacing.sm}`,
+          borderBottom: `1px solid ${colors.border.secondary}`,
+          backgroundColor: colors.bg.primary,
+          fontSize: '12px',
+        }}>
+          <ProfilePopover userId={author?.id} username={displayName} disabled={!author}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm }}>
+              <Avatar
+                src={author?.avatar_url}
+                name={displayName}
+                size={20}
+              />
+              <span style={{ color: author ? colors.accent.green : colors.text.tertiary }}>
+                {displayName}
+              </span>
+              {author?.ideology && (
+                <IdeologyTag ideology={author.ideology} />
+              )}
+            </div>
+          </ProfilePopover>
+          
+          <span style={{ color: colors.text.muted }}>
+            {formatDate(created_at)}
+          </span>
+          
+          <span style={{ color: colors.text.faded, fontSize: '11px' }}>
+            No.{formatPostNumber(id)}
+          </span>
+        </div>
+
+        <div style={{ padding: spacing.md }}>
+          <div style={{ lineHeight: 1.5, marginBottom: spacing.sm }}>
+            {contentSegments.map(segment => {
+              if (segment.type === 'greentext') {
+                return (
+                  <div key={segment.key} style={{ color: colors.accent.green }}>
+                    {segment.text}
+                  </div>
+                )
+              }
+              if (segment.type === 'quote-link') {
+                return (
+                  <div key={segment.key}>
+                    <a href={`#post-${segment.postId}`} style={{ color: colors.accent.red }}>
+                      {segment.text}
+                    </a>
+                  </div>
+                )
+              }
+              return (
+                <div key={segment.key}>
+                  {segment.text || <br />}
+                </div>
+              )
+            })}
+          </div>
+
+          <div style={{
+            display: 'flex',
+            gap: spacing.md,
+            fontSize: '11px',
+          }}>
+            <a
+              href="#"
+              onClick={(e) => { e.preventDefault(); onLike?.(id) }}
+              style={{ 
+                color: isLiked ? colors.accent.red : colors.text.muted,
+              }}
+            >
+              ♥ {like_count}
+            </a>
+            
+            {onReply && (
+              <a
+                href="#"
+                onClick={(e) => { e.preventDefault(); onReply?.(id) }}
+                style={{ color: colors.accent.green }}
+              >
+                [reply]
+              </a>
+            )}
+            
+            {isAdmin && (
+              <a
+                href="#"
+                onClick={(e) => { e.preventDefault(); onDelete?.(id) }}
+                style={{ color: colors.accent.red, marginLeft: 'auto' }}
+              >
+                [delete]
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default Comment
+
+================================================================================
+FILE: src/components/Forum/components/comments/CommentForm.jsx
+================================================================================
+import React, { useState, useRef, useEffect } from 'react'
+import { colors, spacing, commonStyles } from '../../styles/theme'
+import { validateContent } from '../../utils/validators'
+import { LIMITS } from '../../constants'
+
+function CommentForm({
+  onSubmit,
+  onCancel,
+  placeholder = 'write a comment...',
+  submitLabel = '[post]',
+  compact = false,
+  isAuthenticated = false,
+}) {
+  const [content, setContent] = useState('')
+  const [anonymousName, setAnonymousName] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [honeypot, setHoneypot] = useState('')
+  const mountTime = useRef(Date.now())
+
+  useEffect(() => {
+    mountTime.current = Date.now()
+  }, [])
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    // Anti-bot: honeypot check
+    if (honeypot) return
+
+    // Anti-bot: time-based check (must spend at least 3 seconds)
+    const elapsed = Date.now() - mountTime.current
+    if (elapsed < 3000) {
+      setError('Please take a moment before posting.')
+      return
+    }
+
+    // Anti-bot: rate limiting (10 second cooldown)
+    const lastPost = localStorage.getItem('_lastCommentPost')
+    if (lastPost && Date.now() - parseInt(lastPost, 10) < 10000) {
+      const remaining = Math.ceil((10000 - (Date.now() - parseInt(lastPost, 10))) / 1000)
+      setError(`Please wait ${remaining} seconds before posting another comment.`)
+      return
+    }
+    
+    const validation = validateContent(content, LIMITS.COMMENT_MIN)
+    if (!validation.valid) {
+      setError(validation.error)
+      return
+    }
+    
+    setLoading(true)
+    try {
+      await onSubmit?.(content, isAuthenticated ? null : (anonymousName || 'Anonymous'))
+      localStorage.setItem('_lastCommentPost', Date.now().toString())
+      setContent('')
+      setAnonymousName('')
+      setError('')
+    } catch (err) {
+      setError(err.message || 'failed to post comment')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div style={{
+      ...commonStyles.card,
+      padding: compact ? spacing.sm : spacing.lg,
+      marginBottom: compact ? 0 : spacing.lg,
+    }}>
+      <form onSubmit={handleSubmit}>
+        {/* Anti-bot honeypot - hidden from humans */}
+        <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }} aria-hidden="true">
+          <input
+            type="text"
+            name="website_url"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+          />
+        </div>
+        {!isAuthenticated && (
+          <input
+            type="text"
+            value={anonymousName}
+            onChange={(e) => setAnonymousName(e.target.value)}
+            placeholder="Name (optional)"
+            style={{
+              ...commonStyles.input,
+              marginBottom: spacing.sm,
+              width: 'auto',
+              minWidth: '150px',
+            }}
+            disabled={loading}
+            maxLength={50}
+          />
+        )}
+        <textarea
+          value={content}
+          onChange={(e) => { setContent(e.target.value); setError('') }}
+          placeholder={placeholder}
+          rows={compact ? 3 : 5}
+          style={{
+            ...commonStyles.input,
+            resize: 'vertical',
+            minHeight: compact ? '60px' : '100px',
+            marginBottom: spacing.sm,
+          }}
+          disabled={loading}
+          maxLength={LIMITS.COMMENT_MAX}
+        />
+        
+        {error && (
+          <div style={{
+            color: colors.state.error,
+            fontSize: '11px',
+            marginBottom: spacing.sm,
+          }}>
+            {error}
+          </div>
+        )}
+        
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+          <span style={{ fontSize: '11px', color: colors.text.muted }}>
+            {content.length}/{LIMITS.COMMENT_MAX}
+          </span>
+          
+          <div style={{ display: 'flex', gap: spacing.sm }}>
+            <button
+              type="submit"
+              style={commonStyles.buttonPrimary}
+              disabled={loading}
+            >
+              {loading ? '[posting...]' : submitLabel}
+            </button>
+            
+            {onCancel && (
+              <button
+                type="button"
+                onClick={onCancel}
+                style={commonStyles.buttonSecondary}
+                disabled={loading}
+              >
+                [cancel]
+              </button>
+            )}
+          </div>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+export default CommentForm
+
+================================================================================
+FILE: src/components/Forum/components/comments/CommentList.jsx
+================================================================================
+import React from 'react'
+import Comment from './Comment'
+import CommentForm from './CommentForm'
+import LoadingSpinner from '../common/LoadingSpinner'
+import { colors, spacing } from '../../styles/theme'
+
+function CommentList({
+  comments,
+  loading,
+  onReply,
+  onLike,
+  isLiked,
+  replyingTo,
+  onSubmitReply,
+  onCancelReply,
+  currentUserId,
+  isAuthenticated = false,
+  isAdmin,
+  onDeleteComment,
+}) {
+  if (loading) {
+    return <LoadingSpinner text="loading comments..." />
+  }
+
+  if (!comments || comments.length === 0) {
+    return (
+      <div style={{
+        textAlign: 'center',
+        color: colors.text.muted,
+        padding: spacing.lg,
+      }}>
+        no replies yet. be the first to respond.
+      </div>
+    )
+  }
+
+  const renderComment = (comment, depth = 0) => {
+    return (
+      <React.Fragment key={comment.id}>
+        <Comment
+          comment={comment}
+          depth={depth}
+          onReply={onReply}
+          onLike={onLike}
+          isLiked={isLiked?.(comment.id)}
+          currentUserId={currentUserId}
+          isAdmin={isAdmin}
+          onDelete={onDeleteComment}
+        />
+        
+        {replyingTo === comment.id && (
+          <div style={{ marginLeft: Math.min(depth + 1, 4) * 20, marginBottom: spacing.md }}>
+            <CommentForm
+              onSubmit={onSubmitReply}
+              onCancel={onCancelReply}
+              placeholder={`replying to No.${comment.id.toString().slice(-4).toUpperCase()}...`}
+              compact
+              isAuthenticated={isAuthenticated}
+            />
+          </div>
+        )}
+        
+        {comment.replies && comment.replies.map(reply => 
+          renderComment(reply, depth + 1)
+        )}
+      </React.Fragment>
+    )
+  }
+
+  return (
+    <div>
+      {comments.map(comment => renderComment(comment))}
+    </div>
+  )
+}
+
+export default CommentList
+
+================================================================================
+FILE: src/components/Forum/components/common/Avatar.jsx
+================================================================================
+import React, { useState } from 'react'
+import { colors } from '../../styles/theme'
+import { getInitials } from '../../utils/helpers'
+
+function Avatar({ src, name, size = 40 }) {
+  const [hasError, setHasError] = useState(false)
+
+  if (src && !hasError) {
+    return (
+      <img
+        src={src}
+        alt={name || 'avatar'}
+        onError={() => setHasError(true)}
+        style={{
+          width: size,
+          height: size,
+          objectFit: 'cover',
+          border: `1px solid ${colors.border.primary}`,
+          backgroundColor: colors.bg.hover,
+        }}
+      />
+    )
+  }
+
+  return (
+    <div style={{
+      width: size,
+      height: size,
+      backgroundColor: colors.bg.hover,
+      border: `1px solid ${colors.border.primary}`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: colors.text.faded,
+      fontSize: size * 0.4,
+      fontWeight: 'bold',
+    }}>
+      {getInitials(name)}
+    </div>
+  )
+}
+
+export default Avatar
+
+================================================================================
+FILE: src/components/Forum/components/common/ErrorMessage.jsx
+================================================================================
+import React from 'react'
+import { colors, spacing } from '../../styles/theme'
+
+function ErrorMessage({ message, onRetry }) {
+  return (
+    <div style={{
+      textAlign: 'center',
+      color: colors.state.error,
+      padding: spacing.lg,
+    }}>
+      <p>{message || 'something went wrong'}</p>
+      {onRetry && (
+        <a
+          href="#"
+          onClick={(e) => { e.preventDefault(); onRetry() }}
+          style={{ color: colors.accent.green, marginTop: spacing.sm, display: 'inline-block' }}
+        >
+          [try again]
+        </a>
+      )}
+    </div>
+  )
+}
+
+export default ErrorMessage
+
+================================================================================
+FILE: src/components/Forum/components/common/IdeologyTag.jsx
+================================================================================
+import React from 'react'
+import { getIdeologyColor, getIdeologyAbbrev } from '../../constants'
+
+function IdeologyTag({ ideology, showFull = false }) {
+  if (!ideology) return null
+
+  const color = getIdeologyColor(ideology)
+  const display = showFull ? ideology : getIdeologyAbbrev(ideology)
+
+  return (
+    <span style={{
+      color,
+      fontSize: '11px',
+      marginLeft: '4px',
+    }}>
+      [{display}]
+    </span>
+  )
+}
+
+export default IdeologyTag
+
+================================================================================
+FILE: src/components/Forum/components/common/LoadingSpinner.jsx
+================================================================================
+import React from 'react'
+import { colors } from '../../styles/theme'
+
+function LoadingSpinner({ text = 'loading...' }) {
+  return (
+    <div style={{
+      textAlign: 'center',
+      color: colors.text.muted,
+      padding: '20px',
+    }}>
+      {text}
+    </div>
+  )
+}
+
+export default LoadingSpinner
+
+================================================================================
+FILE: src/components/Forum/components/common/Pagination.jsx
+================================================================================
+import React from 'react'
+import { colors, spacing } from '../../styles/theme'
+
+function Pagination({ currentPage, totalPages, onPageChange }) {
+  if (totalPages <= 1) return null
+
+  const getPageNumbers = () => {
+    const pages = []
+    const showEllipsis = totalPages > 7
+    
+    if (!showEllipsis) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i)
+      }
+    } else {
+      pages.push(1)
+      
+      if (currentPage > 3) {
+        pages.push('...')
+      }
+      
+      for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+        if (!pages.includes(i)) {
+          pages.push(i)
+        }
+      }
+      
+      if (currentPage < totalPages - 2) {
+        pages.push('...')
+      }
+      
+      if (!pages.includes(totalPages)) {
+        pages.push(totalPages)
+      }
+    }
+    
+    return pages
+  }
+
+  return (
+    <div style={{
+      textAlign: 'center',
+      marginTop: spacing.xl,
+      color: colors.text.muted,
+    }}>
+      {getPageNumbers().map((page, index) => (
+        <span key={index}>
+          {page === '...' ? (
+            <span style={{ margin: `0 ${spacing.xs}` }}>...</span>
+          ) : (
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                if (page !== currentPage) {
+                  onPageChange?.(page)
+                }
+              }}
+              style={{
+                color: page === currentPage ? colors.text.primary : colors.accent.green,
+                margin: `0 ${spacing.xs}`,
+                textDecoration: page === currentPage ? 'none' : 'underline',
+              }}
+            >
+              {page}
+            </a>
+          )}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+export default Pagination
+
+================================================================================
+FILE: src/components/Forum/components/common/ProfilePopover.jsx
+================================================================================
+import React, { useState, useEffect, useRef } from 'react'
+import { colors, spacing, typography } from '../../styles/theme'
+import { supabase } from '../../../../supabaseClient'
+import Avatar from './Avatar'
+
+function ProfilePopover({ userId, username, children, disabled = false }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [profile, setProfile] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [position, setPosition] = useState({ top: 0, left: 0 })
+  const triggerRef = useRef(null)
+  const popoverRef = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(event.target) &&
+        triggerRef.current &&
+        !triggerRef.current.contains(event.target)
+      ) {
+        setIsOpen(false)
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen])
+
+  const fetchProfile = async () => {
+    if (!userId || profile) return
+    
+    setLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, username, bio, ideology, avatar_url, banner_url, is_certified')
+        .eq('id', userId)
+        .single()
+
+      if (error) throw error
+      setProfile(data)
+    } catch (err) {
+      console.error('Error fetching profile for popover:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleClick = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    if (disabled || !userId) return
+
+    if (!isOpen) {
+      fetchProfile()
+      
+      if (triggerRef.current) {
+        const rect = triggerRef.current.getBoundingClientRect()
+        setPosition({
+          top: rect.bottom + window.scrollY + 8,
+          left: rect.left + window.scrollX,
+        })
+      }
+    }
+    
+    setIsOpen(!isOpen)
+  }
+
+  return (
+    <>
+      <span
+        ref={triggerRef}
+        onClick={handleClick}
+        style={{ cursor: disabled ? 'default' : 'pointer' }}
+      >
+        {children}
+      </span>
+
+      {isOpen && (
+        <div
+          ref={popoverRef}
+          style={{
+            position: 'absolute',
+            top: position.top,
+            left: position.left,
+            zIndex: 1000,
+            width: '280px',
+            backgroundColor: colors.bg.elevated,
+            border: `1px solid ${colors.border.primary}`,
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+          }}
+        >
+          {/* Banner */}
+          <div
+            style={{
+              height: '60px',
+              backgroundColor: profile?.banner_url ? 'transparent' : colors.bg.hover,
+              backgroundImage: profile?.banner_url ? `url(${profile.banner_url})` : 'none',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          />
+
+          {/* Avatar overlapping banner */}
+          <div style={{ position: 'relative', padding: spacing.md }}>
+            <div
+              style={{
+                position: 'absolute',
+                top: '-30px',
+                left: spacing.md,
+              }}
+            >
+              <Avatar
+                src={profile?.avatar_url}
+                name={profile?.username || username}
+                size={50}
+                style={{
+                  border: `3px solid ${colors.bg.elevated}`,
+                }}
+              />
+            </div>
+
+            {/* Content */}
+            <div style={{ marginTop: '24px' }}>
+              {loading ? (
+                <div style={{ color: colors.text.tertiary, fontSize: typography.fontSize.sm }}>
+                  loading...
+                </div>
+              ) : profile ? (
+                <>
+                  {/* Username */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: spacing.xs }}>
+                    <span style={{ 
+                      color: colors.accent.green, 
+                      fontWeight: 'bold',
+                      fontSize: typography.fontSize.md,
+                    }}>
+                      {profile.username}
+                    </span>
+                    {profile.is_certified && (
+                      <span style={{ color: colors.accent.green, fontSize: '12px' }}>✓</span>
+                    )}
+                  </div>
+
+                  {/* Ideology */}
+                  {profile.ideology && (
+                    <div style={{ 
+                      color: colors.text.tertiary, 
+                      fontSize: typography.fontSize.xs,
+                      marginTop: spacing.xs,
+                    }}>
+                      {profile.ideology}
+                    </div>
+                  )}
+
+                  {/* Bio */}
+                  {profile.bio && (
+                    <div style={{ 
+                      color: colors.text.secondary, 
+                      fontSize: typography.fontSize.sm,
+                      marginTop: spacing.sm,
+                      lineHeight: typography.lineHeight.normal,
+                      maxHeight: '60px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}>
+                      {profile.bio}
+                    </div>
+                  )}
+
+                  {!profile.bio && !profile.ideology && (
+                    <div style={{ 
+                      color: colors.text.muted, 
+                      fontSize: typography.fontSize.sm,
+                      marginTop: spacing.sm,
+                      fontStyle: 'italic',
+                    }}>
+                      no bio yet
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div style={{ color: colors.text.muted, fontSize: typography.fontSize.sm }}>
+                  profile not found
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
+export default ProfilePopover
+
+================================================================================
+FILE: src/components/Forum/components/common/RepostModal.jsx
+================================================================================
+import React, { useState } from 'react'
+import { colors, spacing, commonStyles } from '../../styles/theme'
+
+function RepostModal({ thread, onRepost, onClose, isReposted }) {
+  const [quoteContent, setQuoteContent] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleRepost = async (withQuote = false) => {
+    setIsSubmitting(true)
+    try {
+      await onRepost(thread.id, withQuote ? quoteContent : null)
+      onClose()
+    } catch (err) {
+      console.error('Repost failed:', err)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleUnrepost = async () => {
+    setIsSubmitting(true)
+    try {
+      await onRepost(thread.id, null, true) // true = unrepost
+      onClose()
+    } catch (err) {
+      console.error('Unrepost failed:', err)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <div style={{
+      position: 'fixed',
+      inset: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000,
+    }}>
+      <div style={{
+        ...commonStyles.card,
+        maxWidth: '500px',
+        width: '90%',
+        maxHeight: '80vh',
+        overflow: 'auto',
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: spacing.lg,
+          paddingBottom: spacing.sm,
+          borderBottom: `1px solid ${colors.border.secondary}`,
+        }}>
+          <h3 style={{ margin: 0, fontWeight: 'normal' }}>
+            {isReposted ? 'Remove Repost' : 'Repost Thread'}
+          </h3>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: colors.text.muted,
+              cursor: 'pointer',
+              fontSize: '18px',
+              padding: spacing.xs,
+            }}
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Thread Preview */}
+        <div style={{
+          backgroundColor: colors.bg.tertiary,
+          padding: spacing.md,
+          borderRadius: '4px',
+          marginBottom: spacing.lg,
+          borderLeft: `3px solid ${colors.accent.green}`,
+        }}>
+          <div style={{ fontSize: '12px', color: colors.text.muted, marginBottom: spacing.xs }}>
+            @{thread.author?.username || 'Anonymous'}
+          </div>
+          <div style={{ fontWeight: 'bold', marginBottom: spacing.xs }}>
+            {thread.title}
+          </div>
+          <div style={{ 
+            fontSize: '13px', 
+            color: colors.text.secondary,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+          }}>
+            {thread.content?.substring(0, 200)}
+            {thread.content?.length > 200 && '...'}
+          </div>
+        </div>
+
+        {isReposted ? (
+          <div>
+            <p style={{ color: colors.text.secondary, marginBottom: spacing.lg }}>
+              You have already reposted this thread. Would you like to remove your repost?
+            </p>
+            <div style={{ display: 'flex', gap: spacing.md }}>
+              <button
+                onClick={handleUnrepost}
+                disabled={isSubmitting}
+                style={{
+                  flex: 1,
+                  padding: spacing.sm,
+                  backgroundColor: colors.accent.red,
+                  color: colors.text.primary,
+                  border: 'none',
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  opacity: isSubmitting ? 0.5 : 1,
+                }}
+              >
+                {isSubmitting ? 'Removing...' : 'Remove Repost'}
+              </button>
+              <button
+                onClick={onClose}
+                style={{
+                  flex: 1,
+                  padding: spacing.sm,
+                  backgroundColor: 'transparent',
+                  color: colors.text.secondary,
+                  border: `1px solid ${colors.border.secondary}`,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            {/* Quote Input */}
+            <div style={{ marginBottom: spacing.lg }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: spacing.sm, 
+                color: colors.text.secondary,
+                fontSize: '13px',
+              }}>
+                Add a comment (optional):
+              </label>
+              <textarea
+                value={quoteContent}
+                onChange={(e) => setQuoteContent(e.target.value)}
+                placeholder="Add your thoughts..."
+                style={{
+                  width: '100%',
+                  minHeight: '80px',
+                  padding: spacing.sm,
+                  backgroundColor: colors.bg.input,
+                  border: `1px solid ${colors.border.primary}`,
+                  color: colors.text.primary,
+                  resize: 'vertical',
+                  fontFamily: 'inherit',
+                  fontSize: '13px',
+                }}
+                maxLength={500}
+              />
+              <div style={{ 
+                fontSize: '11px', 
+                color: colors.text.muted, 
+                textAlign: 'right',
+                marginTop: spacing.xs,
+              }}>
+                {quoteContent.length}/500
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: spacing.md }}>
+              <button
+                onClick={() => handleRepost(false)}
+                disabled={isSubmitting}
+                style={{
+                  flex: 1,
+                  padding: spacing.sm,
+                  backgroundColor: colors.accent.green,
+                  color: colors.bg.primary,
+                  border: 'none',
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  opacity: isSubmitting ? 0.5 : 1,
+                  fontWeight: 'bold',
+                }}
+              >
+                {isSubmitting ? 'Reposting...' : 'Repost'}
+              </button>
+              {quoteContent.trim() && (
+                <button
+                  onClick={() => handleRepost(true)}
+                  disabled={isSubmitting}
+                  style={{
+                    flex: 1,
+                    padding: spacing.sm,
+                    backgroundColor: colors.accent.sovietRed,
+                    color: colors.text.primary,
+                    border: 'none',
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                    opacity: isSubmitting ? 0.5 : 1,
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {isSubmitting ? 'Reposting...' : 'Quote Repost'}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default RepostModal
+
+================================================================================
+FILE: src/components/Forum/components/notifications/NotificationsPanel.jsx
+================================================================================
+import React, { useState, useEffect, useCallback } from 'react'
+import { spacing } from '../../styles/theme'
+import { formatDate } from '../../utils/formatters'
+import Avatar from '../common/Avatar'
+
+const notificationLabels = {
+  reply: 'replied to your',
+  like: 'liked your',
+  mention: 'mentioned you in',
+  quote: 'quoted your',
+}
+
+const frostedGlassStyle = {
+  backdropFilter: 'blur(20px)',
+  WebkitBackdropFilter: 'blur(20px)',
+  backgroundColor: 'rgba(18, 18, 18, 0.85)',
+}
+
+function NotificationItem({ notification, onView, onMarkRead, onDelete }) {
+  const {
+    id,
+    type,
+    content_preview,
+    is_read,
+    created_at,
+    thread_id,
+    source_user,
+  } = notification
+
+  const targetType = thread_id ? 'thread' : 'comment'
+
+  return (
+    <div
+      style={{
+        padding: spacing.md,
+        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+        backgroundColor: is_read ? 'transparent' : 'rgba(255, 255, 255, 0.03)',
+        display: 'flex',
+        gap: spacing.sm,
+        cursor: 'pointer',
+        transition: 'background-color 0.15s ease',
+      }}
+      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'}
+      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = is_read ? 'transparent' : 'rgba(255, 255, 255, 0.03)'}
+      onClick={() => {
+        if (!is_read) onMarkRead?.(id)
+        onView?.(notification)
+      }}
+    >
+      <Avatar
+        src={source_user?.avatar_url}
+        name={source_user?.username}
+        size={32}
+      />
+      
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: '13px', marginBottom: spacing.xs }}>
+          <span style={{ color: '#e5e5e5', fontWeight: '500' }}>
+            {source_user?.username || 'Someone'}
+          </span>
+          {' '}
+          <span style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+            {notificationLabels[type] || type} {targetType}
+          </span>
+        </div>
+        
+        {content_preview && (
+          <p style={{
+            fontSize: '12px',
+            color: 'rgba(255, 255, 255, 0.45)',
+            lineHeight: 1.4,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            fontStyle: 'italic',
+          }}>
+            "{content_preview}"
+          </p>
+        )}
+        
+        <span style={{
+          fontSize: '11px',
+          color: 'rgba(255, 255, 255, 0.35)',
+        }}>
+          {formatDate(created_at)}
+        </span>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: spacing.xs }}>
+        {!is_read && (
+          <span style={{
+            width: '6px',
+            height: '6px',
+            borderRadius: '50%',
+            backgroundColor: '#007AFF',
+            marginTop: '6px',
+          }} />
+        )}
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete?.(id)
+          }}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'rgba(255, 255, 255, 0.3)',
+            cursor: 'pointer',
+            padding: '4px',
+            fontSize: '11px',
+            lineHeight: 1,
+            transition: 'color 0.15s ease',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.3)'}
+          title="Remove"
+        >
+          x
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function NotificationsPanel({ 
+  apiService, 
+  userId, 
+  onViewThread, 
+  onClose,
+  onUnreadCountChange,
+}) {
+  const [notifications, setNotifications] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const fetchNotifications = useCallback(async () => {
+    if (!userId) return
+    setLoading(true)
+    const data = await apiService.getNotifications(userId)
+    setNotifications(data)
+    setLoading(false)
+  }, [apiService, userId])
+
+  useEffect(() => {
+    fetchNotifications()
+  }, [fetchNotifications])
+
+  const handleMarkRead = async (notificationId) => {
+    await apiService.markNotificationRead(notificationId)
+    setNotifications(prev => 
+      prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
+    )
+    const unread = notifications.filter(n => !n.is_read && n.id !== notificationId).length
+    onUnreadCountChange?.(unread)
+  }
+
+  const handleMarkAllRead = async () => {
+    await apiService.markAllNotificationsRead(userId)
+    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
+    onUnreadCountChange?.(0)
+  }
+
+  const handleDelete = async (notificationId) => {
+    await apiService.deleteNotification(notificationId)
+    const deleted = notifications.find(n => n.id === notificationId)
+    setNotifications(prev => prev.filter(n => n.id !== notificationId))
+    if (deleted && !deleted.is_read) {
+      const unread = notifications.filter(n => !n.is_read && n.id !== notificationId).length
+      onUnreadCountChange?.(unread)
+    }
+  }
+
+  const handleClearAll = async () => {
+    await apiService.clearAllNotifications(userId)
+    setNotifications([])
+    onUnreadCountChange?.(0)
+  }
+
+  const handleView = (notification) => {
+    if (notification.thread_id) {
+      onViewThread?.({ id: notification.thread_id })
+      onClose?.()
+    }
+  }
+
+  const unreadCount = notifications.filter(n => !n.is_read).length
+
+  return (
+    <>
+      {/* Backdrop overlay */}
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          zIndex: 999,
+        }}
+      />
+      
+      {/* Panel */}
+      <div style={{
+        position: 'fixed',
+        top: '16px',
+        right: '16px',
+        bottom: '16px',
+        width: '380px',
+        maxWidth: 'calc(100vw - 32px)',
+        borderRadius: '12px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 24px 80px rgba(0, 0, 0, 0.5)',
+        zIndex: 1000,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        ...frostedGlassStyle,
+      }}>
+        {/* Header */}
+        <div style={{
+          padding: '16px 20px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+          <h3 style={{ 
+            fontWeight: '500', 
+            color: '#e5e5e5',
+            fontSize: '15px',
+            letterSpacing: '-0.01em',
+          }}>
+            Notifications
+            {unreadCount > 0 && (
+              <span style={{ 
+                color: 'rgba(255, 255, 255, 0.45)',
+                fontWeight: '400',
+                marginLeft: '8px',
+              }}>
+                {unreadCount} new
+              </span>
+            )}
+          </h3>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: 'none',
+              color: 'rgba(255, 255, 255, 0.6)',
+              cursor: 'pointer',
+              width: '24px',
+              height: '24px',
+              borderRadius: '6px',
+              fontSize: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background-color 0.15s ease',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+          >
+            x
+          </button>
+        </div>
+
+        {/* Actions bar */}
+        {(unreadCount > 0 || notifications.length > 0) && (
+          <div style={{
+            padding: '8px 20px',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+            display: 'flex',
+            gap: '16px',
+            fontSize: '12px',
+          }}>
+            {unreadCount > 0 && (
+              <button
+                onClick={handleMarkAllRead}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#007AFF',
+                  cursor: 'pointer',
+                  padding: 0,
+                  fontSize: '12px',
+                }}
+              >
+                Mark all read
+              </button>
+            )}
+            {notifications.length > 0 && (
+              <button
+                onClick={handleClearAll}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'rgba(255, 255, 255, 0.4)',
+                  cursor: 'pointer',
+                  padding: 0,
+                  fontSize: '12px',
+                }}
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Content */}
+        <div style={{ flex: 1, overflow: 'auto' }}>
+          {loading ? (
+            <div style={{
+              padding: '48px 20px',
+              textAlign: 'center',
+              color: 'rgba(255, 255, 255, 0.4)',
+              fontSize: '13px',
+            }}>
+              Loading...
+            </div>
+          ) : notifications.length === 0 ? (
+            <div style={{
+              padding: '48px 20px',
+              textAlign: 'center',
+              color: 'rgba(255, 255, 255, 0.35)',
+              fontSize: '13px',
+            }}>
+              No notifications yet
+            </div>
+          ) : (
+            notifications.map(notification => (
+              <NotificationItem
+                key={notification.id}
+                notification={notification}
+                onView={handleView}
+                onMarkRead={handleMarkRead}
+                onDelete={handleDelete}
+              />
+            ))
+          )}
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default NotificationsPanel
+
+================================================================================
+FILE: src/components/Forum/components/threads/CatalogView.jsx
+================================================================================
+import React from 'react'
+import { colors, spacing } from '../../styles/theme'
+import { truncateText, formatDate } from '../../utils/formatters'
+
+function CatalogCard({ thread, onView, onBookmark, isBookmarked }) {
+  const {
+    id,
+    title,
+    content,
+    category_slug,
+    comment_count = 0,
+    like_count = 0,
+    created_at,
+  } = thread
+
+  return (
+    <div
+      onClick={() => onView?.(thread)}
+      style={{
+        border: `1px solid ${colors.border.primary}`,
+        backgroundColor: colors.bg.elevated,
+        cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '200px',
+        overflow: 'hidden',
+        transition: 'border-color 0.15s',
+      }}
+      onMouseEnter={(e) => e.currentTarget.style.borderColor = colors.border.secondary}
+      onMouseLeave={(e) => e.currentTarget.style.borderColor = colors.border.primary}
+    >
+      <div style={{
+        padding: spacing.sm,
+        borderBottom: `1px solid ${colors.border.secondary}`,
+        backgroundColor: colors.bg.primary,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}>
+        <span style={{ 
+          fontSize: '11px', 
+          color: colors.text.muted,
+        }}>
+          /{category_slug}/
+        </span>
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onBookmark?.(id)
+          }}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '2px 4px',
+            color: isBookmarked ? colors.accent.green : colors.text.faded,
+            fontSize: '10px',
+            transition: 'color 0.15s ease',
+          }}
+          title={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
+        >
+          {isBookmarked ? '[saved]' : '[save]'}
+        </button>
+      </div>
+
+      <div style={{ 
+        padding: spacing.sm,
+        flex: 1,
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
+        <h4 style={{
+          fontSize: '13px',
+          fontWeight: 'bold',
+          marginBottom: spacing.xs,
+          color: colors.text.primary,
+          lineHeight: 1.3,
+          overflow: 'hidden',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+        }}>
+          {title}
+        </h4>
+
+        <p style={{
+          fontSize: '11px',
+          color: colors.text.tertiary,
+          lineHeight: 1.4,
+          flex: 1,
+          overflow: 'hidden',
+          display: '-webkit-box',
+          WebkitLineClamp: 4,
+          WebkitBoxOrient: 'vertical',
+        }}>
+          {truncateText(content, 150)}
+        </p>
+      </div>
+
+      <div style={{
+        padding: `${spacing.xs} ${spacing.sm}`,
+        borderTop: `1px solid ${colors.border.secondary}`,
+        display: 'flex',
+        justifyContent: 'space-between',
+        fontSize: '10px',
+        color: colors.text.muted,
+      }}>
+        <span>R: {comment_count} / L: {like_count}</span>
+        <span>{formatDate(created_at)}</span>
+      </div>
+    </div>
+  )
+}
+
+function CatalogView({
+  threads,
+  loading,
+  error,
+  onViewThread,
+  onBookmark,
+  isBookmarked,
+  onRetry,
+}) {
+  if (loading) {
+    return (
+      <div style={{
+        textAlign: 'center',
+        padding: spacing.xl,
+        color: colors.text.muted,
+      }}>
+        loading catalog...
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div style={{
+        textAlign: 'center',
+        padding: spacing.xl,
+        color: colors.state.error,
+      }}>
+        <p>{error}</p>
+        {onRetry && (
+          <button
+            onClick={onRetry}
+            style={{
+              marginTop: spacing.md,
+              padding: `${spacing.xs} ${spacing.md}`,
+              background: 'none',
+              border: `1px solid ${colors.accent.green}`,
+              color: colors.accent.green,
+              cursor: 'pointer',
+            }}
+          >
+            [retry]
+          </button>
+        )}
+      </div>
+    )
+  }
+
+  if (!threads || threads.length === 0) {
+    return (
+      <div style={{
+        textAlign: 'center',
+        color: colors.text.muted,
+        padding: spacing.xl,
+        border: `1px solid ${colors.border.primary}`,
+      }}>
+        no threads yet. be the first to start a discussion.
+      </div>
+    )
+  }
+
+  return (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+      gap: spacing.md,
+    }}>
+      {threads.map(thread => (
+        <CatalogCard
+          key={thread.id}
+          thread={thread}
+          onView={onViewThread}
+          onBookmark={onBookmark}
+          isBookmarked={isBookmarked?.(thread.id)}
+        />
+      ))}
+    </div>
+  )
+}
+
+export default CatalogView
+
+================================================================================
+FILE: src/components/Forum/components/threads/ThreadCard.jsx
+================================================================================
+import React from 'react'
+import Avatar from '../common/Avatar'
+import IdeologyTag from '../common/IdeologyTag'
+import ProfilePopover from '../common/ProfilePopover'
+import { colors, spacing } from '../../styles/theme'
+import { formatDate, formatPostNumber, truncateText } from '../../utils/formatters'
+
+function ThreadCard({ thread, onView, onLike, isLiked, onRepost, isReposted, currentUserId, isAdmin, onDelete }) {
+  const {
+    id,
+    title,
+    content,
+    created_at,
+    author,
+    anonymous_name,
+    category_slug,
+    comment_count = 0,
+    like_count = 0,
+    repost_count = 0,
+    is_pinned,
+    is_locked,
+    feedType,
+    reposter,
+    quoteContent,
+  } = thread
+
+  const sanitizedAnonName = anonymous_name && !['undefined', 'null'].includes(anonymous_name.toLowerCase().trim()) && anonymous_name.trim() ? anonymous_name.trim() : null
+  const displayName = author?.username || sanitizedAnonName || 'Anonymous'
+
+  return (
+    <div style={{
+      border: `1px solid ${colors.border.primary}`,
+      marginBottom: spacing.md,
+      backgroundColor: colors.bg.elevated,
+    }}>
+      {/* Repost indicator */}
+      {feedType === 'repost' && reposter && (
+        <div style={{
+          padding: `${spacing.xs} ${spacing.md}`,
+          backgroundColor: colors.bg.tertiary,
+          borderBottom: `1px solid ${colors.border.secondary}`,
+          fontSize: '12px',
+          color: colors.text.muted,
+          display: 'flex',
+          alignItems: 'center',
+          gap: spacing.xs,
+        }}>
+          <span style={{ color: colors.accent.green }}>↻</span>
+          <span>
+            <ProfilePopover userId={reposter.id} username={reposter.username}>
+              <span style={{ color: colors.accent.green, cursor: 'pointer' }}>
+                @{reposter.username}
+              </span>
+            </ProfilePopover>
+            {' '}reposted
+          </span>
+        </div>
+      )}
+
+      {/* Quote content if present */}
+      {feedType === 'repost' && quoteContent && (
+        <div style={{
+          padding: spacing.md,
+          backgroundColor: colors.bg.tertiary,
+          borderBottom: `1px solid ${colors.border.secondary}`,
+          fontStyle: 'italic',
+          color: colors.text.secondary,
+          fontSize: '13px',
+        }}>
+          "{quoteContent}"
+        </div>
+      )}
+
+      <div style={{
+        borderBottom: `1px solid ${colors.border.secondary}`,
+        padding: `${spacing.sm} ${spacing.md}`,
+        backgroundColor: colors.bg.primary,
+        display: 'flex',
+        alignItems: 'center',
+        gap: spacing.sm,
+      }}>
+        <ProfilePopover userId={author?.id} username={displayName} disabled={!author}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm }}>
+            <Avatar
+              src={author?.avatar_url}
+              name={displayName}
+              size={24}
+            />
+            <span style={{ color: author ? colors.accent.green : colors.text.tertiary }}>
+              {displayName}
+            </span>
+          </div>
+        </ProfilePopover>
+        
+        {author?.ideology && (
+          <IdeologyTag ideology={author.ideology} />
+        )}
+        
+        <span style={{ color: colors.text.muted, fontSize: '12px' }}>
+          {formatDate(created_at)}
+        </span>
+        
+        <span style={{ color: colors.text.faded, fontSize: '11px' }}>
+          No.{formatPostNumber(id)}
+        </span>
+        
+        {is_pinned && (
+          <span style={{ color: colors.accent.yellow, fontSize: '11px' }}>
+            [pinned]
+          </span>
+        )}
+        
+        {is_locked && (
+          <span style={{ color: colors.accent.red, fontSize: '11px' }}>
+            [locked]
+          </span>
+        )}
+      </div>
+      
+      <div style={{ padding: spacing.md }}>
+        <h3 style={{
+          marginBottom: spacing.sm,
+          fontSize: '16px',
+          fontWeight: 'normal',
+        }}>
+          <a
+            href="#"
+            onClick={(e) => { e.preventDefault(); onView?.(thread) }}
+            style={{ color: colors.text.primary, textDecoration: 'none' }}
+          >
+            {title}
+          </a>
+        </h3>
+        
+        <p style={{
+          color: colors.text.secondary,
+          fontSize: '14px',
+          lineHeight: 1.5,
+          marginBottom: spacing.md,
+        }}>
+          {truncateText(content, 300)}
+        </p>
+        
+        <div style={{
+          display: 'flex',
+          gap: spacing.md,
+          fontSize: '12px',
+          color: colors.text.muted,
+        }}>
+          <span>/{category_slug}/</span>
+          
+          <a
+            href="#"
+            onClick={(e) => { e.preventDefault(); onView?.(thread) }}
+            style={{ color: colors.accent.green }}
+          >
+            {comment_count} {comment_count === 1 ? 'reply' : 'replies'}
+          </a>
+          
+          <a
+            href="#"
+            onClick={(e) => { e.preventDefault(); onLike?.(thread.id) }}
+            style={{ 
+              color: isLiked ? colors.accent.red : colors.text.muted,
+            }}
+          >
+            ♥ {like_count}
+          </a>
+          
+          <a
+            href="#"
+            onClick={(e) => { e.preventDefault(); onRepost?.(thread) }}
+            style={{ 
+              color: isReposted ? colors.accent.green : colors.text.muted,
+            }}
+          >
+            ↻ {repost_count}
+          </a>
+          
+          <a
+            href="#"
+            onClick={(e) => { e.preventDefault(); onView?.(thread) }}
+            style={{ color: colors.accent.green }}
+          >
+            [view thread]
+          </a>
+          
+          {isAdmin && (
+            <a
+              href="#"
+              onClick={(e) => { e.preventDefault(); onDelete?.(thread.id) }}
+              style={{ color: colors.accent.red, marginLeft: 'auto' }}
+            >
+              [delete]
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default ThreadCard
+
+================================================================================
+FILE: src/components/Forum/components/threads/ThreadForm.jsx
+================================================================================
+import React, { useState, useRef, useEffect } from 'react'
+import { BOARDS } from '../../constants'
+import { colors, spacing, commonStyles } from '../../styles/theme'
+import { validateThreadTitle, validateContent } from '../../utils/validators'
+
+function ThreadForm({ onSubmit, onCancel, initialCategory, isAuthenticated = false }) {
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+    category_slug: initialCategory || 'theory',
+    anonymous_name: '',
+  })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [honeypot, setHoneypot] = useState('')
+  const mountTime = useRef(Date.now())
+
+  useEffect(() => {
+    mountTime.current = Date.now()
+  }, [])
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+    setError('')
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    // Anti-bot: honeypot check
+    if (honeypot) return
+
+    // Anti-bot: time-based check (must spend at least 3 seconds)
+    const elapsed = Date.now() - mountTime.current
+    if (elapsed < 3000) {
+      setError('Please take a moment before posting.')
+      return
+    }
+
+    // Anti-bot: rate limiting (15 second cooldown)
+    const lastPost = localStorage.getItem('_lastThreadPost')
+    if (lastPost && Date.now() - parseInt(lastPost, 10) < 15000) {
+      const remaining = Math.ceil((15000 - (Date.now() - parseInt(lastPost, 10))) / 1000)
+      setError(`Please wait ${remaining} seconds before posting another thread.`)
+      return
+    }
+    
+    const titleValidation = validateThreadTitle(formData.title)
+    if (!titleValidation.valid) {
+      setError(titleValidation.error)
+      return
+    }
+    
+    const contentValidation = validateContent(formData.content)
+    if (!contentValidation.valid) {
+      setError(contentValidation.error)
+      return
+    }
+    
+    setLoading(true)
+    try {
+      await onSubmit?.(formData)
+      localStorage.setItem('_lastThreadPost', Date.now().toString())
+    } catch (err) {
+      setError(err.message || 'failed to create thread')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div style={{
+      ...commonStyles.card,
+      marginBottom: spacing.xl,
+    }}>
+      <h3 style={{
+        marginBottom: spacing.lg,
+        fontWeight: 'normal',
+        color: colors.text.tertiary,
+      }}>
+        start a new thread
+      </h3>
+
+      <form onSubmit={handleSubmit}>
+        {/* Anti-bot honeypot - hidden from humans */}
+        <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }} aria-hidden="true">
+          <input
+            type="text"
+            name="website_url"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+          />
+        </div>
+        <div style={{ marginBottom: spacing.md }}>
+          <label style={{
+            display: 'block',
+            marginBottom: spacing.xs,
+            color: colors.text.tertiary,
+            fontSize: '12px',
+          }}>
+            board
+          </label>
+          <select
+            name="category_slug"
+            value={formData.category_slug}
+            onChange={handleChange}
+            style={{
+              ...commonStyles.input,
+              width: 'auto',
+              minWidth: '200px',
+            }}
+            disabled={loading}
+          >
+            {BOARDS.map(board => (
+              <option key={board.slug} value={board.slug}>
+                /{board.slug}/ - {board.fullName}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {!isAuthenticated && (
+          <div style={{ marginBottom: spacing.md }}>
+            <label style={{
+              display: 'block',
+              marginBottom: spacing.xs,
+              color: colors.text.tertiary,
+              fontSize: '12px',
+            }}>
+              name (optional)
+            </label>
+            <input
+              type="text"
+              name="anonymous_name"
+              value={formData.anonymous_name}
+              onChange={handleChange}
+              placeholder="Anonymous"
+              style={{
+                ...commonStyles.input,
+                width: 'auto',
+                minWidth: '200px',
+              }}
+              disabled={loading}
+              maxLength={50}
+            />
+          </div>
+        )}
+
+        <div style={{ marginBottom: spacing.md }}>
+          <label style={{
+            display: 'block',
+            marginBottom: spacing.xs,
+            color: colors.text.tertiary,
+            fontSize: '12px',
+          }}>
+            title
+          </label>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            placeholder="enter thread title..."
+            style={commonStyles.input}
+            disabled={loading}
+            maxLength={200}
+          />
+        </div>
+
+        <div style={{ marginBottom: spacing.md }}>
+          <label style={{
+            display: 'block',
+            marginBottom: spacing.xs,
+            color: colors.text.tertiary,
+            fontSize: '12px',
+          }}>
+            content
+          </label>
+          <textarea
+            name="content"
+            value={formData.content}
+            onChange={handleChange}
+            placeholder="write your post..."
+            rows={8}
+            style={{
+              ...commonStyles.input,
+              resize: 'vertical',
+              minHeight: '150px',
+            }}
+            disabled={loading}
+          />
+          <div style={{
+            fontSize: '11px',
+            color: colors.text.muted,
+            marginTop: spacing.xs,
+          }}>
+            {formData.content.length} characters
+          </div>
+        </div>
+
+        {error && (
+          <div style={{
+            color: colors.state.error,
+            fontSize: '12px',
+            marginBottom: spacing.md,
+          }}>
+            {error}
+          </div>
+        )}
+
+        <div style={{ display: 'flex', gap: spacing.sm }}>
+          <button
+            type="submit"
+            style={commonStyles.buttonPrimary}
+            disabled={loading}
+          >
+            {loading ? '[posting...]' : '[post thread]'}
+          </button>
+          
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              style={commonStyles.buttonSecondary}
+              disabled={loading}
+            >
+              [cancel]
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
+  )
+}
+
+export default ThreadForm
+
+================================================================================
+FILE: src/components/Forum/components/threads/ThreadList.jsx
+================================================================================
+import React from 'react'
+import ThreadCard from './ThreadCard'
+import Pagination from '../common/Pagination'
+import LoadingSpinner from '../common/LoadingSpinner'
+import ErrorMessage from '../common/ErrorMessage'
+import { colors, spacing } from '../../styles/theme'
+
+function ThreadList({
+  threads,
+  loading,
+  error,
+  pagination,
+  onViewThread,
+  onPageChange,
+  onLikeThread,
+  isThreadLiked,
+  onRepost,
+  isReposted,
+  currentUserId,
+  onRetry,
+  isAdmin,
+  onDeleteThread,
+}) {
+  if (loading) {
+    return <LoadingSpinner text="loading threads..." />
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={onRetry} />
+  }
+
+  if (!threads || threads.length === 0) {
+    return (
+      <div style={{
+        textAlign: 'center',
+        color: colors.text.muted,
+        padding: spacing.xl,
+        border: `1px solid ${colors.border.primary}`,
+      }}>
+        no threads yet. be the first to start a discussion.
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      {threads.map(thread => (
+        <ThreadCard
+          key={thread.feedType === 'repost' ? `repost-${thread.repostId}` : thread.id}
+          thread={thread}
+          onView={onViewThread}
+          onLike={onLikeThread}
+          isLiked={isThreadLiked?.(thread.id)}
+          onRepost={onRepost}
+          isReposted={isReposted?.(thread.id)}
+          currentUserId={currentUserId}
+          isAdmin={isAdmin}
+          onDelete={onDeleteThread}
+        />
+      ))}
+
+      {pagination && (
+        <Pagination
+          currentPage={pagination.page}
+          totalPages={pagination.totalPages}
+          onPageChange={onPageChange}
+        />
+      )}
+    </div>
+  )
+}
+
+export default ThreadList
+
+================================================================================
+FILE: src/components/Forum/components/threads/ThreadView.jsx
+================================================================================
+import React, { useState } from 'react'
+import Avatar from '../common/Avatar'
+import IdeologyTag from '../common/IdeologyTag'
+import ProfilePopover from '../common/ProfilePopover'
+import CommentList from '../comments/CommentList'
+import CommentForm from '../comments/CommentForm'
+import LoadingSpinner from '../common/LoadingSpinner'
+import { colors, spacing, commonStyles } from '../../styles/theme'
+import { formatDate, formatPostNumber } from '../../utils/formatters'
+import { parseContent } from '../../utils/helpers'
+
+function ThreadView({
+  thread,
+  comments,
+  commentsLoading,
+  onBack,
+  onCreateComment,
+  onLikeThread,
+  onLikeComment,
+  isThreadLiked,
+  isCommentLiked,
+  onRepost,
+  isReposted,
+  currentUserId,
+  isAuthenticated = false,
+  isAdmin,
+  onDeleteThread,
+  onDeleteComment,
+}) {
+  const [replyingTo, setReplyingTo] = useState(null)
+
+  if (!thread) {
+    return <LoadingSpinner text="loading thread..." />
+  }
+
+  const {
+    id,
+    title,
+    content,
+    created_at,
+    author,
+    anonymous_name,
+    category_slug,
+    like_count = 0,
+    repost_count = 0,
+    is_pinned,
+    is_locked,
+  } = thread
+
+  const sanitizedAnonName = anonymous_name && !['undefined', 'null'].includes(anonymous_name.toLowerCase().trim()) && anonymous_name.trim() ? anonymous_name.trim() : null
+  const displayName = author?.username || sanitizedAnonName || 'Anonymous'
+  const contentSegments = parseContent(content)
+
+  const handleReply = (parentId = null) => {
+    setReplyingTo(parentId)
+  }
+
+  const handleSubmitComment = async (commentContent, anonymousName = null) => {
+    await onCreateComment?.(commentContent, replyingTo, anonymousName)
+    setReplyingTo(null)
+  }
+
+  return (
+    <div>
+      <div style={{ marginBottom: spacing.lg }}>
+        <a
+          href="#"
+          onClick={(e) => { e.preventDefault(); onBack?.() }}
+          style={{ color: colors.accent.green }}
+        >
+          [back to board]
+        </a>
+      </div>
+
+      <div style={{
+        ...commonStyles.card,
+        marginBottom: spacing.xl,
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: spacing.sm,
+          marginBottom: spacing.md,
+          paddingBottom: spacing.sm,
+          borderBottom: `1px solid ${colors.border.secondary}`,
+        }}>
+          <ProfilePopover userId={author?.id} username={displayName} disabled={!author}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm }}>
+              <Avatar
+                src={author?.avatar_url}
+                name={displayName}
+                size={32}
+              />
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: spacing.xs }}>
+                  <span style={{ color: author ? colors.accent.green : colors.text.tertiary, fontWeight: 'bold' }}>
+                    {displayName}
+                  </span>
+                  {author?.ideology && (
+                    <IdeologyTag ideology={author.ideology} />
+                  )}
+                </div>
+              </div>
+            </div>
+          </ProfilePopover>
+          
+          <div style={{ fontSize: '11px', color: colors.text.muted }}>
+            {formatDate(created_at)} • No.{formatPostNumber(id)} • /{category_slug}/
+          </div>
+          
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: spacing.sm }}>
+            {is_pinned && (
+              <span style={{ color: colors.accent.yellow, fontSize: '11px' }}>
+                [pinned]
+              </span>
+            )}
+            
+            {is_locked && (
+              <span style={{ color: colors.accent.red, fontSize: '11px' }}>
+                [locked]
+              </span>
+            )}
+          </div>
+        </div>
+
+        <h2 style={{
+          fontSize: '20px',
+          fontWeight: 'normal',
+          marginBottom: spacing.lg,
+        }}>
+          {title}
+        </h2>
+
+        <div style={{
+          lineHeight: 1.6,
+          marginBottom: spacing.lg,
+        }}>
+          {contentSegments.map(segment => {
+            if (segment.type === 'greentext') {
+              return (
+                <div key={segment.key} style={{ color: colors.accent.green }}>
+                  {segment.text}
+                </div>
+              )
+            }
+            if (segment.type === 'quote-link') {
+              return (
+                <div key={segment.key}>
+                  <a href={`#post-${segment.postId}`} style={{ color: colors.accent.red }}>
+                    {segment.text}
+                  </a>
+                </div>
+              )
+            }
+            return (
+              <div key={segment.key}>
+                {segment.text || <br />}
+              </div>
+            )
+          })}
+        </div>
+
+        <div style={{
+          display: 'flex',
+          gap: spacing.md,
+          fontSize: '12px',
+          borderTop: `1px solid ${colors.border.secondary}`,
+          paddingTop: spacing.md,
+        }}>
+          <a
+            href="#"
+            onClick={(e) => { e.preventDefault(); onLikeThread?.(id) }}
+            style={{ 
+              color: isThreadLiked ? colors.accent.red : colors.text.muted,
+            }}
+          >
+            ♥ {like_count} {isThreadLiked ? 'liked' : 'like'}
+          </a>
+          
+          <a
+            href="#"
+            onClick={(e) => { e.preventDefault(); onRepost?.(thread) }}
+            style={{ 
+              color: isReposted ? colors.accent.green : colors.text.muted,
+            }}
+          >
+            ↻ {repost_count} {isReposted ? 'reposted' : 'repost'}
+          </a>
+          
+          {!is_locked && (
+            <a
+              href="#"
+              onClick={(e) => { e.preventDefault(); handleReply(null) }}
+              style={{ color: colors.accent.green }}
+            >
+              [reply]
+            </a>
+          )}
+          
+          {isAdmin && (
+            <a
+              href="#"
+              onClick={(e) => { e.preventDefault(); onDeleteThread?.(id) }}
+              style={{ color: colors.accent.red, marginLeft: 'auto' }}
+            >
+              [delete thread]
+            </a>
+          )}
+        </div>
+      </div>
+
+      {!is_locked && replyingTo === null && (
+        <CommentForm
+          onSubmit={handleSubmitComment}
+          onCancel={() => setReplyingTo(null)}
+          placeholder="write a reply..."
+          isAuthenticated={isAuthenticated}
+        />
+      )}
+
+      <div style={{ marginTop: spacing.xl }}>
+        <h3 style={{
+          marginBottom: spacing.lg,
+          fontWeight: 'normal',
+          color: colors.text.tertiary,
+        }}>
+          replies ({comments?.length || 0})
+        </h3>
+
+        <CommentList
+          comments={comments}
+          loading={commentsLoading}
+          onReply={is_locked ? null : handleReply}
+          onLike={onLikeComment}
+          isLiked={isCommentLiked}
+          replyingTo={replyingTo}
+          onSubmitReply={handleSubmitComment}
+          onCancelReply={() => setReplyingTo(null)}
+          currentUserId={currentUserId}
+          isAuthenticated={isAuthenticated}
+          isAdmin={isAdmin}
+          onDeleteComment={onDeleteComment}
+        />
+      </div>
+    </div>
+  )
+}
+
+export default ThreadView
+
+================================================================================
+FILE: src/components/Forum/constants/index.js
+================================================================================
+export const BOARDS = [
+  {
+    name: 'Theory',
+    slug: 't',
+    fullName: 'Marxist theory and philosophy',
+    description: 'Marxist theory and philosophy',
+  },
+  {
+    name: 'Reading',
+    slug: 'r',
+    fullName: 'Study groups and discussions',
+    description: 'Study groups and discussions',
+  },
+  {
+    name: 'Organizing',
+    slug: 'o',
+    fullName: 'Praxis and action',
+    description: 'Praxis and action',
+  },
+  {
+    name: 'History',
+    slug: 'h',
+    fullName: 'Historical analysis',
+    description: 'Historical analysis',
+  },
+  {
+    name: 'Current Events',
+    slug: 'c',
+    fullName: 'News and analysis',
+    description: 'News and analysis',
+  },
+  {
+    name: 'Meta',
+    slug: 'm',
+    fullName: 'Site feedback',
+    description: 'Site feedback',
+  },
+  {
+    name: 'Random',
+    slug: 'x',
+    fullName: 'Off-topic',
+    description: 'Off-topic',
+  },
+]
+
+export const getBoardBySlug = (slug) => BOARDS.find(b => b.slug === slug) || null
+
+export const getBoardName = (slug) => getBoardBySlug(slug)?.name || '—'
+
+================================================================================
+FILE: src/components/Forum/hooks/useBookmarks.js
+================================================================================
+import { useState, useEffect, useCallback } from 'react'
+
+export function useBookmarks(apiService, userId) {
+  const [bookmarkedIds, setBookmarkedIds] = useState(new Set())
+  const [loading, setLoading] = useState(false)
+
+  const fetchBookmarkIds = useCallback(async () => {
+    if (!userId) return
+    
+    setLoading(true)
+    try {
+      const ids = await apiService.getUserBookmarkIds(userId)
+      setBookmarkedIds(new Set(ids))
+    } catch (err) {
+      console.error('Failed to fetch bookmarks:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [apiService, userId])
+
+  useEffect(() => {
+    fetchBookmarkIds()
+  }, [fetchBookmarkIds])
+
+  const isBookmarked = useCallback((threadId) => {
+    return bookmarkedIds.has(threadId)
+  }, [bookmarkedIds])
+
+  const toggleBookmark = useCallback(async (threadId) => {
+    if (!userId) return { success: false, error: 'Not authenticated' }
+
+    const currentlyBookmarked = bookmarkedIds.has(threadId)
+
+    // Optimistic update
+    setBookmarkedIds(prev => {
+      const next = new Set(prev)
+      if (currentlyBookmarked) {
+        next.delete(threadId)
+      } else {
+        next.add(threadId)
+      }
+      return next
+    })
+
+    try {
+      if (currentlyBookmarked) {
+        await apiService.removeBookmark(threadId)
+      } else {
+        await apiService.addBookmark(threadId)
+      }
+      return { success: true, bookmarked: !currentlyBookmarked }
+    } catch (err) {
+      // Rollback on error
+      setBookmarkedIds(prev => {
+        const next = new Set(prev)
+        if (currentlyBookmarked) {
+          next.add(threadId)
+        } else {
+          next.delete(threadId)
+        }
+        return next
+      })
+      return { success: false, error: err }
+    }
+  }, [apiService, userId, bookmarkedIds])
+
+  return {
+    isBookmarked,
+    toggleBookmark,
+    refetch: fetchBookmarkIds,
+    loading,
+    bookmarkCount: bookmarkedIds.size,
+  }
+}
+
+export default useBookmarks
+
+================================================================================
+FILE: src/components/Forum/hooks/useComments.js
+================================================================================
+import { useState, useEffect, useCallback } from 'react'
+import { buildCommentTree } from '../utils/helpers'
+
+export function useComments(apiService, threadId, userId = null) {
+  const [comments, setComments] = useState([])
+  const [flatComments, setFlatComments] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const fetchComments = useCallback(async () => {
+    if (!threadId) return
+    
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const data = await apiService.getComments(threadId)
+      setFlatComments(data || [])
+      setComments(buildCommentTree(data || []))
+    } catch (err) {
+      setError(err.message)
+      setComments([])
+      setFlatComments([])
+    } finally {
+      setLoading(false)
+    }
+  }, [apiService, threadId])
+
+  useEffect(() => {
+    fetchComments()
+  }, [fetchComments])
+
+  const createComment = useCallback(async (content, parentId = null, anonymousName = null) => {
+    try {
+      const newComment = await apiService.createComment({
+        thread_id: threadId,
+        content,
+        parent_id: parentId,
+        anonymous_name: anonymousName,
+      }, userId)
+      
+      const updatedFlat = [...flatComments, newComment]
+      setFlatComments(updatedFlat)
+      setComments(buildCommentTree(updatedFlat))
+      
+      return { success: true, comment: newComment }
+    } catch (err) {
+      return { success: false, error: err }
+    }
+  }, [apiService, threadId, flatComments, userId])
+
+  const updateComment = useCallback(async (commentId, content) => {
+    try {
+      const updatedComment = await apiService.updateComment(commentId, content)
+      
+      const updatedFlat = flatComments.map(c => 
+        c.id === commentId ? updatedComment : c
+      )
+      setFlatComments(updatedFlat)
+      setComments(buildCommentTree(updatedFlat))
+      
+      return { success: true, comment: updatedComment }
+    } catch (err) {
+      return { success: false, error: err }
+    }
+  }, [apiService, flatComments])
+
+  const deleteComment = useCallback(async (commentId) => {
+    try {
+      await apiService.deleteComment(commentId)
+      
+      const updatedFlat = flatComments.map(c => 
+        c.id === commentId ? { ...c, is_deleted: true, content: '[deleted]' } : c
+      )
+      setFlatComments(updatedFlat)
+      setComments(buildCommentTree(updatedFlat))
+      
+      return { success: true }
+    } catch (err) {
+      return { success: false, error: err }
+    }
+  }, [apiService, flatComments])
+
+  return {
+    comments,
+    flatComments,
+    loading,
+    error,
+    refetch: fetchComments,
+    createComment,
+    updateComment,
+    deleteComment,
+    commentCount: flatComments.filter(c => !c.is_deleted).length,
+  }
+}
+
+export default useComments
+
+================================================================================
+FILE: src/components/Forum/hooks/useCorpusReferences.js
+================================================================================
+import { useState, useEffect, useRef } from 'react'
+import { supabase } from '../../../supabaseClient'
+
+/**
+ * Fetches semantically related passages from the Marxist corpus
+ * for a given piece of text (thread content).
+ *
+ * Uses the `corpus-search` Supabase Edge Function which embeds the text
+ * and queries the Qdrant `marxbot_corpus` collection.
+ *
+ * @param {string|null} text - The text to search for (thread content). Null skips the call.
+ * @param {number} topK - Number of passages to return (default 5, max 10).
+ */
+export function useCorpusReferences(text, topK = 5) {
+  const [passages, setPassages] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const lastText = useRef(null)
+
+  useEffect(() => {
+    if (!text || text === lastText.current) return
+    lastText.current = text
+
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+
+    supabase.functions
+      .invoke('corpus-search', {
+        body: { text, top_k: topK },
+      })
+      .then(({ data, error: fnError }) => {
+        if (cancelled) return
+        if (fnError) {
+          setError(fnError.message || 'Corpus search failed')
+          setPassages([])
+        } else {
+          setPassages(data?.passages || [])
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err.message || 'Corpus search failed')
+          setPassages([])
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => { cancelled = true }
+  }, [text, topK])
+
+  return { passages, loading, error }
+}
+
+export default useCorpusReferences
+
+================================================================================
+FILE: src/components/Forum/hooks/useForumPresence.js
+================================================================================
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { supabase } from '../../../supabaseClient'
+
+/**
+ * Tracks live online users on the forum using Supabase Realtime Presence.
+ * Returns a map of boardSlug -> count of users currently viewing that board,
+ * plus the total count of users on the forum.
+ *
+ * @param {string|null} userId  - current user's ID (null if anonymous)
+ * @param {string|null} currentBoard - slug of the board the user is currently viewing (null = board listing)
+ */
+export function useForumPresence(userId, currentBoard = null) {
+  const [onlineCounts, setOnlineCounts] = useState({})
+  const [totalOnline, setTotalOnline] = useState(0)
+  const channelRef = useRef(null)
+
+  const recalculate = useCallback((presenceState) => {
+    const counts = {}
+    let total = 0
+
+    Object.values(presenceState).forEach((presences) => {
+      presences.forEach((p) => {
+        total += 1
+        const board = p.board
+        if (board) {
+          counts[board] = (counts[board] || 0) + 1
+        }
+      })
+    })
+
+    setOnlineCounts(counts)
+    setTotalOnline(total)
+  }, [])
+
+  useEffect(() => {
+    const channel = supabase.channel('forum-presence', {
+      config: { presence: { key: userId || `anon-${Math.random().toString(36).slice(2)}` } },
+    })
+
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        recalculate(channel.presenceState())
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({
+            user_id: userId,
+            board: currentBoard,
+            online_at: new Date().toISOString(),
+          })
+        }
+      })
+
+    channelRef.current = channel
+
+    return () => {
+      channel.untrack()
+      supabase.removeChannel(channel)
+      channelRef.current = null
+    }
+  }, [userId, recalculate]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Update the tracked board when the user navigates between boards
+  useEffect(() => {
+    const channel = channelRef.current
+    if (!channel) return
+
+    channel.track({
+      user_id: userId,
+      board: currentBoard,
+      online_at: new Date().toISOString(),
+    })
+  }, [currentBoard, userId])
+
+  return { onlineCounts, totalOnline }
+}
+
+export default useForumPresence
+
+================================================================================
+FILE: src/components/Forum/hooks/useLikes.js
+================================================================================
+import { useState, useCallback } from 'react'
+
+export function useLikes(apiService, userId) {
+  const [likedItems, setLikedItems] = useState({})
+  const [loading, setLoading] = useState(false)
+
+  const isLiked = useCallback((targetType, targetId) => {
+    const key = `${targetType}:${targetId}`
+    return !!likedItems[key]
+  }, [likedItems])
+
+  const toggleLike = useCallback(async (targetType, targetId) => {
+    if (!userId) return { success: false, error: { message: 'Must be logged in' } }
+    
+    const key = `${targetType}:${targetId}`
+    const currentlyLiked = likedItems[key]
+    
+    setLikedItems(prev => ({
+      ...prev,
+      [key]: !currentlyLiked
+    }))
+    
+    try {
+      if (currentlyLiked) {
+        await apiService.unlike(targetType, targetId)
+      } else {
+        await apiService.like(targetType, targetId)
+      }
+      return { success: true, liked: !currentlyLiked }
+    } catch (err) {
+      setLikedItems(prev => ({
+        ...prev,
+        [key]: currentlyLiked
+      }))
+      return { success: false, error: err }
+    }
+  }, [apiService, userId, likedItems])
+
+  const fetchUserLikes = useCallback(async () => {
+    if (!userId) return
+    
+    try {
+      setLoading(true)
+      const likes = await apiService.getUserLikes(userId)
+      
+      const likeMap = {}
+      likes.forEach(like => {
+        likeMap[`${like.target_type}:${like.target_id}`] = true
+      })
+      setLikedItems(likeMap)
+    } catch (err) {
+      console.error('Failed to fetch likes:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [apiService, userId])
+
+  const setLikeState = useCallback((targetType, targetId, liked) => {
+    const key = `${targetType}:${targetId}`
+    setLikedItems(prev => ({
+      ...prev,
+      [key]: liked
+    }))
+  }, [])
+
+  return {
+    isLiked,
+    toggleLike,
+    fetchUserLikes,
+    setLikeState,
+    loading,
+  }
+}
+
+export default useLikes
+
+================================================================================
+FILE: src/components/Forum/hooks/useNotifications.js
+================================================================================
+import { useState, useEffect, useCallback } from 'react'
+
+export function useNotifications(apiService, userId) {
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [loading, setLoading] = useState(false)
+
+  const fetchUnreadCount = useCallback(async () => {
+    if (!userId) {
+      setUnreadCount(0)
+      return
+    }
+    
+    setLoading(true)
+    try {
+      const count = await apiService.getUnreadCount(userId)
+      setUnreadCount(count)
+    } catch (err) {
+      console.error('Failed to fetch unread count:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [apiService, userId])
+
+  useEffect(() => {
+    fetchUnreadCount()
+    
+    // Poll for new notifications every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000)
+    return () => clearInterval(interval)
+  }, [fetchUnreadCount])
+
+  const updateUnreadCount = useCallback((count) => {
+    setUnreadCount(count)
+  }, [])
+
+  return {
+    unreadCount,
+    loading,
+    refetch: fetchUnreadCount,
+    updateUnreadCount,
+  }
+}
+
+export default useNotifications
+
+================================================================================
+FILE: src/components/Forum/hooks/useProfile.js
+================================================================================
+import { useState, useEffect, useCallback } from 'react'
+
+export function useProfile(apiService, userId) {
+  const [profile, setProfile] = useState(null)
+  const [threads, setThreads] = useState([])
+  const [comments, setComments] = useState([])
+  const [likes, setLikes] = useState({ threads: [], comments: [] })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const fetchProfile = useCallback(async () => {
+    if (!userId) return
+    
+    try {
+      setLoading(true)
+      setError(null)
+      const data = await apiService.getProfile(userId)
+      setProfile(data)
+    } catch (err) {
+      setError(err.message)
+      setProfile(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [apiService, userId])
+
+  const fetchUserThreads = useCallback(async () => {
+    if (!userId) return
+    
+    try {
+      const data = await apiService.getUserThreads(userId)
+      setThreads(data || [])
+    } catch (err) {
+      console.error('Failed to fetch user threads:', err)
+    }
+  }, [apiService, userId])
+
+  const fetchUserComments = useCallback(async () => {
+    if (!userId) return
+    
+    try {
+      const data = await apiService.getUserComments(userId)
+      setComments(data || [])
+    } catch (err) {
+      console.error('Failed to fetch user comments:', err)
+    }
+  }, [apiService, userId])
+
+  const fetchUserLikes = useCallback(async () => {
+    if (!userId) return
+    
+    try {
+      const [likedThreads, likedComments] = await Promise.all([
+        apiService.getUserLikedThreads(userId),
+        apiService.getUserLikedComments(userId),
+      ])
+      setLikes({
+        threads: likedThreads || [],
+        comments: likedComments || [],
+      })
+    } catch (err) {
+      console.error('Failed to fetch user likes:', err)
+    }
+  }, [apiService, userId])
+
+  useEffect(() => {
+    fetchProfile()
+  }, [fetchProfile])
+
+  return {
+    profile,
+    threads,
+    comments,
+    likes,
+    loading,
+    error,
+    fetchProfile,
+    fetchUserThreads,
+    fetchUserComments,
+    fetchUserLikes,
+  }
+}
+
+export default useProfile
+
+================================================================================
+FILE: src/components/Forum/hooks/useRateLimit.js
+================================================================================
+import { useCallback, useRef } from 'react'
+
+const LIMITS = {
+  thread: { max: 3, windowMs: 60_000 },   // 3 threads per minute
+  comment: { max: 10, windowMs: 60_000 },  // 10 comments per minute
+}
+
+/**
+ * Client-side rate limiter for forum actions.
+ * Stores timestamps in memory (resets on page refresh — the real enforcement is server-side RLS).
+ *
+ * Usage:
+ *   const { checkLimit } = useRateLimit()
+ *   const allowed = checkLimit('thread')   // returns { ok: true } or { ok: false, retryAfterMs }
+ */
+export function useRateLimit() {
+  const stamps = useRef({ thread: [], comment: [] })
+
+  const checkLimit = useCallback((action) => {
+    const cfg = LIMITS[action]
+    if (!cfg) return { ok: true }
+
+    const now = Date.now()
+    const bucket = stamps.current[action]
+
+    // Purge entries outside the window
+    const recent = bucket.filter((t) => now - t < cfg.windowMs)
+    stamps.current[action] = recent
+
+    if (recent.length >= cfg.max) {
+      const oldest = recent[0]
+      const retryAfterMs = cfg.windowMs - (now - oldest)
+      return { ok: false, retryAfterMs }
+    }
+
+    // Record this action
+    recent.push(now)
+    return { ok: true }
+  }, [])
+
+  return { checkLimit }
+}
+
+export default useRateLimit
+
+================================================================================
+FILE: src/components/Forum/hooks/useReposts.js
+================================================================================
+import { useState, useCallback, useEffect } from 'react'
+
+export function useReposts(apiService, userId) {
+  const [repostedIds, setRepostedIds] = useState(new Set())
+  const [loading, setLoading] = useState(false)
+
+  const fetchUserReposts = useCallback(async () => {
+    if (!userId) {
+      setRepostedIds(new Set())
+      return
+    }
+    
+    try {
+      setLoading(true)
+      const ids = await apiService.getUserRepostIds(userId)
+      setRepostedIds(new Set(ids))
+    } catch (err) {
+      console.error('Failed to fetch reposts:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [apiService, userId])
+
+  useEffect(() => {
+    fetchUserReposts()
+  }, [fetchUserReposts])
+
+  const isReposted = useCallback((threadId) => {
+    return repostedIds.has(threadId)
+  }, [repostedIds])
+
+  const repost = useCallback(async (threadId, quoteContent = null) => {
+    if (!userId) return { success: false, error: 'Not authenticated' }
+    
+    // Optimistic update
+    setRepostedIds(prev => {
+      const next = new Set(prev)
+      next.add(threadId)
+      return next
+    })
+    
+    try {
+      const result = await apiService.repost(threadId, quoteContent)
+      if (!result.success) {
+        // Rollback on error
+        setRepostedIds(prev => {
+          const next = new Set(prev)
+          next.delete(threadId)
+          return next
+        })
+      }
+      return result
+    } catch (err) {
+      // Rollback on error
+      setRepostedIds(prev => {
+        const next = new Set(prev)
+        next.delete(threadId)
+        return next
+      })
+      return { success: false, error: err }
+    }
+  }, [apiService, userId])
+
+  const unrepost = useCallback(async (threadId) => {
+    if (!userId) return { success: false, error: 'Not authenticated' }
+    
+    const wasReposted = repostedIds.has(threadId)
+    
+    // Optimistic update
+    setRepostedIds(prev => {
+      const next = new Set(prev)
+      next.delete(threadId)
+      return next
+    })
+    
+    try {
+      const result = await apiService.unrepost(threadId)
+      if (!result.success && wasReposted) {
+        // Rollback on error
+        setRepostedIds(prev => {
+          const next = new Set(prev)
+          next.add(threadId)
+          return next
+        })
+      }
+      return result
+    } catch (err) {
+      // Rollback on error
+      if (wasReposted) {
+        setRepostedIds(prev => {
+          const next = new Set(prev)
+          next.add(threadId)
+          return next
+        })
+      }
+      return { success: false, error: err }
+    }
+  }, [apiService, userId, repostedIds])
+
+  const toggleRepost = useCallback(async (threadId, quoteContent = null) => {
+    if (isReposted(threadId)) {
+      return await unrepost(threadId)
+    } else {
+      return await repost(threadId, quoteContent)
+    }
+  }, [isReposted, repost, unrepost])
+
+  return {
+    isReposted,
+    repost,
+    unrepost,
+    toggleRepost,
+    fetchUserReposts,
+    loading,
+  }
+}
+
+export default useReposts
+
+================================================================================
+FILE: src/components/Forum/hooks/useThreads.js
+================================================================================
+import { useState, useEffect, useCallback } from 'react'
+
+export function useThreads(apiService, options = {}, userId = null) {
+  const [threads, setThreads] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [pagination, setPagination] = useState({
+    page: 1,
+    totalPages: 1,
+    total: 0,
+  })
+
+  const { category, page = 1, limit = 20, sortBy = 'created_at' } = options
+
+  const fetchThreads = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const result = await apiService.getThreads({
+        category,
+        page,
+        limit,
+        sortBy,
+      })
+      
+      setThreads(result.data || [])
+      setPagination({
+        page: result.page || page,
+        totalPages: result.totalPages || 1,
+        total: result.total || 0,
+      })
+    } catch (err) {
+      setError(err.message)
+      setThreads([])
+    } finally {
+      setLoading(false)
+    }
+  }, [apiService, category, page, limit, sortBy])
+
+  useEffect(() => {
+    fetchThreads()
+  }, [fetchThreads])
+
+  const createThread = useCallback(async (threadData) => {
+    try {
+      const newThread = await apiService.createThread(threadData, userId)
+      setThreads(prev => [newThread, ...prev])
+      return { success: true, thread: newThread }
+    } catch (err) {
+      return { success: false, error: err }
+    }
+  }, [apiService, userId])
+
+  const updateThread = useCallback(async (threadId, updates) => {
+    try {
+      const updatedThread = await apiService.updateThread(threadId, updates)
+      setThreads(prev => prev.map(t => t.id === threadId ? updatedThread : t))
+      return { success: true, thread: updatedThread }
+    } catch (err) {
+      return { success: false, error: err }
+    }
+  }, [apiService])
+
+  const deleteThread = useCallback(async (threadId) => {
+    try {
+      await apiService.deleteThread(threadId)
+      setThreads(prev => prev.filter(t => t.id !== threadId))
+      return { success: true }
+    } catch (err) {
+      return { success: false, error: err }
+    }
+  }, [apiService])
+
+  return {
+    threads,
+    loading,
+    error,
+    pagination,
+    refetch: fetchThreads,
+    createThread,
+    updateThread,
+    deleteThread,
+  }
+}
+
+export function useThread(apiService, threadId) {
+  const [thread, setThread] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const fetchThread = useCallback(async () => {
+    if (!threadId) return
+    
+    try {
+      setLoading(true)
+      setError(null)
+      const data = await apiService.getThread(threadId)
+      setThread(data)
+    } catch (err) {
+      setError(err.message)
+      setThread(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [apiService, threadId])
+
+  useEffect(() => {
+    fetchThread()
+  }, [fetchThread])
+
+  return {
+    thread,
+    loading,
+    error,
+    refetch: fetchThread,
+  }
+}
+
+export default useThreads
+
+================================================================================
+FILE: src/components/Forum/index.js
+================================================================================
+export { default as ForumPage } from './ForumPage'
+export { forumApiService } from './api'
+export * from './constants'
+export * from './styles/theme'
+export * from './utils/formatters'
+export * from './utils/validators'
+export * from './utils/helpers'
+export { useThreads, useThread } from './hooks/useThreads'
+export { useComments } from './hooks/useComments'
+export { useLikes } from './hooks/useLikes'
+export { useProfile } from './hooks/useProfile'
+
+================================================================================
+FILE: src/components/Forum/styles/theme.js
+================================================================================
+export const colors = {
+  bg: {
+    primary: '#000000',
+    elevated: '#0a0a0a',
+    input: '#111111',
+    hover: '#1a1a1a',
+  },
+  
+  border: {
+    primary: '#333333',
+    secondary: '#222222',
+    subtle: '#1a1a1a',
+  },
+  
+  text: {
+    primary: '#ffffff',
+    secondary: '#cccccc',
+    tertiary: '#888888',
+    muted: '#666666',
+    faded: '#444444',
+  },
+  
+  accent: {
+    green: '#88ff88',
+    greenHover: '#aaffaa',
+    red: '#ff6b6b',
+    redBright: '#ff4444',
+    sovietRed: '#cc0000',
+    yellow: '#ffcc00',
+    orange: '#ff8800',
+  },
+  
+  state: {
+    success: '#88ff88',
+    error: '#ff4444',
+    warning: '#ffcc00',
+  }
+}
+
+export const typography = {
+  fontFamily: "Arial, Helvetica, sans-serif",
+  fontFamilyMono: "'Courier New', Courier, monospace",
+  
+  fontSize: {
+    xs: '11px',
+    sm: '12px',
+    base: '14px',
+    md: '15px',
+    lg: '18px',
+    xl: '28px',
+  },
+  
+  fontWeight: {
+    normal: 400,
+    bold: 700,
+  },
+  
+  lineHeight: {
+    tight: 1.2,
+    normal: 1.5,
+    relaxed: 1.6,
+  }
+}
+
+export const spacing = {
+  xs: '4px',
+  sm: '8px',
+  md: '12px',
+  lg: '16px',
+  xl: '24px',
+  xxl: '32px',
+  xxxl: '48px',
+}
+
+export const layout = {
+  maxWidth: '1200px',
+  borderRadius: '0px',
+}
+
+export const commonStyles = {
+  pageContainer: {
+    minHeight: 'calc(100vh - 64px)',
+    backgroundColor: colors.bg.primary,
+    color: colors.text.primary,
+    fontFamily: typography.fontFamily,
+    fontSize: typography.fontSize.base,
+    padding: `${spacing.lg} ${spacing.xl}`,
+    width: '100%',
+    maxWidth: '100%',
+    boxSizing: 'border-box',
+  },
+  
+  card: {
+    border: `1px solid ${colors.border.primary}`,
+    backgroundColor: colors.bg.elevated,
+    padding: spacing.lg,
+  },
+  
+  input: {
+    width: '100%',
+    padding: spacing.sm,
+    backgroundColor: colors.bg.input,
+    border: `1px solid ${colors.border.primary}`,
+    color: colors.text.primary,
+    fontFamily: typography.fontFamily,
+    fontSize: typography.fontSize.base,
+    boxSizing: 'border-box',
+  },
+  
+  link: {
+    color: colors.accent.green,
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
+  
+  buttonPrimary: {
+    padding: `6px ${spacing.lg}`,
+    backgroundColor: 'transparent',
+    border: `1px solid ${colors.accent.green}`,
+    color: colors.accent.green,
+    cursor: 'pointer',
+    fontFamily: typography.fontFamily,
+    fontSize: typography.fontSize.base,
+  },
+  
+  buttonSecondary: {
+    padding: `6px ${spacing.lg}`,
+    backgroundColor: 'transparent',
+    border: `1px solid ${colors.text.muted}`,
+    color: colors.text.muted,
+    cursor: 'pointer',
+    fontFamily: typography.fontFamily,
+    fontSize: typography.fontSize.base,
+  },
+  
+  buttonDanger: {
+    padding: `6px ${spacing.lg}`,
+    backgroundColor: 'transparent',
+    border: `1px solid ${colors.state.error}`,
+    color: colors.state.error,
+    cursor: 'pointer',
+    fontFamily: typography.fontFamily,
+    fontSize: typography.fontSize.base,
+  },
+}
+
+================================================================================
+FILE: src/components/Forum/utils/formatters.js
+================================================================================
+export function formatDate(date, includeTime = true) {
+  const d = new Date(date)
+  
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  
+  if (!includeTime) {
+    return `${year}-${month}-${day}`
+  }
+  
+  const hours = String(d.getHours()).padStart(2, '0')
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+  const seconds = String(d.getSeconds()).padStart(2, '0')
+  
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+}
+
+export function formatRelativeTime(date) {
+  const now = new Date()
+  const then = new Date(date)
+  const diffMs = now - then
+  const diffSeconds = Math.floor(diffMs / 1000)
+  const diffMinutes = Math.floor(diffSeconds / 60)
+  const diffHours = Math.floor(diffMinutes / 60)
+  const diffDays = Math.floor(diffHours / 24)
+  
+  if (diffSeconds < 60) return 'just now'
+  if (diffMinutes < 60) return `${diffMinutes}m ago`
+  if (diffHours < 24) return `${diffHours}h ago`
+  if (diffDays < 7) return `${diffDays}d ago`
+  
+  return formatDate(date, false)
+}
+
+export function truncateText(text, maxLength = 200) {
+  if (!text || text.length <= maxLength) return text
+  return text.substring(0, maxLength).trim() + '...'
+}
+
+export function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim()
+}
+
+export function formatNumber(num) {
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M'
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'K'
+  return String(num)
+}
+
+export function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2)
+}
+
+export function formatPostNumber(id) {
+  if (typeof id === 'string' && id.length > 8) {
+    return id.slice(-4).toUpperCase()
+  }
+  return String(id)
+}
+
+================================================================================
+FILE: src/components/Forum/utils/helpers.js
+================================================================================
+export function buildCommentTree(comments) {
+  if (!comments || !comments.length) return []
+  
+  const map = {}
+  const roots = []
+  
+  comments.forEach(comment => {
+    map[comment.id] = { ...comment, replies: [] }
+  })
+  
+  comments.forEach(comment => {
+    if (comment.parent_id && map[comment.parent_id]) {
+      map[comment.parent_id].replies.push(map[comment.id])
+    } else {
+      roots.push(map[comment.id])
+    }
+  })
+  
+  return roots
+}
+
+export function flattenCommentTree(tree) {
+  const result = []
+  
+  function traverse(nodes) {
+    nodes.forEach(node => {
+      const { replies, ...comment } = node
+      result.push(comment)
+      if (replies && replies.length) {
+        traverse(replies)
+      }
+    })
+  }
+  
+  traverse(tree)
+  return result
+}
+
+export function parseContent(content) {
+  if (!content) return []
+  
+  const lines = content.split('\n')
+  const segments = []
+  
+  lines.forEach((line, index) => {
+    const quoteMatch = line.match(/^>>(\d+)/)
+    if (quoteMatch) {
+      segments.push({
+        type: 'quote-link',
+        postId: quoteMatch[1],
+        text: line,
+        key: index
+      })
+      return
+    }
+    
+    if (line.startsWith('>') && !line.startsWith('>>')) {
+      segments.push({
+        type: 'greentext',
+        text: line,
+        key: index
+      })
+      return
+    }
+    
+    segments.push({
+      type: 'text',
+      text: line,
+      key: index
+    })
+  })
+  
+  return segments
+}
+
+export function canEdit(createdAt, windowMinutes = 30) {
+  const created = new Date(createdAt)
+  const now = new Date()
+  const diffMs = now - created
+  const diffMinutes = diffMs / 1000 / 60
+  
+  return diffMinutes <= windowMinutes
+}
+
+export function debounce(func, wait) {
+  let timeout
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
+export function deepClone(obj) {
+  return JSON.parse(JSON.stringify(obj))
+}
+
+export function getInitials(name) {
+  if (!name) return '?'
+  const parts = name.split(/[\s_-]/)
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase()
+  }
+  return name.substring(0, 2).toUpperCase()
+}
+
+================================================================================
+FILE: src/components/Forum/utils/sanitize.js
+================================================================================
+/**
+ * Lightweight HTML / XSS sanitiser for forum content.
+ * Strips dangerous tags and attributes before content is rendered.
+ */
+
+const DANGEROUS_TAGS = /(<\s*\/?\s*(script|iframe|object|embed|form|input|button|link|meta|style|base|applet|svg|math|template)\b[^>]*>)/gi
+const EVENT_ATTRS = /\s+on\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi
+const JS_URLS = /(href|src|action)\s*=\s*["']?\s*javascript\s*:/gi
+const DATA_URLS = /(href|src)\s*=\s*["']?\s*data\s*:/gi
+
+/**
+ * Strip dangerous HTML from a raw string.
+ * This is a defence-in-depth layer — the primary defence is that we
+ * render user content via `parseContent()` which outputs React elements,
+ * not raw HTML. This function catches anything that slips through.
+ */
+export function sanitizeText(text) {
+  if (!text || typeof text !== 'string') return ''
+  return text
+    .replace(DANGEROUS_TAGS, '')
+    .replace(EVENT_ATTRS, '')
+    .replace(JS_URLS, '')
+    .replace(DATA_URLS, '')
+}
+
+/**
+ * Sanitise a content string before it is stored / sent to the API.
+ * Lighter than sanitizeText — only strips the most dangerous patterns
+ * so user formatting (greentext, etc.) is preserved.
+ */
+export function sanitizeInput(text) {
+  if (!text || typeof text !== 'string') return ''
+  return text
+    .replace(/<\s*script\b[^>]*>[\s\S]*?<\s*\/\s*script\s*>/gi, '')
+    .replace(EVENT_ATTRS, '')
+    .replace(JS_URLS, '')
+}
+
+================================================================================
+FILE: src/components/Forum/utils/validators.js
+================================================================================
+import { LIMITS } from '../constants'
+
+export function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
+export function validateUsername(username) {
+  if (!username) {
+    return { valid: false, error: 'Username is required' }
+  }
+  
+  if (username.length < LIMITS.USERNAME_MIN) {
+    return { valid: false, error: `Username must be at least ${LIMITS.USERNAME_MIN} characters` }
+  }
+  
+  if (username.length > LIMITS.USERNAME_MAX) {
+    return { valid: false, error: `Username must be at most ${LIMITS.USERNAME_MAX} characters` }
+  }
+  
+  const usernameRegex = /^[a-zA-Z0-9_-]+$/
+  if (!usernameRegex.test(username)) {
+    return { valid: false, error: 'Username can only contain letters, numbers, underscores, and hyphens' }
+  }
+  
+  return { valid: true }
+}
+
+export function validatePassword(password) {
+  if (!password) {
+    return { valid: false, error: 'Password is required' }
+  }
+  
+  if (password.length < 8) {
+    return { valid: false, error: 'Password must be at least 8 characters' }
+  }
+  
+  return { valid: true }
+}
+
+export function validateThreadTitle(title) {
+  if (!title || !title.trim()) {
+    return { valid: false, error: 'Title is required' }
+  }
+  
+  if (title.length < LIMITS.TITLE_MIN) {
+    return { valid: false, error: `Title must be at least ${LIMITS.TITLE_MIN} characters` }
+  }
+  
+  if (title.length > LIMITS.TITLE_MAX) {
+    return { valid: false, error: `Title must be at most ${LIMITS.TITLE_MAX} characters` }
+  }
+
+  const spamCheck = checkSpamPatterns(title)
+  if (!spamCheck.valid) return spamCheck
+  
+  return { valid: true }
+}
+
+export function validateContent(content, minLength = LIMITS.CONTENT_MIN) {
+  if (!content || !content.trim()) {
+    return { valid: false, error: 'Content is required' }
+  }
+  
+  if (content.length < minLength) {
+    return { valid: false, error: `Content must be at least ${minLength} characters` }
+  }
+
+  const spamCheck = checkSpamPatterns(content)
+  if (!spamCheck.valid) return spamCheck
+  
+  return { valid: true }
+}
+
+function checkSpamPatterns(text) {
+  // Reject if mostly repeated single character (e.g. "aaaaaaaaaa")
+  if (/^(.)\1{9,}$/.test(text.trim())) {
+    return { valid: false, error: 'Content appears to be spam' }
+  }
+
+  // Reject if the same word is repeated excessively (5+ times in a row)
+  if (/(\b\w+\b)(\s+\1){4,}/i.test(text)) {
+    return { valid: false, error: 'Content appears to be spam' }
+  }
+
+  // Reject excessive URLs (3+)
+  const urlCount = (text.match(/https?:\/\//g) || []).length
+  if (urlCount >= 3) {
+    return { valid: false, error: 'Too many links. Please reduce the number of URLs.' }
+  }
+
+  return { valid: true }
+}
+
+export function validateBio(bio) {
+  if (bio && bio.length > LIMITS.BIO_MAX) {
+    return { valid: false, error: `Bio must be at most ${LIMITS.BIO_MAX} characters` }
+  }
+  
+  return { valid: true }
+}

@@ -198,7 +198,7 @@ const HighlightHandler = ({ children, highlights, onAddHighlight }) => {
           {showPopover && (
                 <div
                     ref={popupRef}
-                    className="highlight-popover bg-gray-800 border border-gray-600 rounded-md shadow-lg p-1"
+                    className="highlight-popover bg-gray-800 border border-gray-600 rounded-none shadow-none p-1"
                     style={{
                         position: 'absolute',
                         top: `${popoverPosition.top}px`,

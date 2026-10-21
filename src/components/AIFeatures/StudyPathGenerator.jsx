@@ -98,7 +98,7 @@ const StudyPathGenerator = ({ onPathGenerated, compact = false }) => {
   // Compact mode for inline display
   if (compact && !studyPath) {
     return (
-      <div className="bg-gradient-to-br from-red-950/40 to-black/40 border border-red-900/30 rounded-xl p-4">
+      <div className="bg-[#10131b] from-red-950/40 to-black/40 border border-red-900/30 rounded-none p-4">
         <div className="flexitems-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-red-400" />
@@ -154,7 +154,7 @@ const StudyPathGenerator = ({ onPathGenerated, compact = false }) => {
                 <button
                   key={lvl}
                   onClick={() => setLevel(lvl)}
-                  className={`p-3 rounded-lg border text-sm font-medium transition-all ${
+                  className={`p-3 rounded-none border text-sm font-medium transition-all ${
                     level === lvl
                       ? 'bg-red-600 border-red-500 text-white'
                       : 'bg-black/30 border-zinc-700 text-zinc-400 hover:border-zinc-600'
@@ -177,7 +177,7 @@ const StudyPathGenerator = ({ onPathGenerated, compact = false }) => {
                 <button
                   key={time.id}
                   onClick={() => setTimeCommitment(time.id)}
-                  className={`p-3 rounded-lg border text-center transition-all ${
+                  className={`p-3 rounded-none border text-center transition-all ${
                     timeCommitment === time.id
                       ? 'bg-red-600 border-red-500 text-white'
                       : 'bg-black/30 border-zinc-700 text-zinc-400 hover:border-zinc-600'
@@ -223,7 +223,7 @@ const StudyPathGenerator = ({ onPathGenerated, compact = false }) => {
           <button
             onClick={generatePath}
             disabled={loading}
-            className="w-full bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 disabled:from-zinc-700 disabled:to-zinc-600 text-white font-medium py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
+            className="w-full bg-[#10131b] from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 disabled:from-zinc-700 disabled:to-zinc-600 text-white font-medium py-3 px-6 rounded-none transition-all flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
@@ -239,7 +239,7 @@ const StudyPathGenerator = ({ onPathGenerated, compact = false }) => {
           </button>
 
           {error && (
-            <div className="p-3 rounded-lg bg-red-950/30 border border-red-900/50 text-sm text-red-300">
+            <div className="p-3 rounded-none bg-red-950/30 border border-red-900/50 text-sm text-red-300">
               {error}
             </div>
           )}
@@ -248,7 +248,7 @@ const StudyPathGenerator = ({ onPathGenerated, compact = false }) => {
         // Generated Path Display
         <div className="space-y-6">
           {/* Path Header */}
-          <div className="rounded-xl border border-zinc-800 bg-gradient-to-br from-zinc-900/80 to-black/60 p-5">
+          <div className="rounded-none border border-zinc-800 bg-[#10131b] from-zinc-900/80 to-black/60 p-5">
             <div className="flex items-start justify-between gap-3 mb-3">
               <div>
                 <h3 className="text-xl font-semibold text-white">{studyPath.path_title}</h3>
@@ -286,7 +286,7 @@ const StudyPathGenerator = ({ onPathGenerated, compact = false }) => {
             
             <div className="relative">
               {/* Timeline Line */}
-              <div className="absolute left-4 top-0 bottom-0 w-px bg-gradient-to-b from-red-600 via-zinc-700 to-zinc-800" />
+              <div className="absolute left-4 top-0 bottom-0 w-px bg-[#10131b] from-red-600 via-zinc-700 to-zinc-800" />
               
               <div className="space-y-4">
                 {studyPath.milestones.map((milestone, index) => (
@@ -294,12 +294,12 @@ const StudyPathGenerator = ({ onPathGenerated, compact = false }) => {
                     {/* Timeline Dot */}
                     <div className={`absolute left-2.5 w-3 h-3 rounded-full border-2 ${
                       index === 0 
-                        ? 'bg-red-500 border-red-400 shadow-lg shadow-red-500/30' 
+                        ? 'bg-red-500 border-red-400 shadow-none shadow-red-500/30' 
                         : 'bg-zinc-900 border-zinc-600'
                     }`} />
                     
                     {/* Milestone Card */}
-                    <div className="flex-1 bg-black/40 border border-zinc-800 rounded-lg p-4 hover:border-zinc-700 transition-colors">
+                    <div className="flex-1 bg-black/40 border border-zinc-800 rounded-none p-4 hover:border-zinc-700 transition-colors">
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <h5 className="font-medium text-white">
                           {index + 1}. {milestone.title}
@@ -352,7 +352,7 @@ const StudyPathGenerator = ({ onPathGenerated, compact = false }) => {
 
           {/* Study Tips */}
           {studyPath.study_tips?.length > 0 && (
-            <div className="rounded-xl border border-amber-900/30 bg-amber-950/20 p-4">
+            <div className="rounded-none border border-amber-900/30 bg-amber-950/20 p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Lightbulb className="h-4 w-4 text-amber-400" />
                 <h4 className="text-sm font-medium text-amber-200">Study Tips</h4>
@@ -372,13 +372,13 @@ const StudyPathGenerator = ({ onPathGenerated, compact = false }) => {
           <div className="flex gap-3 pt-2">
             <button
               onClick={resetPath}
-              className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium py-2.5 px-4 rounded-lg transition-colors text-sm"
+              className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium py-2.5 px-4 rounded-none transition-colors text-sm"
             >
               Customize Again
             </button>
             <button
               onClick={() => onPathGenerated?.(studyPath)}
-              className="flex-1 bg-red-600 hover:bg-red-500 text-white font-medium py-2.5 px-4 rounded-lg transition-colors text-sm flex items-center justify-center gap-2"
+              className="flex-1 bg-red-600 hover:bg-red-500 text-white font-medium py-2.5 px-4 rounded-none transition-colors text-sm flex items-center justify-center gap-2"
             >
               Save to My Progress
               <ChevronRight className="h-4 w-4" />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../../supabaseClient';
 import { Loader, BookOpen, Search, ChevronDown, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 function stripMarkdown(text) {
     if (!text) return '';
@@ -9,13 +9,13 @@ function stripMarkdown(text) {
 }
 
 const TYPE_CONFIG = {
-    event:        { label: 'Events',        color: '#ef4444' },
-    concept:      { label: 'Concepts',      color: '#f59e0b' },
-    person:       { label: 'People',        color: '#3b82f6' },
-    publication:  { label: 'Publications',  color: '#8b5cf6' },
-    organization: { label: 'Organizations', color: '#10b981' },
-    place:        { label: 'Places',        color: '#06b6d4' },
-    term:         { label: 'Terms',         color: '#6b7280' },
+    event:        { label: 'Events',        color: '#d41f3d' },
+    concept:      { label: 'Concepts',      color: '#c8860a' },
+    person:       { label: 'People',        color: '#4a7fb5' },
+    publication:  { label: 'Publications',  color: '#8a84b8' },
+    organization: { label: 'Organizations', color: '#2d8a4e' },
+    place:        { label: 'Places',        color: '#4a7fb5' },
+    term:         { label: 'Terms',         color: '#7d7a6e' },
 };
 
 const TYPE_ORDER = ['event', 'concept', 'person', 'publication', 'organization', 'place', 'term'];
@@ -87,7 +87,7 @@ const MarxistGlossary = () => {
 
     if (loading) {
         return (
-            <div className="bg-black/30 backdrop-blur-sm p-6 rounded-lg flex items-center justify-center h-[500px]">
+            <div className="bg-black/30 backdrop-blur-sm p-6 rounded-none flex items-center justify-center h-[500px]">
                 <Loader className="animate-spin text-red-500" size={48} />
             </div>
         );
@@ -95,7 +95,7 @@ const MarxistGlossary = () => {
 
     if (error) {
         return (
-            <div className="bg-black/30 backdrop-blur-sm p-6 rounded-lg">
+            <div className="bg-black/30 backdrop-blur-sm p-6 rounded-none">
                 <h2 className="text-2xl text-white mb-4">Internal Wiki</h2>
                 <div className="flex items-center justify-center h-[500px] border border-red-900/30 rounded">
                     <p className="text-red-400">Error loading glossary: {error}</p>
@@ -105,7 +105,7 @@ const MarxistGlossary = () => {
     }
 
     return (
-        <div className="bg-black/30 backdrop-blur-sm p-6 rounded-lg min-h-[600px]">
+        <div className="bg-black/30 backdrop-blur-sm p-6 rounded-none min-h-[600px]">
             {/* Header */}
             <h2 className="text-3xl font-bold text-white mb-2 flex items-center">
                 <BookOpen className="mr-3 text-red-500" />
@@ -123,7 +123,7 @@ const MarxistGlossary = () => {
                     placeholder="Search terms, concepts, events..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="w-full bg-gray-900/70 border border-red-900/30 rounded-lg pl-10 pr-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-red-500/60 transition-colors"
+                    className="w-full bg-gray-900/70 border border-red-900/30 rounded-none pl-10 pr-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-red-500/60 transition-colors"
                 />
             </div>
 
@@ -131,7 +131,7 @@ const MarxistGlossary = () => {
             <div className="flex flex-wrap gap-2 mb-6">
                 <button
                     onClick={() => setActiveType('all')}
-                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                    className={`px-3 py-1.5 rounded-none text-sm font-medium transition-all ${
                         activeType === 'all'
                             ? 'bg-red-600 text-white'
                             : 'bg-gray-800/60 text-gray-400 hover:text-white'
@@ -144,12 +144,12 @@ const MarxistGlossary = () => {
                         <button
                             key={t}
                             onClick={() => setActiveType(activeType === t ? 'all' : t)}
-                            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                            className={`px-3 py-1.5 rounded-none text-sm font-medium transition-all ${
                                 activeType === t
                                     ? 'text-white'
                                     : 'bg-gray-800/60 text-gray-400 hover:text-white'
                             }`}
-                            style={activeType === t ? { backgroundColor: TYPE_CONFIG[t]?.color || '#ef4444' } : {}}
+                            style={activeType === t ? { backgroundColor: TYPE_CONFIG[t]?.color || '#d41f3d' } : {}}
                         >
                             {TYPE_CONFIG[t]?.label || t} ({typeCounts[t]})
                         </button>
@@ -168,7 +168,7 @@ const MarxistGlossary = () => {
                     {TYPE_ORDER.map(type => {
                         const items = grouped[type];
                         if (!items || items.length === 0) return null;
-                        const cfg = TYPE_CONFIG[type] || { label: type, color: '#6b7280' };
+                        const cfg = TYPE_CONFIG[type] || { label: type, color: '#7d7a6e' };
                         const isCollapsed = collapsedGroups[type];
 
                         return (
@@ -196,8 +196,8 @@ const MarxistGlossary = () => {
                                         {items.map(item => (
                                             <Link
                                                 key={item.term}
-                                                to={`/glossary/${encodeURIComponent(item.term)}`}
-                                                className="block bg-gray-900/50 hover:bg-gray-900/80 p-4 rounded-lg transition-colors border border-transparent hover:border-red-900/30"
+                                                href={`/glossary/${encodeURIComponent(item.term)}`}
+                                                className="block bg-gray-900/50 hover:bg-gray-900/80 p-4 rounded-none transition-colors border border-transparent hover:border-red-900/30"
                                             >
                                                 <div className="flex items-start justify-between gap-3">
                                                     <div className="min-w-0 flex-1">

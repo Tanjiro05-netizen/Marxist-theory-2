@@ -24,7 +24,7 @@ export const summaryHeader = style({
 
 export const summaryLabel = style({
   margin: 0,
-  fontFamily: vars.font.mono,
+  fontFamily: vars.font.label,
   fontSize: '10px',
   textTransform: 'uppercase',
   letterSpacing: '0.14em',
@@ -48,7 +48,7 @@ export const summaryMeta = style({
 });
 
 export const summaryValue = style({
-  fontFamily: vars.font.mono,
+  fontFamily: vars.font.label,
   fontSize: '12px',
   letterSpacing: '0.08em',
   textTransform: 'uppercase',
@@ -68,7 +68,7 @@ export const progressFill = style({
   height: '100%',
   borderRadius: vars.radius.pill,
   background: `linear-gradient(90deg, ${vars.color.accentSoft} 0%, ${vars.color.accent} 100%)`,
-  transition: 'width 360ms ease',
+  transition: 'width var(--dur-element) var(--ease-standard)',
 });
 
 export const summaryStats = style({
@@ -161,7 +161,7 @@ export const milestoneButton = style([panelInset, {
   alignItems: 'center',
   textAlign: 'left',
   cursor: 'pointer',
-  transition: 'transform 180ms ease, border-color 180ms ease, background 180ms ease',
+  transition: 'transform var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       transform: 'translateX(3px)',
@@ -208,7 +208,7 @@ export const milestoneSubtitle = style({
 
 export const milestoneMeta = style({
   marginTop: vars.space.xxs,
-  fontFamily: vars.font.mono,
+  fontFamily: vars.font.label,
   fontSize: '10px',
   textTransform: 'uppercase',
   letterSpacing: '0.1em',

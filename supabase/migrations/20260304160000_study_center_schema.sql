@@ -108,21 +108,25 @@ CREATE TRIGGER handle_study_resources_updated_at
 -- study_resources: public read, Teacher+admin write
 ALTER TABLE public.study_resources ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Study resources are publicly readable" ON public.study_resources;
 CREATE POLICY "Study resources are publicly readable"
     ON public.study_resources FOR SELECT
     TO public
     USING (true);
 
+DROP POLICY IF EXISTS "Teachers and admins can insert study resources" ON public.study_resources;
 CREATE POLICY "Teachers and admins can insert study resources"
     ON public.study_resources FOR INSERT
     TO authenticated
     WITH CHECK (public.can_manage_study());
 
+DROP POLICY IF EXISTS "Teachers and admins can update study resources" ON public.study_resources;
 CREATE POLICY "Teachers and admins can update study resources"
     ON public.study_resources FOR UPDATE
     TO authenticated
     USING (public.can_manage_study());
 
+DROP POLICY IF EXISTS "Teachers and admins can delete study resources" ON public.study_resources;
 CREATE POLICY "Teachers and admins can delete study resources"
     ON public.study_resources FOR DELETE
     TO authenticated
@@ -131,21 +135,25 @@ CREATE POLICY "Teachers and admins can delete study resources"
 -- study_concepts: public read, Teacher+admin write
 ALTER TABLE public.study_concepts ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Study concepts are publicly readable" ON public.study_concepts;
 CREATE POLICY "Study concepts are publicly readable"
     ON public.study_concepts FOR SELECT
     TO public
     USING (true);
 
+DROP POLICY IF EXISTS "Teachers and admins can insert study concepts" ON public.study_concepts;
 CREATE POLICY "Teachers and admins can insert study concepts"
     ON public.study_concepts FOR INSERT
     TO authenticated
     WITH CHECK (public.can_manage_study());
 
+DROP POLICY IF EXISTS "Teachers and admins can update study concepts" ON public.study_concepts;
 CREATE POLICY "Teachers and admins can update study concepts"
     ON public.study_concepts FOR UPDATE
     TO authenticated
     USING (public.can_manage_study());
 
+DROP POLICY IF EXISTS "Teachers and admins can delete study concepts" ON public.study_concepts;
 CREATE POLICY "Teachers and admins can delete study concepts"
     ON public.study_concepts FOR DELETE
     TO authenticated
@@ -154,21 +162,25 @@ CREATE POLICY "Teachers and admins can delete study concepts"
 -- study_milestones: public read, Teacher+admin write
 ALTER TABLE public.study_milestones ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Study milestones are publicly readable" ON public.study_milestones;
 CREATE POLICY "Study milestones are publicly readable"
     ON public.study_milestones FOR SELECT
     TO public
     USING (true);
 
+DROP POLICY IF EXISTS "Teachers and admins can insert study milestones" ON public.study_milestones;
 CREATE POLICY "Teachers and admins can insert study milestones"
     ON public.study_milestones FOR INSERT
     TO authenticated
     WITH CHECK (public.can_manage_study());
 
+DROP POLICY IF EXISTS "Teachers and admins can update study milestones" ON public.study_milestones;
 CREATE POLICY "Teachers and admins can update study milestones"
     ON public.study_milestones FOR UPDATE
     TO authenticated
     USING (public.can_manage_study());
 
+DROP POLICY IF EXISTS "Teachers and admins can delete study milestones" ON public.study_milestones;
 CREATE POLICY "Teachers and admins can delete study milestones"
     ON public.study_milestones FOR DELETE
     TO authenticated
@@ -177,27 +189,32 @@ CREATE POLICY "Teachers and admins can delete study milestones"
 -- study_user_progress: users read/write own rows
 ALTER TABLE public.study_user_progress ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view their own study progress" ON public.study_user_progress;
 CREATE POLICY "Users can view their own study progress"
     ON public.study_user_progress FOR SELECT
     TO authenticated
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own study progress" ON public.study_user_progress;
 CREATE POLICY "Users can insert their own study progress"
     ON public.study_user_progress FOR INSERT
     TO authenticated
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own study progress" ON public.study_user_progress;
 CREATE POLICY "Users can update their own study progress"
     ON public.study_user_progress FOR UPDATE
     TO authenticated
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own study progress" ON public.study_user_progress;
 CREATE POLICY "Users can delete their own study progress"
     ON public.study_user_progress FOR DELETE
     TO authenticated
     USING (auth.uid() = user_id);
 
 -- Admins can also read all progress (for admin views)
+DROP POLICY IF EXISTS "Admins can view all study progress" ON public.study_user_progress;
 CREATE POLICY "Admins can view all study progress"
     ON public.study_user_progress FOR SELECT
     TO authenticated

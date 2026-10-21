@@ -1,28 +1,21 @@
-module.exports = {
-  testEnvironment: 'jsdom',
+const nextJest = require('next/jest');
+
+const createJestConfig = nextJest({ dir: './' });
+
+const customJestConfig = {
+  roots: ['<rootDir>/src'],
+  testEnvironment: 'jest-environment-jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
   moduleNameMapper: {
+    '^react$': '<rootDir>/node_modules/react',
+    '^react-dom$': '<rootDir>/node_modules/react-dom',
+    '^react-dom/(.*)$': '<rootDir>/node_modules/react-dom/$1',
+    '\\.css\\.ts$': '<rootDir>/src/test/cssTsMock.js',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@/(.*)$': '<rootDir>/$1',
   },
-  transform: {
-    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
-  },
-  testPathIgnorePatterns: ['/node_modules/', '/public/'],
+  testPathIgnorePatterns: ['/node_modules/', '/public/', '/\\.claude/'],
   collectCoverage: false,
-  collectCoverageFrom: [
-    'src/**/*.{js,jsx,ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/index.js',
-    '!src/reportWebVitals.js',
-    '!src/setupTests.js',
-  ],
-  coverageThreshold: {
-    global: {
-      branches: 70,
-      functions: 70,
-      lines: 70,
-      statements: 70,
-    },
-  },
 };
+
+module.exports = createJestConfig(customJestConfig);

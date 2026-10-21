@@ -35,7 +35,7 @@ const TextMetadata = ({
     } = metadata;
 
     return (
-        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 mb-6 border border-gray-700/50">
+        <div className="bg-[#10131b] from-gray-900 to-gray-800 rounded-none p-6 mb-6 border border-gray-700/50">
             {/* Language Switcher */}
             {availableLanguages.length > 1 && (
                 <div className="flex items-center gap-2 mb-4 pb-4 border-b border-gray-700/50">

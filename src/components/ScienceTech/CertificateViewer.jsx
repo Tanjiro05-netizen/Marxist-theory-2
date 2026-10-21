@@ -17,7 +17,7 @@ const CertificateViewer = ({ certificate, course, user, onClose }) => {
     if (window.html2canvas) {
       const canvas = await window.html2canvas(certificateRef.current, {
         scale: 2,
-        backgroundColor: '#1a1b23'
+        backgroundColor: '#1a1f2b'
       });
       const link = document.createElement('a');
       link.download = `certificate-${certificate.certificate_number}.png`;
@@ -55,14 +55,14 @@ const CertificateViewer = ({ certificate, course, user, onClose }) => {
           <div className="flex items-center gap-2">
             <button
               onClick={handleShare}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-none transition-colors"
             >
               <Share2 className="w-4 h-4" />
               Share
             </button>
             <button
               onClick={handleDownload}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-none transition-colors"
             >
               <Download className="w-4 h-4" />
               Download
@@ -79,11 +79,11 @@ const CertificateViewer = ({ certificate, course, user, onClose }) => {
         {/* Certificate */}
         <div 
           ref={certificateRef}
-          className="bg-gradient-to-br from-[#1a1b23] to-[#0f1015] rounded-xl border-4 border-red-600/50 p-8 md:p-12 print:border-red-600"
+          className="bg-[#10131b] from-[#1a1f2b] to-[#10131b] rounded-none border-4 border-red-600/50 p-8 md:p-12 print:border-red-600"
           style={{ aspectRatio: '1.414' }}
         >
           {/* Border Decoration */}
-          <div className="h-full border-2 border-red-900/30 rounded-lg p-6 md:p-10 flex flex-col items-center justify-between">
+          <div className="h-full border-2 border-red-900/30 rounded-none p-6 md:p-10 flex flex-col items-center justify-between">
             {/* Header */}
             <div className="text-center">
               <div className="flex items-center justify-center gap-3 mb-4">

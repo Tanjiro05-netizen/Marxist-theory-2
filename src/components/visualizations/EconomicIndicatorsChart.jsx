@@ -10,7 +10,16 @@ import {
     ResponsiveContainer
 } from 'recharts';
 import { motion } from 'framer-motion';
-import { INDICATOR_LABELS, INDICATOR_COLORS } from '../../services/api/imf';
+import { INDICATORS } from '../../services/worldBankApi';
+
+// Indicator labels/colors derived from the World Bank indicator catalog
+const INDICATOR_LABELS = Object.fromEntries(
+    Object.entries(INDICATORS).map(([key, ind]) => [key, ind.name])
+);
+const INDICATOR_PALETTE = ['#d41f3d', '#4a7fb5', '#2d8a4e', '#c8860a', '#8a84b8', '#14b8a6'];
+const INDICATOR_COLORS = Object.fromEntries(
+    Object.keys(INDICATORS).map((key, i) => [key, INDICATOR_PALETTE[i % INDICATOR_PALETTE.length]])
+);
 
 // Add console logs to debug data flow
 const EconomicIndicatorsChart = ({ 
@@ -99,29 +108,29 @@ const EconomicIndicatorsChart = ({
                     data={chartData}
                     margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#262a35" />
                     <XAxis
                         dataKey="year"
-                        stroke="#9ca3af"
-                        tick={{ fill: '#9ca3af' }}
+                        stroke="#a5a194"
+                        tick={{ fill: '#a5a194' }}
                     />
                     <YAxis
-                        stroke="#9ca3af"
-                        tick={{ fill: '#9ca3af' }}
+                        stroke="#a5a194"
+                        tick={{ fill: '#a5a194' }}
                     />
                     <Tooltip
                         contentStyle={{
-                            backgroundColor: '#1f2937',
-                            border: '1px solid #374151',
-                            borderRadius: '0.375rem'
+                            backgroundColor: '#10131b',
+                            border: '1px solid #262a35',
+                            borderRadius: '0'
                         }}
-                        labelStyle={{ color: '#f3f4f6' }}
-                        itemStyle={{ color: '#f3f4f6' }}
+                        labelStyle={{ color: '#ece9e0' }}
+                        itemStyle={{ color: '#ece9e0' }}
                     />
                     <Legend
                         wrapperStyle={{
                             paddingTop: '1rem',
-                            color: '#f3f4f6'
+                            color: '#ece9e0'
                         }}
                     />
                     {selectedIndicators.map(indicator => 

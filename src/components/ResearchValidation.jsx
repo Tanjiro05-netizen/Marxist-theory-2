@@ -50,12 +50,12 @@ const ResearchValidation = ({ isOpen, onClose }) => {
     };
 
     return (
-        <div className="bg-black/90 text-white rounded-lg p-6 max-w-4xl mx-auto">
+        <div className="bg-black/90 text-white rounded-none p-6 max-w-4xl mx-auto">
             {Object.entries(validationSections).map(([key, section]) => (
                 <div key={key} className="mb-6">
                     <button
                         onClick={() => toggleSection(key)}
-                        className="w-full flex items-center justify-between p-4 bg-red-900/20 rounded-lg hover:bg-red-900/30 transition-colors"
+                        className="w-full flex items-center justify-between p-4 bg-red-900/20 rounded-none hover:bg-red-900/30 transition-colors"
                     >
                         <span className="text-xl font-semibold">{section.title}</span>
                         <ChevronDown 
@@ -68,7 +68,7 @@ const ResearchValidation = ({ isOpen, onClose }) => {
                     {expandedSections[key] && (
                         <div className="mt-4 pl-4 space-y-4">
                             {section.items && section.items.map((item, idx) => (
-                                <div key={idx} className="bg-black/50 p-4 rounded-lg">
+                                <div key={idx} className="bg-black/50 p-4 rounded-none">
                                     <h4 className="text-red-500 font-semibold mb-2">{item.category}</h4>
                                     <ul className="space-y-2">
                                         {item.works.map((work, workIdx) => (

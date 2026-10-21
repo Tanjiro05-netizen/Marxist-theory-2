@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import RoleRoute from './RoleRoute';
 import { useAuth } from '../context/AuthContext';
 
@@ -8,23 +7,15 @@ jest.mock('../context/AuthContext', () => ({
     useAuth: jest.fn(),
 }));
 
-jest.mock('react-router-dom', () => {
-    const actual = jest.requireActual('react-router-dom');
-    return {
-        ...actual,
-        Navigate: ({ to }) => <div data-testid="navigate" data-to={to} />, // test double
-    };
-});
+jest.mock('./RedirectTo.jsx', () => ({ href }) => <div data-testid="navigate" data-to={href} />);
 
 const mockUseAuth = useAuth;
 
 const renderRoute = (props = {}) =>
     render(
-        <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <RoleRoute allowedEditorialRoles={['News']} {...props}>
-                <div>Protected Content</div>
-            </RoleRoute>
-        </MemoryRouter>
+        <RoleRoute allowedEditorialRoles={['News']} {...props}>
+            <div>Protected Content</div>
+        </RoleRoute>
     );
 
 describe('RoleRoute', () => {

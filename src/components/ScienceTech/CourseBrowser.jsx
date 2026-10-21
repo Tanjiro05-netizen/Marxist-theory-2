@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { supabase } from '../../supabaseClient';
 import CourseCard from './CourseCard';
 import SubjectCard from './SubjectCard';
@@ -120,7 +120,7 @@ const CourseBrowser = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* XP Stats */}
           {userXP && (
-            <div className="bg-gradient-to-br from-red-900/20 to-black/40 backdrop-blur-lg rounded-xl p-6 border border-red-900/30">
+            <div className="bg-[#10131b] from-red-900/20 to-black/40 backdrop-blur-lg rounded-none p-6 border border-red-900/30">
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                 <Zap className="w-5 h-5 text-yellow-500" />
                 Your Progress
@@ -144,7 +144,7 @@ const CourseBrowser = () => {
 
           {/* Continue Learning */}
           {userProgress && userProgress.stem_lessons && (
-            <div className="bg-black/40 backdrop-blur-lg rounded-xl p-6 border border-red-900/30">
+            <div className="bg-black/40 backdrop-blur-lg rounded-none p-6 border border-red-900/30">
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-blue-500" />
                 Continue Learning
@@ -156,9 +156,8 @@ const CourseBrowser = () => {
                 <p className="text-white font-medium">
                   {userProgress.stem_lessons.stem_chapters?.title} → {userProgress.stem_lessons.title}
                 </p>
-                <Link
-                  to={`/science-tech/courses/${userProgress.stem_lessons.stem_chapters?.stem_courses?.slug}/${userProgress.stem_lessons.stem_chapters?.slug}/${userProgress.stem_lessons.slug}`}
-                  className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
+                <Link href={`/science-tech/courses/${userProgress.stem_lessons.stem_chapters?.stem_courses?.slug}/${userProgress.stem_lessons.stem_chapters?.slug}/${userProgress.stem_lessons.slug}`}
+                  className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-none text-sm font-medium transition-colors"
                 >
                   Resume <TrendingUp className="w-4 h-4" />
                 </Link>
@@ -193,13 +192,13 @@ const CourseBrowser = () => {
             placeholder="Search courses..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-black/50 border border-red-900/30 text-white rounded-lg pl-10 pr-4 py-3 focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors"
+            className="w-full bg-black/50 border border-red-900/30 text-white rounded-none pl-10 pr-4 py-3 focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors"
           />
         </div>
         <select
           value={difficultyFilter}
           onChange={(e) => setDifficultyFilter(e.target.value)}
-          className="bg-black/50 border border-red-900/30 text-white rounded-lg px-4 py-3 focus:border-red-500 focus:outline-none appearance-none cursor-pointer"
+          className="bg-black/50 border border-red-900/30 text-white rounded-none px-4 py-3 focus:border-red-500 focus:outline-none appearance-none cursor-pointer"
         >
           <option value="">All Levels</option>
           <option value="beginner">Beginner</option>
@@ -209,7 +208,7 @@ const CourseBrowser = () => {
         <select
           value={progressFilter}
           onChange={(e) => setProgressFilter(e.target.value)}
-          className="bg-black/50 border border-red-900/30 text-white rounded-lg px-4 py-3 focus:border-red-500 focus:outline-none appearance-none cursor-pointer"
+          className="bg-black/50 border border-red-900/30 text-white rounded-none px-4 py-3 focus:border-red-500 focus:outline-none appearance-none cursor-pointer"
         >
           <option value="">All Courses</option>
           <option value="enrolled">Enrolled</option>

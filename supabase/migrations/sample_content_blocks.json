@@ -1,0 +1,84 @@
+[
+  {
+    "type": "text",
+    "content": "## Newton's Second Law of Motion\n\nForce equals mass times acceleration. This is one of the most fundamental equations in physics:\n\n$$F = ma$$\n\nWhere:\n- $F$ is the net force (in Newtons)\n- $m$ is the mass (in kilograms)\n- $a$ is the acceleration (in m/s²)"
+  },
+  {
+    "type": "callout",
+    "variant": "definition",
+    "title": "Newton's Second Law",
+    "content": "The net force on an object is equal to the rate of change of its momentum: $\\vec{F} = m\\vec{a}$. This law explains why objects accelerate when pushed."
+  },
+  {
+    "type": "image",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Free_Body_Diagram.svg/640px-Free_Body_Diagram.svg.png",
+    "caption": "A free body diagram showing all forces acting on an object",
+    "alt": "Free body diagram with force vectors"
+  },
+  {
+    "type": "worked_example",
+    "title": "Calculate the Net Force",
+    "steps": [
+      { "label": "Identify knowns", "content": "Mass $m = 5\\,\\text{kg}$, Acceleration $a = 3\\,\\text{m/s}^2$" },
+      { "label": "Apply formula", "content": "$$F = ma = 5 \\times 3 = 15\\,\\text{N}$$" },
+      { "label": "Interpret", "content": "A force of 15 Newtons is needed to accelerate a 5 kg mass at 3 m/s²." }
+    ]
+  },
+  {
+    "type": "inline_exercise",
+    "exercise_type": "numeric",
+    "question": "A 10 kg object accelerates at 2 m/s². What is the net force?",
+    "correct_answer": "20",
+    "hint": "Use the formula F = ma. Substitute the given values.",
+    "explanation": "F = 10 kg × 2 m/s² = 20 N"
+  },
+  {
+    "type": "interactive_widget",
+    "widget_type": "function_plotter",
+    "config": {
+      "functions": ["sin(x)", "cos(x)"],
+      "x_range": [-6.28, 6.28],
+      "parameters": [
+        { "name": "amplitude", "min": 0.1, "max": 3, "default": 1, "step": 0.1 }
+      ]
+    }
+  },
+  {
+    "type": "interactive_widget",
+    "widget_type": "projectile_motion",
+    "config": {
+      "default_angle": 45,
+      "default_velocity": 30,
+      "default_gravity": 9.81
+    }
+  },
+  {
+    "type": "code_sandbox",
+    "language": "python",
+    "starter_code": "# Calculate kinetic energy\nmass = 5  # kg\nvelocity = 10  # m/s\n\n# KE = 0.5 * mass * velocity^2\nKE = 0.5 * mass * velocity**2\nprint(f'Kinetic energy: {KE} J')",
+    "solution": "KE = 0.5 * mass * velocity**2",
+    "instructions": "Calculate the kinetic energy of an object with mass = 5 kg and velocity = 10 m/s using KE = ½mv²."
+  },
+  {
+    "type": "divider",
+    "label": "Review"
+  },
+  {
+    "type": "summary",
+    "points": [
+      "$F = ma$ relates force, mass, and acceleration",
+      "Units: Newtons (N) = kg·m/s²",
+      "The direction of the force is the same as the direction of the acceleration"
+    ]
+  },
+  {
+    "type": "table",
+    "caption": "Common Force Values",
+    "headers": ["Situation", "Force (N)"],
+    "rows": [
+      ["Weight of a 1 kg object on Earth", "9.8"],
+      ["Weight of a 70 kg person", "686"],
+      ["Thrust of a small rocket", "~10,000"]
+    ]
+  }
+]

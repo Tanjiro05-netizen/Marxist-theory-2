@@ -42,9 +42,6 @@ const ConceptAnalysis = ({ concepts = [], loading = false }) => {
               </div>
               <div className={styles.termBlock}>
                 <h3 className={styles.term}>{item.term}</h3>
-                {item.chinese_term && (
-                  <p className={styles.translated}>{item.chinese_term}</p>
-                )}
               </div>
             </div>
 

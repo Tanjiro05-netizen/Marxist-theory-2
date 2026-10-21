@@ -13,14 +13,14 @@ const generateSampleData = (type, sentiment) => {
                 value: sentiment === 'negative' 
                     ? 100 - Math.random() * 50 - i * 3
                     : Math.random() * 50 + i * 3,
-                color: sentiment === 'negative' ? '#ff3b3b' : '#2ed573'
+                color: sentiment === 'negative' ? '#d41f3d' : '#2d8a4e'
             }));
             break;
         case 'class':
             data = [
-                { label: 'Working Class', value: 68, color: '#ff3b3b' },
-                { label: 'Middle Class', value: 24, color: '#ffb800' },
-                { label: 'Upper Class', value: 8, color: '#2ed573' }
+                { label: 'Working Class', value: 68, color: '#d41f3d' },
+                { label: 'Middle Class', value: 24, color: '#d8c79f' },
+                { label: 'Upper Class', value: 8, color: '#2d8a4e' }
             ];
             break;
         case 'trends':
@@ -29,17 +29,17 @@ const generateSampleData = (type, sentiment) => {
                 value: sentiment === 'negative'
                     ? 80 - Math.sin(i * 0.5) * 30
                     : 20 + Math.sin(i * 0.5) * 30,
-                color: i % 2 === 0 ? '#ff3b3b' : '#2ed573'
+                color: i % 2 === 0 ? '#d41f3d' : '#2d8a4e'
             }));
             break;
         case 'movements':
             data = [
-                { label: 'North America', value: 35, color: '#ff3b3b' },
-                { label: 'South America', value: 45, color: '#ffb800' },
-                { label: 'Europe', value: 55, color: '#2ed573' },
-                { label: 'Africa', value: 25, color: '#3b86ff' },
-                { label: 'Asia', value: 65, color: '#9c27b0' },
-                { label: 'Oceania', value: 15, color: '#00bcd4' }
+                { label: 'North America', value: 35, color: '#d41f3d' },
+                { label: 'South America', value: 45, color: '#d8c79f' },
+                { label: 'Europe', value: 55, color: '#2d8a4e' },
+                { label: 'Africa', value: 25, color: '#4a7fb5' },
+                { label: 'Asia', value: 65, color: '#8a84b8' },
+                { label: 'Oceania', value: 15, color: '#4a7fb5' }
             ];
             break;
         default:
@@ -147,7 +147,7 @@ const EnhancedChart = ({
                             className={`chart-line ${isAnimating ? 'animating' : ''}`}
                             points={points}
                             fill="none"
-                            stroke={sentiment === 'negative' ? '#ff3b3b' : '#2ed573'}
+                            stroke={sentiment === 'negative' ? '#d41f3d' : '#2d8a4e'}
                             strokeWidth="2"
                         />
                         {data.map((item, index) => {

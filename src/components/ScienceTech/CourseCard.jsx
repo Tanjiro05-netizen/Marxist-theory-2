@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Clock, BookOpen, BarChart2, ChevronRight, CheckCircle } from 'lucide-react';
 
 const difficultyColors = {
@@ -12,12 +12,11 @@ const CourseCard = ({ course, isEnrolled }) => {
   const chapterCount = course.stem_chapters?.length || 0;
   
   return (
-    <Link
-      to={`/science-tech/courses/${course.slug}`}
-      className="group bg-black/40 backdrop-blur-lg rounded-xl overflow-hidden border border-red-900/30 hover:border-red-500/50 transition-all duration-300 hover:scale-[1.02]"
+    <Link href={`/science-tech/courses/${course.slug}`}
+      className="group bg-black/40 backdrop-blur-lg rounded-none overflow-hidden border border-red-900/30 hover:border-red-500/50 transition-all duration-300 hover:scale-[1.02]"
     >
       {/* Thumbnail */}
-      <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden">
+      <div className="aspect-video bg-[#10131b] from-gray-800 to-gray-900 relative overflow-hidden">
         {course.thumbnail_url ? (
           <img 
             src={course.thumbnail_url} 
@@ -28,7 +27,7 @@ const CourseCard = ({ course, isEnrolled }) => {
           <div 
             className="w-full h-full flex items-center justify-center"
             style={{ 
-              background: `linear-gradient(135deg, ${course.stem_subjects?.color || '#ef4444'}20, transparent)` 
+              background: `linear-gradient(135deg, ${course.stem_subjects?.color || '#d41f3d'}20, transparent)` 
             }}
           >
             <BookOpen className="w-12 h-12 text-gray-600" />

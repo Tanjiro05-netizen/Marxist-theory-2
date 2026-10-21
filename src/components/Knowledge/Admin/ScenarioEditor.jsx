@@ -187,13 +187,13 @@ const ScenarioEditor = ({ scenario, onSave, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-gray-900 border border-gray-700 rounded-none w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <h2 className="text-lg font-bold text-white">
             {scenario?.id ? 'Edit Scenario' : 'Create New Scenario'}
           </h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-gray-800 rounded-none transition-colors">
             <X className="w-5 h-5 text-gray-400" />
           </button>
         </div>
@@ -237,7 +237,7 @@ const ScenarioEditor = ({ scenario, onSave, onClose }) => {
                   type="text"
                   value={form.title}
                   onChange={(e) => handleFormChange('title', e.target.value)}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+                  className="w-full bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
                   placeholder="The Homestead Strike of 1892"
                 />
               </div>
@@ -247,7 +247,7 @@ const ScenarioEditor = ({ scenario, onSave, onClose }) => {
                 <textarea
                   value={form.description}
                   onChange={(e) => handleFormChange('description', e.target.value)}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500 resize-none"
+                  className="w-full bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500 resize-none"
                   rows={2}
                   placeholder="A brief description of the scenario"
                 />
@@ -260,7 +260,7 @@ const ScenarioEditor = ({ scenario, onSave, onClose }) => {
                     type="text"
                     value={form.setting}
                     onChange={(e) => handleFormChange('setting', e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
                     placeholder="Pennsylvania Steel Mills"
                   />
                 </div>
@@ -270,7 +270,7 @@ const ScenarioEditor = ({ scenario, onSave, onClose }) => {
                     type="text"
                     value={form.era}
                     onChange={(e) => handleFormChange('era', e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
                     placeholder="1892"
                   />
                 </div>
@@ -282,7 +282,7 @@ const ScenarioEditor = ({ scenario, onSave, onClose }) => {
                   <select
                     value={form.difficulty}
                     onChange={(e) => handleFormChange('difficulty', e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
                   >
                     {DIFFICULTIES.map(d => (
                       <option key={d.value} value={d.value}>{d.label}</option>
@@ -295,7 +295,7 @@ const ScenarioEditor = ({ scenario, onSave, onClose }) => {
                     type="number"
                     value={form.xp_reward}
                     onChange={(e) => handleFormChange('xp_reward', parseInt(e.target.value) || 0)}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
                     min={10}
                     max={200}
                   />
@@ -306,7 +306,7 @@ const ScenarioEditor = ({ scenario, onSave, onClose }) => {
                     type="number"
                     value={form.estimated_minutes}
                     onChange={(e) => handleFormChange('estimated_minutes', parseInt(e.target.value) || 5)}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
                     min={5}
                     max={60}
                   />
@@ -335,7 +335,7 @@ const ScenarioEditor = ({ scenario, onSave, onClose }) => {
                   <button
                     key={type.value}
                     onClick={() => handleAddNode(type.value)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-none text-sm transition-colors"
                   >
                     <span>{type.icon}</span>
                     <span>{type.label}</span>
@@ -345,7 +345,7 @@ const ScenarioEditor = ({ scenario, onSave, onClose }) => {
 
               {/* Warning if no start node */}
               {nodes.length > 0 && !nodes.some(n => n.is_start) && (
-                <div className="p-3 bg-yellow-900/30 border border-yellow-700 rounded-lg flex items-center gap-2 text-yellow-400 text-sm">
+                <div className="p-3 bg-yellow-900/30 border border-yellow-700 rounded-none flex items-center gap-2 text-yellow-400 text-sm">
                   <AlertTriangle className="w-4 h-4" />
                   No start node defined. Mark one node as the start.
                 </div>
@@ -363,7 +363,7 @@ const ScenarioEditor = ({ scenario, onSave, onClose }) => {
                     const isExpanded = expandedNode === node.id;
                     
                     return (
-                      <div key={node.id} className="bg-gray-800/50 border border-gray-700 rounded-lg overflow-hidden">
+                      <div key={node.id} className="bg-gray-800/50 border border-gray-700 rounded-none overflow-hidden">
                         {/* Node Header */}
                         <div className="flex items-center p-3">
                           <button
@@ -489,14 +489,14 @@ const ScenarioEditor = ({ scenario, onSave, onClose }) => {
         <div className="flex gap-3 p-4 border-t border-gray-700">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+            className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-none transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSaveScenario}
             disabled={saving || !form.title}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-none transition-colors"
           >
             {saving ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -545,10 +545,10 @@ const NodeEditorModal = ({ node, nodes, onSave, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60] p-4">
-      <div className="bg-gray-800 border border-gray-600 rounded-xl w-full max-w-lg max-h-[80vh] overflow-y-auto">
+      <div className="bg-gray-800 border border-gray-600 rounded-none w-full max-w-lg max-h-[80vh] overflow-y-auto">
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <h3 className="font-bold text-white">Edit Node</h3>
-          <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg">
+          <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-none">
             <X className="w-4 h-4 text-gray-400" />
           </button>
         </div>
@@ -560,7 +560,7 @@ const NodeEditorModal = ({ node, nodes, onSave, onClose }) => {
               type="text"
               value={form.title}
               onChange={(e) => setForm(prev => ({ ...prev, title: e.target.value }))}
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+              className="w-full bg-gray-900 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
             />
           </div>
 
@@ -569,7 +569,7 @@ const NodeEditorModal = ({ node, nodes, onSave, onClose }) => {
             <textarea
               value={form.content}
               onChange={(e) => setForm(prev => ({ ...prev, content: e.target.value }))}
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500 resize-none"
+              className="w-full bg-gray-900 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500 resize-none"
               rows={6}
             />
           </div>
@@ -580,7 +580,7 @@ const NodeEditorModal = ({ node, nodes, onSave, onClose }) => {
               <select
                 value={form.node_type}
                 onChange={(e) => setForm(prev => ({ ...prev, node_type: e.target.value }))}
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+                className="w-full bg-gray-900 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
               >
                 {NODE_TYPES.map(t => (
                   <option key={t.value} value={t.value}>{t.icon} {t.label}</option>
@@ -594,7 +594,7 @@ const NodeEditorModal = ({ node, nodes, onSave, onClose }) => {
                 <select
                   value={form.ending_type || ''}
                   onChange={(e) => setForm(prev => ({ ...prev, ending_type: e.target.value || null }))}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+                  className="w-full bg-gray-900 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
                 >
                   <option value="">Select...</option>
                   {ENDING_TYPES.map(t => (
@@ -611,7 +611,7 @@ const NodeEditorModal = ({ node, nodes, onSave, onClose }) => {
               <textarea
                 value={form.ending_insight}
                 onChange={(e) => setForm(prev => ({ ...prev, ending_insight: e.target.value }))}
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500 resize-none"
+                className="w-full bg-gray-900 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500 resize-none"
                 rows={3}
                 placeholder="What actually happened in history..."
               />
@@ -635,13 +635,13 @@ const NodeEditorModal = ({ node, nodes, onSave, onClose }) => {
         <div className="flex gap-3 p-4 border-t border-gray-700">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+            className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-none transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={() => onSave(form)}
-            className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg transition-colors"
+            className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-500 rounded-none transition-colors"
           >
             Save Node
           </button>
@@ -663,10 +663,10 @@ const ChoiceEditorModal = ({ choice, nodes, onSave, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60] p-4">
-      <div className="bg-gray-800 border border-gray-600 rounded-xl w-full max-w-lg">
+      <div className="bg-gray-800 border border-gray-600 rounded-none w-full max-w-lg">
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <h3 className="font-bold text-white">Edit Choice</h3>
-          <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg">
+          <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-none">
             <X className="w-4 h-4 text-gray-400" />
           </button>
         </div>
@@ -677,7 +677,7 @@ const ChoiceEditorModal = ({ choice, nodes, onSave, onClose }) => {
             <textarea
               value={form.choice_text}
               onChange={(e) => setForm(prev => ({ ...prev, choice_text: e.target.value }))}
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500 resize-none"
+              className="w-full bg-gray-900 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500 resize-none"
               rows={2}
               placeholder="What the player sees as the choice"
             />
@@ -688,7 +688,7 @@ const ChoiceEditorModal = ({ choice, nodes, onSave, onClose }) => {
             <select
               value={form.next_node_id || ''}
               onChange={(e) => setForm(prev => ({ ...prev, next_node_id: e.target.value || null }))}
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+              className="w-full bg-gray-900 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
             >
               <option value="">No link (dead end)</option>
               {nodes.map(n => (
@@ -705,7 +705,7 @@ const ChoiceEditorModal = ({ choice, nodes, onSave, onClose }) => {
               type="text"
               value={form.consequence_preview}
               onChange={(e) => setForm(prev => ({ ...prev, consequence_preview: e.target.value }))}
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+              className="w-full bg-gray-900 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
               placeholder="Optional hint about outcome"
             />
           </div>
@@ -716,7 +716,7 @@ const ChoiceEditorModal = ({ choice, nodes, onSave, onClose }) => {
               type="text"
               value={form.concept_demonstrated}
               onChange={(e) => setForm(prev => ({ ...prev, concept_demonstrated: e.target.value }))}
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+              className="w-full bg-gray-900 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
               placeholder="e.g., Class solidarity, Individual action"
             />
           </div>
@@ -738,13 +738,13 @@ const ChoiceEditorModal = ({ choice, nodes, onSave, onClose }) => {
         <div className="flex gap-3 p-4 border-t border-gray-700">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+            className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-none transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={() => onSave(form)}
-            className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg transition-colors"
+            className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-500 rounded-none transition-colors"
           >
             Save Choice
           </button>

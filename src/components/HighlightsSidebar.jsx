@@ -4,7 +4,7 @@ const HighlightsSidebar = ({ highlights, onDelete, onDeleteHighlight }) => {
     const handleDelete = onDeleteHighlight || onDelete;
     return (
         <div className="">
-            <div className="bg-gray-900/50 backdrop-blur-sm p-4 rounded-lg border border-gray-700/50">
+            <div className="bg-gray-900/50 backdrop-blur-sm p-4 rounded-none border border-gray-700/50">
                 <h3 className="text-xl font-semibold text-white mb-4">Your Highlights</h3>
                 {highlights.length === 0 ? (
                     <p className="text-gray-400">Select text in the article to create a highlight.</p>

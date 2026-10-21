@@ -94,12 +94,12 @@ const QuestionEditor = ({ question, onSave, onClose, saving }) => {
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-900 border border-gray-700 rounded-none w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <h2 className="text-lg font-bold text-white">
             {question ? 'Edit Question' : 'Add New Question'}
           </h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-gray-800 rounded-none transition-colors">
             <X className="w-5 h-5 text-gray-400" />
           </button>
         </div>
@@ -110,7 +110,7 @@ const QuestionEditor = ({ question, onSave, onClose, saving }) => {
             <select
               value={form.question_type}
               onChange={(e) => handleChange('question_type', e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+              className="w-full bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
             >
               {QUESTION_TYPES.map(type => (
                 <option key={type.value} value={type.value}>{type.label}</option>
@@ -123,7 +123,7 @@ const QuestionEditor = ({ question, onSave, onClose, saving }) => {
             <textarea
               value={form.question_text}
               onChange={(e) => handleChange('question_text', e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500 resize-none"
+              className="w-full bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500 resize-none"
               rows={3}
               placeholder={form.question_type === 'fill_blank' 
                 ? "Use ___ for the blank (e.g., 'The workers control the ___')"
@@ -143,14 +143,14 @@ const QuestionEditor = ({ question, onSave, onClose, saving }) => {
                       type="text"
                       value={option}
                       onChange={(e) => handleOptionChange(index, e.target.value)}
-                      className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+                      className="flex-1 bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
                       placeholder={`Option ${index + 1}`}
                     />
                     {form.options.length > 2 && (
                       <button
                         type="button"
                         onClick={() => removeOption(index)}
-                        className="p-2 bg-gray-800 hover:bg-red-600/20 text-red-400 rounded-lg transition-colors"
+                        className="p-2 bg-gray-800 hover:bg-red-600/20 text-red-400 rounded-none transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -160,7 +160,7 @@ const QuestionEditor = ({ question, onSave, onClose, saving }) => {
                 <button
                   type="button"
                   onClick={addOption}
-                  className="flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-none text-sm transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Add Option
@@ -170,7 +170,7 @@ const QuestionEditor = ({ question, onSave, onClose, saving }) => {
           )}
 
           {isSwipeOrTF && (
-            <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3">
+            <div className="bg-gray-800/50 border border-gray-700 rounded-none p-3">
               <p className="text-sm text-gray-400">
                 {form.question_type === 'true_false' 
                   ? 'Options will automatically be set to "True" and "False"'
@@ -186,7 +186,7 @@ const QuestionEditor = ({ question, onSave, onClose, saving }) => {
               <select
                 value={form.correct_answer}
                 onChange={(e) => handleChange('correct_answer', e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+                className="w-full bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
                 required
               >
                 <option value="">Select...</option>
@@ -197,7 +197,7 @@ const QuestionEditor = ({ question, onSave, onClose, saving }) => {
               <select
                 value={form.correct_answer}
                 onChange={(e) => handleChange('correct_answer', e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+                className="w-full bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
                 required
               >
                 <option value="">Select...</option>
@@ -208,7 +208,7 @@ const QuestionEditor = ({ question, onSave, onClose, saving }) => {
               <select
                 value={form.correct_answer}
                 onChange={(e) => handleChange('correct_answer', e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+                className="w-full bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
                 required
               >
                 <option value="">Select correct answer...</option>
@@ -221,7 +221,7 @@ const QuestionEditor = ({ question, onSave, onClose, saving }) => {
                 type="text"
                 value={form.correct_answer}
                 onChange={(e) => handleChange('correct_answer', e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
+                className="w-full bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500"
                 placeholder="Enter the correct answer"
                 required
               />
@@ -233,7 +233,7 @@ const QuestionEditor = ({ question, onSave, onClose, saving }) => {
             <textarea
               value={form.explanation}
               onChange={(e) => handleChange('explanation', e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500 resize-none"
+              className="w-full bg-gray-800 border border-gray-700 rounded-none px-3 py-2 text-white focus:outline-none focus:border-red-500 resize-none"
               rows={2}
               placeholder="Explain why this is the correct answer (shown after answering)"
             />
@@ -243,14 +243,14 @@ const QuestionEditor = ({ question, onSave, onClose, saving }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+              className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-none transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving || !form.question_text || !form.correct_answer}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-none transition-colors"
             >
               {saving ? (
                 <>

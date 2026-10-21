@@ -16,23 +16,23 @@ const SubjectCard = ({ subject, courseCount, isSelected, onClick }) => {
     <button
       onClick={onClick}
       className={`
-        relative p-4 rounded-xl border transition-all duration-300 text-left
+        relative p-4 rounded-none border transition-all duration-300 text-left
         ${isSelected 
           ? 'bg-red-900/30 border-red-500/50 scale-105' 
           : 'bg-black/40 border-red-900/30 hover:border-red-500/30 hover:scale-102'
         }
       `}
       style={{
-        '--subject-color': subject.color || '#ef4444'
+        '--subject-color': subject.color || '#d41f3d'
       }}
     >
       <div 
-        className="w-10 h-10 rounded-lg flex items-center justify-center mb-3"
+        className="w-10 h-10 rounded-none flex items-center justify-center mb-3"
         style={{ backgroundColor: `${subject.color}20` }}
       >
         <IconComponent 
           className="w-5 h-5" 
-          style={{ color: subject.color || '#ef4444' }}
+          style={{ color: subject.color || '#d41f3d' }}
         />
       </div>
       <h3 className="text-white font-semibold text-sm mb-1">{subject.name}</h3>
@@ -43,7 +43,7 @@ const SubjectCard = ({ subject, courseCount, isSelected, onClick }) => {
       {isSelected && (
         <div 
           className="absolute top-2 right-2 w-2 h-2 rounded-full"
-          style={{ backgroundColor: subject.color || '#ef4444' }}
+          style={{ backgroundColor: subject.color || '#d41f3d' }}
         />
       )}
     </button>

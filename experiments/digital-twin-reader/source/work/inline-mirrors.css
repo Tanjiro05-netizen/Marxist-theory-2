@@ -1,0 +1,49 @@
+/* Inline diagrams share the essay's typography and light/dark palette. */
+.mir,#twinbar,.figmark{display:none!important}
+@media(min-width:1080px){.stage{grid-template-columns:7rem minmax(0,38rem);gap:3rem}.dock{display:none}}
+.mirror-links{display:flex;flex-wrap:wrap;gap:.5rem 1.3rem;margin:1.6rem 0 .3rem;font-family:var(--cond)}
+.mirror-links a{display:flex;align-items:center;gap:.5rem;color:var(--ink);text-decoration:none;font-size:.92rem;line-height:1.2;padding:.4rem 0;border-bottom:1px solid var(--rule)}
+.mirror-links a:hover{border-color:var(--ink)}
+.mirror-links svg{width:31px;height:31px;flex:none;fill:none;stroke:currentColor;stroke-width:1.3}
+.inline-mirror{margin:2.4rem 0 2.7rem;padding:1.1rem 0 .8rem;border-block:1px solid var(--rule);scroll-margin-top:2rem;break-inside:avoid}
+.inline-mirror h3{font-family:var(--cond);font-size:1.55rem;font-weight:600;letter-spacing:-.015em;line-height:1.15;margin:0 0 .8rem}
+.im-scene{width:100%;display:block;overflow:visible}
+.im-scene text{fill:var(--ink);font-family:var(--cond);font-size:18px;font-weight:400}
+.im-scene .im-small{font-size:15px;fill:var(--graphite)}
+.im-scene .im-bold{font-weight:600}
+.im-scene .im-tag{font-size:13px;letter-spacing:1.4px;fill:var(--graphite);font-weight:600}
+.im-scene .im-wire{stroke:var(--ink);stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.im-scene .im-faint{stroke:var(--rule);stroke-width:1;fill:none}
+.im-scene .im-box{stroke:var(--rule);stroke-width:1;fill:var(--paper)}
+.im-scene .im-fill{fill:var(--ink);stroke:none}
+.im-controls{display:flex;align-items:stretch;gap:.4rem;margin-top:.7rem;font-family:var(--cond)}
+.im-play{display:grid;place-items:center;width:44px;min-height:44px;flex:none;border:1px solid var(--rule);border-radius:3px}
+.im-play svg{width:17px;height:17px;fill:currentColor}
+.im-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.3rem;flex:1}
+.im-steps button{font:inherit;font-size:.86rem;line-height:1.1;min-height:44px;padding:.35rem .15rem;border:1px solid var(--rule);border-radius:3px;text-align:center}
+.im-steps button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.im-progress{height:2px;background:var(--rule);margin-top:.7rem}
+.im-progress i{display:block;height:100%;background:var(--ink);transform:scaleX(0);transform-origin:left}
+@media(max-width:480px){.mirror-links{gap:.25rem 1rem}.mirror-links a{font-size:.84rem}.inline-mirror{margin-block:2rem}.inline-mirror h3{font-size:1.4rem}.im-steps button{font-size:.8rem}}
+@media print{.mirror-links,.im-controls,.im-progress{display:none}.inline-mirror{break-inside:avoid}}
+.engine-chain{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.6rem;align-items:center;font-family:var(--cond);padding:.5rem 0 1.1rem;border-bottom:1px solid var(--rule);margin-bottom:1rem}
+.engine-chain span{display:block;font-size:.76rem;color:var(--graphite);margin-bottom:.2rem}
+.engine-chain b{display:block;font-size:.92rem;line-height:1.25;font-weight:500}
+.engine-chain i{font-style:normal;color:var(--graphite)}
+.engine-observed{stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.engine-predicted{stroke:var(--graphite);stroke-width:1.7;stroke-dasharray:6 5;stroke-linejoin:round}
+.engine-axis{stroke:var(--rule);stroke-width:1}
+.engine-now{stroke:var(--mid);stroke-width:1;stroke-dasharray:2 4}
+.engine-difference{stroke:var(--ink);stroke-width:1}
+.im-scene .engine-axis-label{font-size:13px;fill:var(--graphite)}
+.im-scene .engine-branch{font-size:15px;font-weight:500;fill:var(--graphite)}
+.engine-choice{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-family:var(--cond)}
+.engine-choice button{border:1px solid var(--rule);border-radius:3px;padding:.65rem .35rem;min-height:46px;text-align:center;font-size:.95rem}
+.engine-choice button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.engine-outcome{display:flex;align-items:center;justify-content:space-between;gap:.7rem;font-family:var(--cond);margin-top:.65rem}
+.engine-check{border:1px solid var(--ink);border-radius:3px;padding:.45rem .7rem;min-height:42px;font-size:.9rem}
+.engine-check:disabled{opacity:.35;cursor:default}
+.engine-reset{font-size:.85rem;color:var(--graphite);text-decoration:underline;text-underline-offset:3px;min-height:42px}
+.engine-result{font-family:var(--cond);font-size:.94rem;line-height:1.4;margin:.75rem 0 .2rem;min-height:2.8em;color:var(--graphite)}
+@media(max-width:480px){.engine-chain{gap:.35rem}.engine-chain span{font-size:.69rem}.engine-chain b{font-size:.82rem}.engine-choice button{font-size:.88rem}}
+@media print{.engine-choice,.engine-outcome{display:none}}

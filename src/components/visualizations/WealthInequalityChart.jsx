@@ -9,7 +9,7 @@ const WealthInequalityChart = ({ data, countries }) => {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="custom-tooltip bg-slate-900 border border-slate-700 p-4 rounded-lg shadow-lg">
+        <div className="custom-tooltip bg-slate-900 border border-slate-700 p-4 rounded-none shadow-none">
           <p className="text-white font-semibold mb-2">{`Year: ${label}`}</p>
           <div className="space-y-1">
             {payload.map((entry, index) => (
@@ -33,7 +33,7 @@ const WealthInequalityChart = ({ data, countries }) => {
 
   return (
     <motion.div 
-      className="bg-gradient-to-r from-slate-900/80 via-gray-900/70 to-black/60 p-6 rounded-lg shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl border border-slate-800 hover:border-slate-700"
+      className="bg-[#10131b] from-slate-900/80 via-gray-900/70 to-black/60 p-6 rounded-none shadow-none backdrop-blur-sm transition-all duration-300 hover:shadow-none border border-slate-800 hover:border-slate-700"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -52,17 +52,17 @@ const WealthInequalityChart = ({ data, countries }) => {
         >
           <XAxis 
             dataKey="year" 
-            stroke="#6b7280"
-            tick={{ fill: '#9ca3af' }}
+            stroke="#7d7a6e"
+            tick={{ fill: '#a5a194' }}
           />
           <YAxis 
-            stroke="#6b7280"
-            tick={{ fill: '#9ca3af' }}
+            stroke="#7d7a6e"
+            tick={{ fill: '#a5a194' }}
             label={{ 
               value: 'GINI Index', 
               angle: -90, 
               position: 'insideLeft',
-              style: { fill: '#9ca3af' }
+              style: { fill: '#a5a194' }
             }}
           />
           <Tooltip 
@@ -74,12 +74,12 @@ const WealthInequalityChart = ({ data, countries }) => {
           />
           <ReferenceLine
             y={40}
-            stroke="#ef4444"
+            stroke="#d41f3d"
             strokeDasharray="3 3"
             label={{ 
               value: "High Inequality", 
               position: "insideTopRight",
-              fill: "#ef4444",
+              fill: "#d41f3d",
               fontSize: 12
             }}
           />
@@ -103,7 +103,7 @@ const WealthInequalityChart = ({ data, countries }) => {
         </LineChart>
       </ResponsiveContainer>
       {hoveredPoint && (
-        <div className="mt-4 p-3 bg-slate-800/50 rounded-md">
+        <div className="mt-4 p-3 bg-slate-800/50 rounded-none">
           <p className="text-sm text-white">
             <span className="font-semibold">Year {hoveredPoint.year}:</span> {" "}
             Average GINI index across selected countries: {
@@ -121,14 +121,14 @@ const WealthInequalityChart = ({ data, countries }) => {
 
 // A consistent color palette
 const COLORS = [
-  '#3b82f6', // blue
-  '#ef4444', // red
-  '#10b981', // green
-  '#f59e0b', // amber
-  '#8b5cf6', // purple
-  '#ec4899', // pink
-  '#06b6d4', // cyan
-  '#f97316', // orange
+  '#4a7fb5', // blue
+  '#d41f3d', // red
+  '#2d8a4e', // green
+  '#c8860a', // amber
+  '#6f6a9e', // purple
+  '#d41f3d', // pink
+  '#4a7fb5', // cyan
+  '#c8860a', // orange
 ];
 
 export default WealthInequalityChart;

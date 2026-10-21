@@ -20,7 +20,7 @@ export const card = style([panelInset, {
   gap: vars.space.lg,
   minHeight: '250px',
   overflow: 'hidden',
-  transition: 'transform 180ms ease, border-color 180ms ease, background 180ms ease',
+  transition: 'transform var(--dur-micro) var(--ease-standard), border-color var(--dur-micro) var(--ease-standard), background var(--dur-micro) var(--ease-standard)',
   selectors: {
     '&:hover': {
       transform: 'translateY(-3px)',
@@ -37,7 +37,7 @@ export const glow = style({
   width: '140px',
   height: '140px',
   borderRadius: '50%',
-  background: 'radial-gradient(circle, rgba(200,30,30,0.14) 0%, rgba(200,30,30,0.02) 72%)',
+  background: 'radial-gradient(circle, rgba(179, 18, 46,0.14) 0%, rgba(179, 18, 46,0.02) 72%)',
   filter: 'blur(12px)',
   pointerEvents: 'none',
 });

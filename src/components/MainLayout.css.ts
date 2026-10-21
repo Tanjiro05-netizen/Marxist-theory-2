@@ -3,13 +3,26 @@ import { vars } from '../styles/obsidianTheme.css.ts';
 
 export const shell = style({
   minHeight: '100vh',
+  minWidth: 0,
   background: vars.color.background,
   color: vars.color.text,
   fontFamily: vars.font.body,
+  display: 'flex',
+  flexDirection: 'column',
 });
 
+/* The header is in flow (masthead scrolls away, navband is sticky),
+   so no fixed-header padding is needed. */
 export const main = style({
-  paddingTop: '64px',
+  flex: 1,
+  minWidth: 0,
+  paddingTop: 0,
+});
+
+export const mainFullBleed = style({
+  flex: 1,
+  minWidth: 0,
+  paddingTop: 0,
 });
 
 export const fab = style({
@@ -18,6 +31,12 @@ export const fab = style({
   right: vars.space.lg,
   zIndex: 50,
   textDecoration: 'none',
+  '@media': {
+    'screen and (max-width: 768px)': {
+      bottom: 'max(16px, env(safe-area-inset-bottom))',
+      right: 'max(12px, env(safe-area-inset-right))',
+    },
+  },
 });
 
 export const fabCircle = style({
@@ -25,30 +44,23 @@ export const fabCircle = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '48px',
-  height: '48px',
-  borderRadius: '50%',
+  width: '46px',
+  height: '46px',
+  borderRadius: vars.radius.tiny,
   background: vars.color.surface,
   border: vars.border.accent,
-  color: vars.color.accent,
-  transition: 'all 240ms ease',
+  color: vars.color.accentHover,
+  transition: 'border-color var(--dur-element) var(--ease-standard), background var(--dur-element) var(--ease-standard)',
   selectors: {
     '&:hover': {
       borderColor: vars.color.accentHover,
-      boxShadow: vars.shadow.glow,
+      background: vars.color.accentWash,
     },
   },
 });
 
 export const fabPulse = style({
-  position: 'absolute',
-  inset: 0,
-  borderRadius: '50%',
-  border: `1px solid ${vars.color.accentSoft}`,
-  animationName: 'ping',
-  animationDuration: '2s',
-  animationIterationCount: 'infinite',
-  animationTimingFunction: 'ease-out',
+  display: 'none',
 });
 
 export const fabTooltip = style({
@@ -58,14 +70,17 @@ export const fabTooltip = style({
   marginBottom: vars.space.xs,
   padding: `${vars.space.xxs} ${vars.space.xs}`,
   background: vars.color.surface,
-  border: vars.border.accent,
-  borderRadius: vars.radius.sm,
-  fontFamily: vars.font.mono,
+  border: vars.border.strong,
+  borderRadius: vars.radius.tiny,
+  fontFamily: vars.font.label,
   fontSize: '10px',
+  fontWeight: 500,
+  letterSpacing: '0.18em',
+  textTransform: 'uppercase',
   color: vars.color.textMuted,
   whiteSpace: 'nowrap',
   opacity: 0,
-  transition: 'opacity 180ms ease',
+  transition: 'opacity var(--dur-micro) var(--ease-standard)',
   selectors: {
     [`${fab}:hover &`]: {
       opacity: 1,
@@ -74,5 +89,5 @@ export const fabTooltip = style({
 });
 
 export const fabAccent = style({
-  color: vars.color.accent,
+  color: vars.color.accentHover,
 });

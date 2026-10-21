@@ -11,6 +11,47 @@ const TYPE_ICONS = {
   lecture: Video,
 };
 
+const normalizeSources = (sources) =>
+  Array.isArray(sources)
+    ? sources.filter((source) => source?.title).slice(0, 6)
+    : [];
+
+const SourceChips = ({ sources = [] }) => {
+  const visibleSources = normalizeSources(sources);
+  if (visibleSources.length === 0) return null;
+
+  return (
+    <div className={styles.sourceList} aria-label="Sources used">
+      <span className={styles.sourceListLabel}>Sources used</span>
+      {visibleSources.map((source, index) => {
+        const marker = source.marker || `S${index + 1}`;
+        const content = (
+          <>
+            <span className={styles.sourceMarker}>{marker}</span>
+            <span className={styles.sourceTitle}>{source.title}</span>
+          </>
+        );
+
+        return source.href ? (
+          <a
+            key={`${marker}-${source.title}`}
+            href={source.href}
+            className={styles.sourceChip}
+            target={source.href.startsWith("http") ? "_blank" : undefined}
+            rel={source.href.startsWith("http") ? "noopener noreferrer" : undefined}
+          >
+            {content}
+          </a>
+        ) : (
+          <span key={`${marker}-${source.title}`} className={styles.sourceChip}>
+            {content}
+          </span>
+        );
+      })}
+    </div>
+  );
+};
+
 const StudyPathAI = ({ milestones = [], resources = [], userProgress = {} }) => {
   const incompleteMilestones = useMemo(
     () => milestones.filter((milestone) => !userProgress[milestone.id]?.completed),
@@ -33,8 +74,8 @@ const StudyPathAI = ({ milestones = [], resources = [], userProgress = {} }) => 
 
       return {
         step: index + 1,
-        title: milestone.chinese_title || milestone.title,
-        subtitle: milestone.chinese_title ? milestone.title : (milestone.description || ""),
+        title: milestone.title,
+        subtitle: milestone.description || "",
         suggestion: linkedResource
           ? `Suggested resource: ${linkedResource.title}`
           : (milestone.description || "Complete this milestone to continue your reading line."),
@@ -64,14 +105,19 @@ const StudyPathAI = ({ milestones = [], resources = [], userProgress = {} }) => 
 
     return {
       milestones: milestones.map((milestone) => ({
+        id: milestone.id,
         title: milestone.title,
         description: milestone.description,
+        resource_id: milestone.resource_id,
         completed: !!userProgress[milestone.id]?.completed,
       })),
       resources: resources.map((resource) => ({
+        id: resource.id,
         title: resource.title,
         type: resource.type,
         author: resource.author,
+        category: resource.category,
+        digital_library_book_id: resource.digital_library_book_id,
       })),
       completedCount,
       totalCount: milestones.length,
@@ -129,10 +175,16 @@ const StudyPathAI = ({ milestones = [], resources = [], userProgress = {} }) => 
       const reply = data?.reply;
       if (!reply) throw new Error("Empty response");
 
-      setMessages((prev) => [...prev, { type: "bot", content: reply }]);
+      setMessages((prev) => [...prev, {
+        type: "bot",
+        content: reply,
+        sources: normalizeSources(data?.sources),
+        provider: data?.provider,
+        model: data?.model,
+      }]);
     } catch (error) {
       console.warn("AI chat error, using fallback:", error);
-      setMessages((prev) => [...prev, { type: "bot", content: getLocalFallback(trimmedInput) }]);
+      setMessages((prev) => [...prev, { type: "bot", content: getLocalFallback(trimmedInput), sources: [] }]);
     } finally {
       setIsTyping(false);
     }
@@ -215,7 +267,10 @@ const StudyPathAI = ({ milestones = [], resources = [], userProgress = {} }) => 
                         <div className={styles.avatar.bot}>
                           <Bot size={16} />
                         </div>
-                        <div className={styles.bubble.bot}>{message.content}</div>
+                        <div className={styles.messageBody}>
+                          <div className={styles.bubble.bot}>{message.content}</div>
+                          <SourceChips sources={message.sources} />
+                        </div>
                       </>
                     ) : (
                       <>

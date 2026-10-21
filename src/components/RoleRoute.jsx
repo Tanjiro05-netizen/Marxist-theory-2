@@ -1,16 +1,23 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import RedirectTo from './RedirectTo.jsx';
 import { useAuth } from '../context/AuthContext';
 
 const RoleRoute = ({ children, allowedEditorialRoles = [], allowAdmin = true }) => {
     const { user, loading, isAdmin, hasEditorialRole } = useAuth();
 
     if (loading) {
-        return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">Checking permissions...</div>;
+        return (
+            <div className="min-h-screen bg-[#0b0d12] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-gray-400 text-sm">Checking permissions...</span>
+                </div>
+            </div>
+        );
     }
 
     if (!user) {
-        return <Navigate to="/login" replace />;
+        return <RedirectTo href="/login" replace />;
     }
 
     const isAllowedByAdmin = allowAdmin && isAdmin();
@@ -19,7 +26,7 @@ const RoleRoute = ({ children, allowedEditorialRoles = [], allowAdmin = true }) 
         allowedEditorialRoles.some((roleName) => hasEditorialRole(roleName));
 
     if (!isAllowedByAdmin && !isAllowedByRole) {
-        return <Navigate to="/coming-soon" replace />;
+        return <RedirectTo href="/coming-soon" replace />;
     }
 
     return children;

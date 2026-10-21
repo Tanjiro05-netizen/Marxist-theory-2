@@ -1,0 +1,89 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   view-transitions.css — the cross-fade from the landing page into the
+   platform. NavTransition.jsx runs it on that step and no other.
+
+   The landing page dissolves out over the dark page ground; the platform
+   starts rising just before it has finished, so the two overlap for a beat and
+   you briefly see the landing page ghosted over what you are arriving at. The
+   dip through near-black in the middle is the point — it is what makes the
+   change of place read as a change of place.
+
+   Timings live in the custom properties below; nothing else needs touching to
+   make the whole thing quicker or slower. NavTransition.jsx drives it.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Timed off the house scale in styles/theme.css: --dur-place is the whole
+   arc, and the dissolve's two halves are struck from it so changing the one
+   value moves everything together. */
+:root {
+  --vt-out: calc(var(--dur-place) * 0.7);
+  --vt-in: calc(var(--dur-place) * 0.51);
+  --vt-in-delay: calc(var(--dur-place) * 0.49);
+  --vt-morph: var(--dur-place);
+}
+
+/* The UA cross-fade blends the two snapshots additively (plus-lighter), which
+   keeps the midpoint bright. Normal blending lets it fall to the page ground
+   instead, which is the dissolve we want. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  animation: vt-page-out var(--vt-out) var(--ease-travel) both;
+}
+
+::view-transition-new(root) {
+  animation: vt-page-in var(--vt-in) var(--ease-travel) var(--vt-in-delay) both;
+}
+
+@keyframes vt-page-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes vt-page-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
+/* ── The wordmark ──────────────────────────────────────────────────────────
+   The masthead doesn't dissolve with the rest of it. The landing page's big
+   serif "Marxist.info" travels right and shrinks into the platform's header
+   bar, its red rule going with it, so there is one thing to hold on to while
+   everything behind changes. Named groups paint above the root, which is why
+   the lettering stays legible straight through the dark middle of the fade.
+
+   The pairing is set where each one is styled: src/views/LandingPage.css and
+   src/components/Header.css.ts. Both ends of a pair must carry the same
+   view-transition-name, and no page may render it twice.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+::view-transition-group(site-wordmark),
+::view-transition-group(site-rule),
+::view-transition-old(site-wordmark),
+::view-transition-new(site-wordmark),
+::view-transition-old(site-rule),
+::view-transition-new(site-rule) {
+  animation-duration: var(--vt-morph);
+  animation-timing-function: var(--ease-travel);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(site-wordmark),
+  ::view-transition-group(site-rule),
+  ::view-transition-old(site-wordmark),
+  ::view-transition-new(site-wordmark),
+  ::view-transition-old(site-rule),
+  ::view-transition-new(site-rule) {
+    animation: none;
+  }
+}

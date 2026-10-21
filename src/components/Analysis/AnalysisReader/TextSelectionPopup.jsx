@@ -148,7 +148,7 @@ const TextSelectionPopup = ({
             className="absolute z-50 transform -translate-x-1/2 -translate-y-full"
             style={{ left: position.x, top: position.y }}
         >
-            <div className="bg-gray-900 border border-gray-700 rounded-lg shadow-xl overflow-hidden">
+            <div className="bg-gray-900 border border-gray-700 rounded-none shadow-none overflow-hidden">
                 {/* Main Actions */}
                 {!showColorPicker && !showCommentInput && (
                     <div className="flex items-center gap-1 p-1">

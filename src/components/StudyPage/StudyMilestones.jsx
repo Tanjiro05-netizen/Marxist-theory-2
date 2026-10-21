@@ -71,8 +71,8 @@ const StudyMilestones = ({ milestones = [], userProgress = {}, loading = false, 
         {milestones.map((milestone) => {
           const isCompleted = userProgress[milestone.id]?.completed === true;
           const milestoneState = isCompleted ? "completed" : "pending";
-          const title = milestone.chinese_title || milestone.title;
-          const subtitle = milestone.chinese_title ? milestone.title : (milestone.description || "No description available yet.");
+          const title = milestone.title;
+          const subtitle = milestone.description || "No description available yet.";
 
           return (
             <div key={milestone.id} className={styles.milestoneRow}>

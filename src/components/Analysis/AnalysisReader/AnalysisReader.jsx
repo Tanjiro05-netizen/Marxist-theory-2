@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { usePathname, useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Loader2, ArrowLeft, Users, MessageSquare, Bookmark, Highlighter, Link2, BarChart3, Trash2, BookOpen } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { supabase } from '../../../supabaseClient';
@@ -16,20 +16,55 @@ import TextSelectionPopup from './TextSelectionPopup';
 import { SectionComments } from '../AnalysisComments';
 import { TextAnalysisPanel, CrossReferencesPanel } from '../AnalysisTools';
 import useCrossReferences from '../hooks/useCrossReferences';
+import GlossaryPopup from '../../GlossaryPopup';
+import { buildGlossaryIndex } from './glossifyHtml';
+import * as rs from './AnalysisReader.css.ts';
 
 const AnalysisReader = () => {
     const { slug } = useParams();
-    const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const { isAdmin } = useAuth();
     const [viewMode, setViewMode] = useState(searchParams.get('mode') === 'read' ? 'reading' : 'analysis');
     const isReadingMode = viewMode === 'reading';
+    const [glossaryIndex, setGlossaryIndex] = useState(null);
+    const [glossaryTerm, setGlossaryTerm] = useState(null);
+    const glossaryLookupRef = useRef(null);
+
+    /* Glossary layer — fetch once, index the terms, annotate every section */
+    useEffect(() => {
+        let cancelled = false;
+        const fetchGlossary = async () => {
+            try {
+                const { data, error } = await supabase.from('glossary').select('term, type, explanation, url');
+                if (error || cancelled || !Array.isArray(data)) return;
+                const index = buildGlossaryIndex(data);
+                glossaryLookupRef.current = index?.byLower || null;
+                setGlossaryIndex(index);
+            } catch (err) {
+                console.error('Error fetching glossary:', err);
+            }
+        };
+        fetchGlossary();
+        return () => { cancelled = true; };
+    }, []);
+
+    const handleGlossaryClick = useCallback((event) => {
+        const target = event.target.closest?.('.ar-gloss-term');
+        if (!target) return;
+        const key = target.getAttribute('data-gloss-term')?.toLowerCase();
+        const entry = key ? glossaryLookupRef.current?.get(key) : null;
+        if (entry) setGlossaryTerm(entry);
+    }, []);
 
     const toggleViewMode = useCallback(() => {
         const newMode = isReadingMode ? 'analysis' : 'reading';
         setViewMode(newMode);
-        setSearchParams(newMode === 'reading' ? { mode: 'read' } : {}, { replace: true });
-    }, [isReadingMode, setSearchParams]);
+        const next = new URLSearchParams();
+        if (newMode === 'reading') next.set('mode', 'read');
+        router.replace(next.toString() ? `${pathname}?${next.toString()}` : pathname);
+    }, [isReadingMode, pathname, router]);
     const {
         text,
         loading,
@@ -169,7 +204,7 @@ const AnalysisReader = () => {
                 .eq('id', text.id);
             
             if (deleteError) throw deleteError;
-            navigate('/analysis');
+            router.push('/analysis');
         } catch (err) {
             console.error('Error deleting text:', err);
             alert('Failed to delete text: ' + err.message);
@@ -178,23 +213,22 @@ const AnalysisReader = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center">
-                <Loader2 className="w-12 h-12 text-red-500 animate-spin" />
+            <div className={rs.loadingWrap}>
+                <Loader2 className="w-12 h-12 animate-spin text-[color:var(--red-bright)]" />
             </div>
         );
     }
 
     if (error || !text) {
         return (
-            <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white">
-                <h2 className="text-2xl font-bold mb-4">Text Not Found</h2>
-                <p className="text-gray-400 mb-6">{error || 'The requested text could not be loaded.'}</p>
-                <button
-                    onClick={() => navigate('/analysis')}
-                    className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
-                >
-                    Back to Analysis
-                </button>
+            <div className={rs.page}>
+                <div className={rs.errorWrap}>
+                    <h2 className={rs.errorTitle}>Text Not Found</h2>
+                    <p className={rs.errorText}>{error || 'The requested text could not be loaded.'}</p>
+                    <button onClick={() => router.push('/analysis')} className={rs.errorLink}>
+                        Back to Analysis
+                    </button>
+                </div>
             </div>
         );
     }
@@ -208,14 +242,14 @@ const AnalysisReader = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className={rs.page}>
             <ReadingProgress />
 
             {/* Back button and admin delete */}
             <div className="fixed top-20 left-4 z-30 flex gap-2">
                 <button
-                    onClick={() => navigate('/analysis')}
-                    className="p-2 bg-gray-800/80 hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-2 text-sm"
+                    onClick={() => router.push('/analysis')}
+                    className="p-2 border border-[color:var(--line)] bg-[color:var(--ink)] hover:border-[color:var(--red-bright)] transition-colors flex items-center gap-2 text-sm text-[color:var(--paper-dim)]"
                 >
                     <ArrowLeft size={18} />
                     <span className="hidden md:inline">Back</span>
@@ -223,7 +257,7 @@ const AnalysisReader = () => {
                 {isAdmin && isAdmin() && (
                     <button
                         onClick={handleDeleteText}
-                        className="p-2 bg-gray-800/80 hover:bg-red-600 rounded-lg transition-colors flex items-center gap-2 text-sm text-gray-400 hover:text-white"
+                        className="p-2 border border-[color:var(--line)] bg-[color:var(--ink)] hover:border-[color:var(--red-bright)] transition-colors flex items-center gap-2 text-sm text-[color:var(--paper-dim)] hover:text-[color:var(--red-bright)]"
                         title="Delete this text"
                     >
                         <Trash2 size={18} />
@@ -232,41 +266,29 @@ const AnalysisReader = () => {
                 )}
             </div>
 
-            {/* Main 3-column layout */}
-            <div className="container mx-auto px-4 pt-24 pb-16">
-                {/* Mode indicator banner */}
-                <div className={`flex items-center justify-between mb-4 px-4 py-2.5 rounded-xl ${
-                    isReadingMode
-                        ? 'bg-emerald-900/30 border border-emerald-700/40'
-                        : 'bg-red-900/25 border border-red-700/30'
-                }`}>
+            <div className={rs.stage}>
+                {/* Mode strip */}
+                <div className={rs.modeStrip}>
                     <div className="flex items-center gap-2">
                         {isReadingMode ? (
-                            <>
-                                <BookOpen size={16} className="text-emerald-400" />
-                                <span className="text-sm font-medium text-emerald-300">Reading Mode</span>
-                                <span className="text-xs text-emerald-500/70 hidden sm:inline">— focused, distraction-free reading</span>
-                            </>
+                            <BookOpen size={15} className={rs.modeLabel} />
                         ) : (
-                            <>
-                                <BarChart3 size={16} className="text-red-400" />
-                                <span className="text-sm font-medium text-red-300">Analysis Mode</span>
-                                <span className="text-xs text-red-500/70 hidden sm:inline">— comments, highlights, cross-references & deep analysis</span>
-                            </>
+                            <BarChart3 size={15} className={rs.modeLabel} />
                         )}
+                        <span className={rs.modeLabel}>{isReadingMode ? 'Reading Mode' : 'Analysis Mode'}</span>
+                        <span className={rs.modeNote}>
+                            {isReadingMode ? '— focused, distraction-free reading' : '— comments, highlights, cross-references & deep analysis'}
+                        </span>
                     </div>
-                    <button
-                        onClick={toggleViewMode}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-700/60 text-gray-300 hover:bg-gray-600 hover:text-white transition-colors"
-                    >
-                        {isReadingMode ? <><BarChart3 size={14} /> Switch to Analysis</> : <><BookOpen size={14} /> Switch to Reading</>}
+                    <button onClick={toggleViewMode} className={rs.modeToggle}>
+                        {isReadingMode ? <><BarChart3 size={13} /> Switch to Analysis</> : <><BookOpen size={13} /> Switch to Reading</>}
                     </button>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div className={`${rs.stageGrid} ${isReadingMode ? rs.readingGrid : rs.analysisGrid}`}>
                     {/* Left Sidebar - TOC */}
-                    <aside className="hidden lg:block lg:col-span-3">
-                        <div className="sticky top-24">
+                    <aside className={rs.sideRail}>
+                        <div className={rs.sticky}>
                             <TableOfContents
                                 items={tableOfContents}
                                 activeSection={activeSection}
@@ -274,14 +296,14 @@ const AnalysisReader = () => {
                             />
 
                             {/* Active viewers - analysis mode only */}
-                            {!isReadingMode && <div className="mt-4 p-4 bg-gray-900/50 rounded-xl">
-                                <h4 className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
+                            {!isReadingMode && <div className="mt-4 p-4 border border-[color:var(--line-soft)]">
+                                <h4 className="text-sm font-medium text-[color:var(--paper-dim)] mb-2 flex items-center gap-2">
                                     <Users size={14} />
                                     Active Readers ({activeUsers.length + 1})
                                 </h4>
                                 <div className="flex -space-x-2">
-                                    <div 
-                                        className="w-8 h-8 rounded-full bg-red-600 border-2 border-gray-900 flex items-center justify-center text-xs font-medium"
+                                    <div
+                                        className="w-8 h-8 rounded-full bg-[color:var(--red)] border-2 border-[color:var(--ink)] flex items-center justify-center text-xs font-medium"
                                         title="You"
                                     >
                                         You
@@ -289,7 +311,7 @@ const AnalysisReader = () => {
                                     {activeUsers.map((user) => (
                                         <div
                                             key={user.id}
-                                            className="w-8 h-8 rounded-full bg-gray-700 border-2 border-gray-900 flex items-center justify-center text-xs overflow-hidden"
+                                            className="w-8 h-8 rounded-full bg-[color:var(--ink-3)] border-2 border-[color:var(--ink)] flex items-center justify-center text-xs overflow-hidden"
                                             title={`${user.username}${user.section_id ? ` (§${user.section_id})` : ''}`}
                                         >
                                             {user.avatar_url ? (
@@ -305,7 +327,7 @@ const AnalysisReader = () => {
                     </aside>
 
                     {/* Main Content */}
-                    <main className={isReadingMode ? 'lg:col-span-9' : 'lg:col-span-6'}>
+                    <main className={rs.column}>
                         <TextMetadata
                             metadata={metadata}
                             currentLanguage={currentLanguage}
@@ -314,7 +336,7 @@ const AnalysisReader = () => {
                         />
 
                         {/* Sections */}
-                        <div ref={contentRef} className="bg-gray-900/30 rounded-2xl p-6 md:p-8 relative">
+                        <div ref={contentRef} className={rs.content} onClick={handleGlossaryClick}>
                             <TextSelectionPopup
                                 containerRef={contentRef}
                                 onHighlight={handleSelectionHighlight}
@@ -336,6 +358,7 @@ const AnalysisReader = () => {
                                         onBookmarkClick={handleBookmarkClick}
                                         onCrossRefClick={handleCrossRefClick}
                                         readingMode={isReadingMode}
+                                        glossaryIndex={glossaryIndex}
                                     />
                                 );
                             })}
@@ -343,28 +366,24 @@ const AnalysisReader = () => {
                     </main>
 
                     {/* Right Sidebar - Tools (analysis mode only) */}
-                    {!isReadingMode && <aside className="hidden lg:block lg:col-span-3">
-                        <div className="sticky top-24">
+                    {!isReadingMode && <aside className={rs.sideRail}>
+                        <div className={rs.sticky}>
                             {/* Tab Navigation */}
-                            <div className="flex flex-wrap gap-1 mb-4 bg-gray-900/50 rounded-xl p-2">
+                            <div className={rs.railTabs}>
                                 {tabs.map((tab) => (
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
-                                        className={`flex-1 min-w-[60px] p-2 rounded-lg text-xs font-medium transition-colors flex flex-col items-center gap-1
-                                            ${activeTab === tab.id
-                                                ? 'bg-red-600 text-white'
-                                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                                            }`}
+                                        className={`${rs.railTab} ${activeTab === tab.id ? rs.railTabActive : ''}`}
                                     >
                                         <tab.icon size={16} />
-                                        <span className="hidden xl:inline">{tab.label}</span>
+                                        <span>{tab.label}</span>
                                     </button>
                                 ))}
                             </div>
 
                             {/* Tab Content */}
-                            <div className="bg-gray-900/50 rounded-xl p-4 min-h-[400px] max-h-[calc(100vh-280px)] overflow-y-auto">
+                            <div className={`${rs.railPanel} max-h-[calc(100vh-280px)] overflow-y-auto`}>
                                 {activeTab === 'comments' && (
                                     <div>
                                         {filterSection && (
@@ -408,7 +427,7 @@ const AnalysisReader = () => {
                                                     <button
                                                         key={bookmark.id}
                                                         onClick={() => scrollToSection(bookmark.section_id)}
-                                                        className="w-full text-left p-3 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-colors"
+                                                        className="w-full text-left p-3 bg-gray-800/50 hover:bg-gray-800 rounded-none transition-colors"
                                                     >
                                                         <div className="text-sm text-white">§{bookmark.section_id}</div>
                                                         {bookmark.note && (
@@ -437,8 +456,8 @@ const AnalysisReader = () => {
                                                 {highlights.map(highlight => (
                                                     <div
                                                         key={highlight.id}
-                                                        className="p-3 bg-gray-800/50 rounded-lg border-l-4"
-                                                        style={{ borderColor: highlight.color === 'yellow' ? '#facc15' : highlight.color === 'green' ? '#22c55e' : highlight.color === 'blue' ? '#3b82f6' : highlight.color === 'pink' ? '#ec4899' : '#f97316' }}
+                                                        className="p-3 bg-gray-800/50 rounded-none border-l-4"
+                                                        style={{ borderColor: highlight.color === 'yellow' ? '#facc15' : highlight.color === 'green' ? '#2d8a4e' : highlight.color === 'blue' ? '#4a7fb5' : highlight.color === 'pink' ? '#d41f3d' : '#c8860a' }}
                                                     >
                                                         <p className="text-sm text-gray-300 italic">"{highlight.selected_text}"</p>
                                                         <div className="flex items-center justify-between mt-2">
@@ -481,8 +500,8 @@ const AnalysisReader = () => {
             </div>
 
             {/* Mobile Bottom Navigation (analysis mode only) */}
-            {!isReadingMode && <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 z-40">
-                <div className="flex justify-around p-2">
+            {!isReadingMode && <div className={rs.mobileBar}>
+                <div className="flex justify-around w-full p-1">
                     {tabs.slice(0, 4).map((tab) => (
                         <button
                             key={tab.id}
@@ -490,14 +509,16 @@ const AnalysisReader = () => {
                                 setActiveTab(tab.id);
                                 setSidebarOpen(true);
                             }}
-                            className={`p-3 rounded-lg transition-colors
-                                ${activeTab === tab.id ? 'text-red-500' : 'text-gray-400'}`}
+                            className={`${rs.mobileBarBtn} ${activeTab === tab.id ? rs.mobileBarBtnActive : ''}`}
                         >
                             <tab.icon size={20} />
                         </button>
                     ))}
                 </div>
             </div>}
+
+            {/* Glossary popup — opened by clicking an annotated term */}
+            <GlossaryPopup term={glossaryTerm} onClose={() => setGlossaryTerm(null)} />
         </div>
     );
 };

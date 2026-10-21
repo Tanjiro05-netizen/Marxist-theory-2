@@ -10,7 +10,7 @@ const GlossaryPopup = ({ term, onClose }) => {
             onClick={onClose}
         >
             <div 
-                className="bg-gray-900 border border-red-500/30 rounded-lg shadow-2xl w-full max-w-2xl m-4 relative p-8 transform transition-all duration-300 ease-out scale-95 animate-scaleIn"
+                className="bg-gray-900 border border-red-500/30 rounded-none shadow-none w-full max-w-2xl m-4 relative p-8 transform transition-all duration-300 ease-out scale-95 animate-scaleIn"
                 onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
             >
                 <button 

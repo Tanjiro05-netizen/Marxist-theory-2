@@ -1,18 +1,32 @@
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+
+/* Fonts are self-hosted via next/font in app/layout.jsx (variables on <html>,
+   consumed as --ff-* in theme.css). The theme itself is the data-theme
+   attribute on <html>, set before first paint by the inline script there and
+   flipped by ThemeToggle. This provider mirrors that attribute into React so
+   components can read or set it; it never overrides it. */
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-    const theme = 'dark';
+    const [theme, setThemeState] = useState('dark');
 
     useEffect(() => {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        document.body.classList.add('dark-theme');
-        document.body.classList.remove('light-theme');
+        const el = document.documentElement;
+        const sync = () => setThemeState(el.dataset.theme === 'light' ? 'light' : 'dark');
+        sync();
+        const observer = new MutationObserver(sync);
+        observer.observe(el, { attributes: true, attributeFilter: ['data-theme'] });
+        return () => observer.disconnect();
     }, []);
 
+    const setTheme = (next) => {
+        document.documentElement.dataset.theme = next === 'light' ? 'light' : 'dark';
+        try { localStorage.setItem('theme', next === 'light' ? 'light' : 'dark'); } catch { /* private mode */ }
+    };
+
     return (
-        <ThemeContext.Provider value={{ theme }}>
+        <ThemeContext.Provider value={{ theme, setTheme }}>
             {children}
         </ThemeContext.Provider>
     );

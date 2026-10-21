@@ -243,6 +243,17 @@ export const forumApiService = {
 
   // ── Bookmarks ────────────────────────────────────────────
 
+  async getBookmarks(userId) {
+    const { data, error } = await supabase
+      .from('forum_bookmarks')
+      .select('id, created_at, thread:forum_threads!thread_id(*, author:profiles!author_id(' + AUTHOR_SELECT + '))')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return data || []
+  },
+
   async getUserBookmarkIds(userId) {
     const { data, error } = await supabase
       .from('forum_bookmarks')

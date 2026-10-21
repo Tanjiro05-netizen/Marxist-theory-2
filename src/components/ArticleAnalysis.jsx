@@ -5,6 +5,7 @@ import { Pack } from '@visx/hierarchy';
 import { hierarchy } from '@visx/hierarchy';
 import { scaleOrdinal } from '@visx/scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
+import { sanitizeRichHtml } from '../lib/sanitize-html.js';
 
 const ArticleAnalysis = ({ articleId, articleContent, onJumpToText }) => {
     const [keywords, setKeywords] = useState([]);
@@ -118,16 +119,16 @@ const ArticleAnalysis = ({ articleId, articleContent, onJumpToText }) => {
     }, [namedEntities]);
 
     return (
-        <div className="p-4 bg-gray-900/50 rounded-lg text-white">
+        <div className="p-4 bg-gray-900/50 rounded-none text-white">
             <h3 className="text-xl font-bold mb-4 text-red-400">Textual Analysis</h3>
-            {error && <p className="text-red-500 bg-red-900/50 p-3 rounded-md mb-4">{error}</p>}
+            {error && <p className="text-red-500 bg-red-900/50 p-3 rounded-none mb-4">{error}</p>}
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Left Column: Bubble Chart */}
                 <div>
                     <h4 className="text-lg font-semibold mb-2">Keyword Graph</h4>
                     <p className="text-sm text-gray-400 mb-4">Most frequent words. Bubble size indicates frequency. Click a bubble to see its context.</p>
-                    <div className="bg-black/20 rounded-lg p-2 h-[400px] w-full relative">
+                    <div className="bg-black/20 rounded-none p-2 h-[400px] w-full relative">
                         {isLoadingKeywords ? (
                             <div className="flex justify-center items-center h-full"><Loader2 className="animate-spin h-8 w-8" /></div>
                         ) : packData ? (
@@ -147,7 +148,7 @@ const ArticleAnalysis = ({ articleId, articleContent, onJumpToText }) => {
                                                     <circle
                                                         r={circle.r}
                                                         fill={colorScale(circle.data.text)}
-                                                        stroke={selectedWord === circle.data.text ? '#ef4444' : '#fff'}
+                                                        stroke={selectedWord === circle.data.text ? '#d41f3d' : '#fff'}
                                                         strokeWidth={selectedWord === circle.data.text ? 3 : 1}
                                                         fillOpacity={0.8}
                                                     />
@@ -175,7 +176,7 @@ const ArticleAnalysis = ({ articleId, articleContent, onJumpToText }) => {
                 {/* Right Column: Concordance */}
                 <div>
                     <h4 className="text-lg font-semibold mb-2">Concordance (Keywords in Context)</h4>
-                    <div className="bg-black/20 p-4 rounded-lg h-[400px]">
+                    <div className="bg-black/20 p-4 rounded-none h-[400px]">
                         {isLoadingConcordance ? (
                             <div className="flex justify-center items-center h-full"><Loader2 className="animate-spin h-8 w-8" /></div>
                         ) : selectedWord ? (
@@ -186,9 +187,12 @@ const ArticleAnalysis = ({ articleId, articleContent, onJumpToText }) => {
                                         concordance.sentences.map((sentence, i) => (
                                             <li 
                                                 key={i} 
-                                                className="text-gray-300 cursor-pointer hover:bg-gray-800/50 p-1 rounded-md transition-colors"
+                                                className="text-gray-300 cursor-pointer hover:bg-gray-800/50 p-1 rounded-none transition-colors"
                                                 onClick={() => onJumpToText && onJumpToText(sentence)}
-                                                dangerouslySetInnerHTML={{ __html: sentence.replace(new RegExp(`\b(${concordance.word})\b`, 'gi'), '<strong class="text-red-400 font-bold">$1</strong>') }}>
+                                                dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(sentence).replace(
+                                                    new RegExp(`\\b(${`${concordance.word || ''}`.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\b`, 'gi'),
+                                                    '<strong class="text-red-400 font-bold">$1</strong>'
+                                                ) }}>
                                             </li>
                                         ))
                                     ) : (
@@ -209,7 +213,7 @@ const ArticleAnalysis = ({ articleId, articleContent, onJumpToText }) => {
             <div className="mt-8">
                 <h4 className="text-lg font-semibold mb-2">Named-Entity Recognition</h4>
                 <p className="text-sm text-gray-400 mb-4">Identified people, organizations, places, and other entities.</p>
-                <div className="bg-black/20 rounded-lg p-4 min-h-[200px]">
+                <div className="bg-black/20 rounded-none p-4 min-h-[200px]">
                     {isLoadingNER ? (
                         <div className="flex justify-center items-center h-full"><Loader2 className="animate-spin h-8 w-8" /></div>
                     ) : Object.keys(groupedEntities).length > 0 ? (

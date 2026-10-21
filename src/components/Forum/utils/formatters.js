@@ -1,19 +1,12 @@
+import i18n from '../../../i18n'
+
 export function formatDate(date, includeTime = true) {
   const d = new Date(date)
-  
-  const year = d.getFullYear()
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  
-  if (!includeTime) {
-    return `${year}-${month}-${day}`
-  }
-  
-  const hours = String(d.getHours()).padStart(2, '0')
-  const minutes = String(d.getMinutes()).padStart(2, '0')
-  const seconds = String(d.getSeconds()).padStart(2, '0')
-  
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+  const locale = i18n.resolvedLanguage || i18n.language || 'en'
+  return new Intl.DateTimeFormat(locale, includeTime
+    ? { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }
+    : { year: 'numeric', month: '2-digit', day: '2-digit' }
+  ).format(d)
 }
 
 export function formatRelativeTime(date) {
@@ -25,10 +18,13 @@ export function formatRelativeTime(date) {
   const diffHours = Math.floor(diffMinutes / 60)
   const diffDays = Math.floor(diffHours / 24)
   
-  if (diffSeconds < 60) return 'just now'
-  if (diffMinutes < 60) return `${diffMinutes}m ago`
-  if (diffHours < 24) return `${diffHours}h ago`
-  if (diffDays < 7) return `${diffDays}d ago`
+  const locale = i18n.resolvedLanguage || i18n.language || 'en'
+  const relative = new Intl.RelativeTimeFormat(locale, { numeric: 'auto', style: 'narrow' })
+
+  if (diffSeconds < 60) return relative.format(0, 'second')
+  if (diffMinutes < 60) return relative.format(-diffMinutes, 'minute')
+  if (diffHours < 24) return relative.format(-diffHours, 'hour')
+  if (diffDays < 7) return relative.format(-diffDays, 'day')
   
   return formatDate(date, false)
 }

@@ -1,79 +1,70 @@
 import React from 'react';
-import { Search, Bell, MessageSquare, Zap } from 'lucide-react';
+import { Search, Zap } from 'lucide-react';
+import Link from 'next/link';
 
-const KnowledgeLayout = ({ children, sidebar, widgets }) => {
+const KnowledgeLayout = ({ children, sidebar, widgets, searchQuery = '', onSearchChange }) => {
   return (
-    <div className="min-h-screen bg-[#12131A] text-slate-300 font-sans selection:bg-red-500/30 selection:text-white">
-      
+    <div className="min-h-screen bg-[#0b0d12] text-white font-[Outfit,sans-serif] selection:bg-[rgba(179, 18, 46,0.3)] selection:text-white">
+
       {/* --- Action Toolbar (Sub-Header) --- */}
-      <div className="sticky top-16 z-40 bg-[#12131A]/95 backdrop-blur border-b border-gray-800 py-2 mb-4 shadow-lg shadow-black/20">
-        <div className="w-full max-w-[1600px] mx-auto px-3 md:px-4 flex items-center justify-between gap-3 md:gap-4">
-           {/* Branding / Breadcrumb */}
-           <div className="hidden md:flex items-center gap-2 text-sm font-medium text-slate-400 shrink-0">
-              <span className="text-red-500 font-bold tracking-tight">KNOWLEDGE<span className="text-[10px] text-slate-500 ml-0.5">BASE</span></span>
-              <span className="text-slate-600">/</span>
-              <span className="text-slate-200">Feed</span>
-           </div>
+      <div className="sticky top-16 z-40 bg-[#0b0d12]/95 backdrop-blur border-b border-white/[0.06] py-2.5 mb-6 shadow-[0_1px_0_rgba(255,255,255,0.04)]">
+        <div className="w-full max-w-[1380px] mx-auto px-4 md:px-6 flex items-center justify-between gap-3 md:gap-4">
 
-           {/* Search Bar - Wider & Central */}
-           <div className="flex-1 max-w-3xl relative group">
-              <input 
-                type="text" 
-                placeholder="Search the knowledge database..." 
-                className="w-full bg-gray-800 border border-gray-700 rounded-sm px-4 py-2 pl-10 text-xs focus:outline-none focus:border-red-500/50 transition-all text-slate-200 placeholder-slate-600 shadow-inner"
-              />
-              <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-500 group-focus-within:text-red-500 transition-colors" />
-              <div className="absolute right-2 top-2 text-[10px] bg-red-600/20 text-red-400 px-2 py-0.5 rounded border border-red-600/30 hidden sm:block cursor-pointer hover:bg-red-600/30 transition-colors">
-                Ask AI
-              </div>
-           </div>
+          {/* Eyebrow / Breadcrumb */}
+          <div className="hidden md:flex flex-col shrink-0">
+            <span className="font-[JetBrains_Mono,monospace] text-[9px] uppercase tracking-[0.16em] text-[#b3122e] opacity-70">
+              Knowledge Q&amp;A
+            </span>
+            <span className="text-[11px] text-white/40 leading-none mt-0.5">Community knowledge base</span>
+          </div>
 
-           {/* Actions */}
-           <div className="flex items-center gap-2 md:gap-4 shrink-0">
-             <button className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white px-3 md:px-5 py-1.5 rounded-sm text-xs font-bold shadow-[0_0_15px_rgba(220,38,38,0.3)] transition-all hover:shadow-[0_0_20px_rgba(255,42,42,0.5)] border border-red-500/20">
-                <Zap className="w-3.5 h-3.5" />
-                <span className="hidden md:inline">Ask Question</span>
-             </button>
-             
-             <div className="h-6 w-[1px] bg-white/10"></div>
+          {/* Search Bar */}
+          <div className="flex-1 max-w-2xl relative group">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => onSearchChange?.(e.target.value)}
+              placeholder="Search questions and answers..."
+              className="w-full bg-[#10131b] border border-white/[0.06] rounded-none px-4 py-2 pl-9 text-xs focus:outline-none focus:border-[rgba(179, 18, 46,0.4)] transition-all duration-200 text-white/80 placeholder-white/25 font-[Outfit,sans-serif]"
+            />
+            <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-white/25 group-focus-within:text-[#b3122e] transition-colors" />
+          </div>
 
-             <div className="flex items-center gap-4 text-slate-400">
-               <button className="hover:text-white transition-colors relative p-1">
-                 <Bell className="w-4 h-4" />
-                 <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-red-400 rounded-full shadow-[0_0_5px_rgba(248,113,113,0.8)]"></span>
-               </button>
-               <button className="hover:text-white transition-colors p-1">
-                 <MessageSquare className="w-4 h-4" />
-               </button>
-             </div>
-           </div>
+          {/* Ask Question CTA */}
+          <Link href="/knowledge/ask"
+            className="flex items-center gap-2 bg-[#b3122e] hover:bg-[#d41f3d] text-white px-4 md:px-5 py-2 rounded-none text-[11px] font-[JetBrains_Mono,monospace] uppercase tracking-[0.08em] shadow-[0_0_20px_rgba(179, 18, 46,0.22)] transition-all hover:shadow-[0_0_28px_rgba(179, 18, 46,0.38)] shrink-0"
+          >
+            <Zap className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Ask Question</span>
+          </Link>
         </div>
       </div>
 
       {/* --- Main Content Grid --- */}
-      <div className="w-full max-w-[1600px] mx-auto px-3 md:px-4 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 pb-12 items-start">
-        
-        {/* Left Sidebar (Dense Nav) */}
-        <div className="hidden md:block md:col-span-3 xl:col-span-2 sticky top-36 h-fit space-y-2">
-           {sidebar}
+      <div className="w-full max-w-[1380px] mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 pb-16 items-start">
+
+        {/* Left Sidebar */}
+        <div className="hidden md:block md:col-span-3 xl:col-span-2 sticky top-36 h-fit space-y-3">
+          {sidebar}
         </div>
 
-        {/* Center Feed (Dense) */}
+        {/* Center Feed */}
         <main className="md:col-span-9 xl:col-span-7 min-h-0 space-y-4">
           {children}
         </main>
 
-        {/* Right Sidebar (Widgets) */}
+        {/* Right Widgets */}
         <aside className="hidden xl:block xl:col-span-3 space-y-4 sticky top-36 h-fit">
           {widgets}
         </aside>
       </div>
-      
-      {/* Floating Action Button (Mobile) */}
-      <button className="md:hidden fixed bottom-6 right-6 bg-red-600 text-white p-4 rounded-full shadow-lg shadow-red-600/40 z-50 border border-white/20 hover:scale-105 transition-transform">
-        <Zap className="w-6 h-6" />
-      </button>
 
+      {/* Mobile FAB */}
+      <Link href="/knowledge/ask"
+        className="md:hidden fixed bottom-6 right-6 bg-[#b3122e] hover:bg-[#d41f3d] text-white p-4 rounded-full shadow-[0_4px_24px_rgba(179, 18, 46,0.4)] z-50 transition-all hover:scale-105"
+      >
+        <Zap className="w-5 h-5" />
+      </Link>
     </div>
   );
 };

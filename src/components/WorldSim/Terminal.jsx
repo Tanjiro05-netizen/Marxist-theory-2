@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bot, HelpCircle, Plus, Save, Trash2, X, ExternalLink } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import './worldsim.css';
 
 const Terminal = ({ 
@@ -19,7 +19,7 @@ const Terminal = ({
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [showMarxBotTooltip, setShowMarxBotTooltip] = useState(false);
-  const marxBotNavigate = useNavigate();
+  const router = useRouter();
   const [customInput, setCustomInput] = useState('');
   const outputRef = useRef(null);
   const inputRef = useRef(null);
@@ -139,7 +139,7 @@ const Terminal = ({
               />
             </button>
             <button
-              onClick={() => marxBotNavigate('/marxbot')}
+              onClick={() => router.push('/marxbot')}
               className="flex items-center gap-1 text-xs text-phosphor-dim hover:text-phosphor font-mono whitespace-nowrap transition-colors"
               title="Open MarxBot page"
             >

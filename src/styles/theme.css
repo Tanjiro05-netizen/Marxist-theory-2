@@ -1,48 +1,289 @@
-/* Theme variables */
+/* Font indirection: next/font variables set on <html> (see app/layout.jsx),
+   falling back to the original families if unavailable. */
 :root {
-  /* Dark theme (default) */
-  --bg-primary: #12131A;
+  --ff-display: var(--font-cormorant, 'Cormorant Garamond');
+  --ff-body: var(--font-newsreader, 'Newsreader');
+  --ff-label: var(--font-outfit, 'Outfit');
+  --ff-mono: var(--font-jetbrains, 'JetBrains Mono');
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   theme.css — global tokens & base
+   Ink page, warm paper text, crimson accent, hairline rules, paper navband.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Ink ladder */
+  --ink: #0b0d12;
+  --ink-2: #10131b;
+  --ink-3: #151924;
+
+  /* Hairlines */
+  --line: #262a35;
+  --line-soft: #1c202b;
+
+  /* Warm paper text ramp */
+  --paper: #ece9e0;
+  --paper-soft: #c9c5b8;
+  --paper-dim: #a5a194;
+  --paper-faint: #6f6c61;
+
+  /* Crimson — deep oxblood, a shade darker than the reference sites' bright red */
+  --red: #9b1022;
+  --red-bright: #c11730;
+
+  /* Paper band (the inverted navband) & sand accent */
+  --paper-band: #f4f2ec;
+  --band-ink: #14161d;
+  --sand: #d8c79f;
+
+  /* ── Motion ───────────────────────────────────────────────────────────────
+     One vocabulary for time and easing. These are deliberately few: before
+     this, 23 different durations and ~330 bare `ease` keywords were each
+     deciding for themselves, and the result read as noise rather than a
+     house style.
+
+     Reach for a duration by what is moving, not by how long you want it:
+       micro    a state change in place — colour, opacity, a small nudge
+       element  something that changes size or travels across its container
+       place    the page itself changing (see styles/view-transitions.css)
+       spin     one turn of a looping indicator
+
+     Both curves are ease-out: things should leave quickly and arrive gently.
+       standard  the default, and what the site had already settled on
+       travel    symmetric, for something crossing the screen and back
+
+     These are not theme-dependent — motion stays the same in light and dark,
+     so they live here and not in the per-theme blocks below. Plain CSS and
+     vanilla-extract both read them as var(--dur-micro) etc.; there is no
+     second spelling to keep in step.
+     ───────────────────────────────────────────────────────────────────── */
+  --dur-micro: 160ms;
+  --dur-element: 300ms;
+  --dur-place: 860ms;
+  --dur-spin: 800ms;
+
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-travel: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Legacy aliases — kept so older references resolve to the new palette */
+  --bg-primary: var(--ink);
   --bg-secondary: rgba(0, 0, 0, 0.3);
-  --text-primary: #ffffff;
-  --text-secondary: #d1d5db; /* gray-300 */
-  --text-tertiary: #9ca3af; /* gray-400 */
-  --accent-primary: #dc2626; /* red-600 */
-  --accent-secondary: rgba(220, 38, 38, 0.2); /* red-600 with opacity */
-  --border-color: rgba(185, 28, 28, 0.3); /* red-900 with opacity */
+  --text-primary: var(--paper);
+  --text-secondary: var(--paper-dim);
+  --text-tertiary: var(--paper-faint);
+  --accent-primary: var(--red);
+  --accent-secondary: rgba(155, 16, 34, 0.2);
+  --border-color: rgba(155, 16, 34, 0.3);
 }
 
-/* Apply theme to common elements */
+/* ── Light mode — the same warm palette, printed the other way up.
+   Set by the pre-paint script on <html data-theme="light">. ── */
+html[data-theme='light'] {
+  color-scheme: light;
+
+  /* Ink ladder becomes the paper ground */
+  --ink: #f3f0e7;
+  --ink-2: #faf8f2;
+  --ink-3: #e9e5d8;
+
+  /* Hairlines darken */
+  --line: #c8c1af;
+  --line-soft: #e2dccd;
+
+  /* Text becomes ink */
+  --paper: #1c1a14;
+  --paper-soft: #453f33;
+  --paper-dim: #6b6455;
+  --paper-faint: #948b76;
+
+  /* The crimson holds; bright red only shifts a step for contrast */
+  --sand: #8a6f3f;
+}
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  /* Reserve the viewport scrollbar's gutter so hiding the scrollbar
+     (scroll-lock behind modals and the nav drawer) never shifts the
+     page sideways. No effect where scrollbars overlay the content. */
+  scrollbar-gutter: stable;
+  /* No horizontal panning, anywhere. `clip` is preferred over `hidden`
+     because it does not turn the element into a scroll container, so
+     position: sticky keeps working. */
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* The grain reads lighter on paper — pull it back */
+html[data-theme='light'] body::after {
+  opacity: 0.03;
+}
+
+@supports not (overflow: clip) {
+  html, body { overflow-x: hidden; }
+}
+
 body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: clip;
 }
 
-/* Additional utility classes */
-.bg-theme-primary {
-  background-color: var(--bg-primary);
+@media (max-width: 1399px) {
+  .language-switcher-trigger,
+  .language-switcher-option {
+    min-height: 44px;
+  }
 }
 
-.bg-theme-secondary {
-  background-color: var(--bg-secondary);
+/* 16px form text avoids Safari's automatic focus zoom without disabling
+   users' own pinch zoom. Do not shrink the entire site to hide overflow. */
+@media (max-width: 768px) {
+  .reading-list-panel { padding-bottom: env(safe-area-inset-bottom); }
+  .reading-list-panel button { min-height: 44px; min-width: 44px; }
+  input:not([type='checkbox']):not([type='radio']), select, textarea {
+    font-size: 16px;
+  }
+  /* Safari's native select skin can ignore min-height. Keep its native
+     picker, but draw the control so the touch target is reliably 44px. */
+  select {
+    -webkit-appearance: none;
+    appearance: none;
+    min-height: 44px;
+    padding-right: 28px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='m2 4 4 4 4-4' fill='none' stroke='%23a5a194' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
 }
 
-.text-theme-primary {
-  color: var(--text-primary);
+body {
+  margin: 0;
+  background-color: var(--ink);
+  color: var(--paper);
+  font-family: var(--ff-body), Georgia, 'Times New Roman', serif;
+  font-weight: 300;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.text-theme-secondary {
-  color: var(--text-secondary);
+/* Fixed grain overlay — the one permitted texture */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.text-theme-tertiary {
-  color: var(--text-tertiary);
+::selection {
+  background: var(--red);
+  color: #fff;
 }
 
-.accent-theme-primary {
-  color: var(--accent-primary);
+/* Reader drop cap — a crimson serif initial on the first paragraph */
+.reader-dropcap > p:first-of-type::first-letter,
+.reader-dropcap > p:first-child::first-letter {
+  font-family: var(--ff-display), Georgia, serif;
+  font-weight: 600;
+  font-size: 3.4em;
+  float: left;
+  line-height: 0.8;
+  padding-right: 0.14em;
+  padding-top: 0.06em;
+  color: var(--red-bright);
 }
 
-.border-theme {
-  border-color: var(--border-color);
+:focus-visible {
+  outline: 2px solid var(--red-bright);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ink);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--red);
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Legacy utility aliases (unused, kept harmless) */
+.bg-theme-primary { background-color: var(--bg-primary); }
+.bg-theme-secondary { background-color: var(--bg-secondary); }
+.text-theme-primary { color: var(--text-primary); }
+.text-theme-secondary { color: var(--text-secondary); }
+.text-theme-tertiary { color: var(--text-tertiary); }
+.accent-theme-primary { color: var(--accent-primary); }
+.border-theme { border-color: var(--border-color); }
+
+/* In-article search highlighting */
+.search-highlight {
+  background-color: rgba(212, 31, 61, 0.35);
+  border-radius: 0;
+}
+.current-search-highlight {
+  background-color: rgba(212, 31, 61, 0.55);
+  border: 1px solid var(--red-bright);
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────────
+   Honoured in one place rather than remembered in each of the 70-odd files
+   that animate something. Every transition collapses to nothing, which covers
+   the ~330 hover, colour and size changes that make up most of the movement
+   here.
+
+   Keyframe animations go the same way, with the one exception carved out of
+   the selector rather than restored after the fact. Everything animated runs
+   for 1ms and once. animation-fill-mode is deliberately left alone, and that
+   is what makes skipping safe: a reveal written with `forwards` or `both`
+   lands on its last frame, so the titles, console lines and chart bars that
+   sit at opacity 0 until their animation puts them right still end up
+   visible. A loop carries no fill mode, so it drops back to its base style —
+   the breathing rules, drifting particles and pulsing dots stay drawn where
+   they are, simply still.
+
+   The exception is the looping indicators. A spinner that has stopped reads
+   as a hung page, which is worse than the movement it was meant to spare, so
+   they are excluded by :not() instead of being switched off and turned back
+   on. Nothing bids against them, and no duration has to be invented here for
+   them to turn at — they keep the timing they were written with. Two class
+   names mark one thing: Tailwind's .animate-spin, already on the fifty-odd
+   icon spinners and so free, and .motion-loop for the rest — the route
+   spinner in app/loading.jsx, and appended to the spinner classes in
+   obsidianTheme, Globe, CertificateVerifyPage and SubmitPage. Anything new
+   that must keep turning takes .motion-loop too.
+
+   The page cross-fade is outside all of this: ::view-transition-* pseudo
+   elements are not in the document tree, so * never reaches them, and
+   styles/view-transitions.css stands them down itself. ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  *:not(.motion-loop):not(.animate-spin),
+  *:not(.motion-loop):not(.animate-spin)::before,
+  *:not(.motion-loop):not(.animate-spin)::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

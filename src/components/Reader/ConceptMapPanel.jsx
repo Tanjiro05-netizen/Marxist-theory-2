@@ -1,14 +1,16 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
-import ForceGraph2D from 'react-force-graph-2d';
+import dynamic from 'next/dynamic';
+
+const ForceGraph2D = dynamic(() => import('react-force-graph-2d'), { ssr: false });
 
 const COLORS = {
-  heading: '#f97316',
+  heading: '#c8860a',
   headingBg: 'rgba(249,115,22,0.12)',
-  concept: '#ef4444',
+  concept: '#d41f3d',
   conceptBg: 'rgba(239,68,68,0.10)',
   link: 'rgba(255,255,255,0.08)',
-  label: '#e4e4e7',
-  labelMuted: '#a1a1aa',
+  label: '#c9c5b8',
+  labelMuted: '#a5a194',
 };
 
 const truncate = (str, max) => (str.length > max ? str.slice(0, max - 1) + '…' : str);
@@ -51,14 +53,14 @@ const ConceptMapPanel = ({ graphData, onNodeClick }) => {
 
   if (!safeGraphData.nodes.length) {
     return (
-      <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4 h-[420px] flex items-center justify-center">
+      <div className="bg-gray-900/50 border border-gray-700 rounded-none p-4 h-[420px] flex items-center justify-center">
         <p className="text-sm text-gray-400">No concept graph data available for this text.</p>
       </div>
     );
   }
 
   return (
-    <div ref={containerRef} className="bg-gray-900/50 border border-gray-700 rounded-lg h-[420px] no-pdf overflow-hidden">
+    <div ref={containerRef} className="bg-gray-900/50 border border-gray-700 rounded-none h-[420px] no-pdf overflow-hidden">
       {dimensions.width > 0 && dimensions.height > 0 && (
         <ForceGraph2D
           ref={fgRef}
