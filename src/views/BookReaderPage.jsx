@@ -1,19 +1,57 @@
+'use client';
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useParams, useSearchParams } from 'next/navigation';
 import { Loader, AlertCircle, Download, BookOpen, Bookmark, ArrowLeft, FileText, BookMarked } from 'lucide-react';
 import { supabase } from '../supabaseClient';
+import { prefetchQuery } from '../lib/queryCache';
+import { bookQueryKey, fetchBook } from '../lib/libraryQueries';
+import { coverImageSrc } from '../lib/coverImage';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { recordBookDownload } from '../services/libraryStats';
-import EpubReader from '../components/EpubReader/EpubReader';
-import EditorialReader from '../components/EditorialReader/EditorialReader';
-import TextEditionReader from '../components/TextEditionReader/TextEditionReader';
 import BookReviewSection from '../components/Library/BookReviewSection';
 import AddToListButton from '../components/Library/AddToListButton';
 import * as s from './BookReaderPage.css.ts';
 
-const BookReaderPage = () => {
+/* A book opens in exactly one of these. Loading all three put epub.js and
+   mark.js in the route's first-load bundle for every reader, including the
+   majority whose book is a plain text edition and needs neither. Each is
+   fetched when the view that uses it is actually shown. */
+/* The title page draws its cover up to 340px tall — about 227px wide at the
+   usual 2:3 — and the suggested shelf at thumbnail size. */
+const TITLE_COVER_WIDTH = 640;
+const SUGGESTED_COVER_WIDTH = 256;
+
+const storageUrl = (bucket, filename) => {
+    if (!filename) return null;
+    const { data } = supabase.storage.from(bucket).getPublicUrl(filename);
+    return data?.publicUrl || null;
+};
+
+const readerLoading = () => (
+    <div className={s.readerLoadingWrap}>
+        <div className={s.loadingInner}>
+            <Loader size={28} className="animate-spin text-red-500" />
+        </div>
+    </div>
+);
+const EditorialReader = dynamic(() => import('../components/EditorialReader/EditorialReader'), {
+    ssr: false,
+    loading: readerLoading,
+});
+const TextEditionReader = dynamic(() => import('../components/TextEditionReader/TextEditionReader'), {
+    ssr: false,
+    loading: readerLoading,
+});
+const EpubReader = dynamic(() => import('../components/EpubReader/EpubReader'), {
+    ssr: false,
+    loading: readerLoading,
+});
+
+const BookReaderPage = ({ initialBook = null }) => {
     const { bookId } = useParams();
     // Deep link from library full-text search: ?q=<phrase>&section=<sN>
     const searchParams = useSearchParams();
@@ -22,12 +60,14 @@ const BookReaderPage = () => {
     const { user } = useAuth();
     const { t } = useTranslation();
 
-    const [book, setBook] = useState(null);
-    const [epubUrl, setEpubUrl] = useState(null);
-    const [pdfDownloadUrl, setPdfDownloadUrl] = useState(null);
-    const [coverUrl, setCoverUrl] = useState(null);
+    /* The server already rendered the title page from this; the client fetch
+       below replaces it with the full row (text edition included). */
+    const [book, setBook] = useState(initialBook);
+    const [epubUrl, setEpubUrl] = useState(() => storageUrl('library', initialBook?.epub_filename));
+    const [pdfDownloadUrl, setPdfDownloadUrl] = useState(() => storageUrl('library', initialBook?.pdf_filename));
+    const [coverUrl, setCoverUrl] = useState(() => coverImageSrc(initialBook?.cover_image_url, TITLE_COVER_WIDTH));
     const [coverError, setCoverError] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(!initialBook);
     const [error, setError] = useState(null);
 
     const [isBookmarked, setIsBookmarked] = useState(false);
@@ -37,28 +77,42 @@ const BookReaderPage = () => {
     // 'read' (editorial) | 'text' (indexed text edition, search deep links) | 'ebook' (paginated reader)
     const [view, setView] = useState('read');
     const [relatedBooks, setRelatedBooks] = useState([]);
+    /* The suggested shelf is only fetched once it comes into reach. */
+    const [suggestedNear, setSuggestedNear] = useState(false);
+    const suggestedRef = useRef(null);
     const progressTimerRef = useRef(null);
 
     const isAuthed = !!user && user.id !== 'dev-admin';
 
     useEffect(() => {
-        const fetchBook = async () => {
+        let cancelled = false;
+
+        /* Moving between books keeps this component mounted, so adopt the
+           new book's server-rendered metadata before anything is fetched —
+           otherwise the previous book stays on screen while the next loads. */
+        const seed = initialBook && initialBook.id === bookId ? initialBook : null;
+        if (seed) {
+            setBook(seed);
+            setEpubUrl(storageUrl('library', seed.epub_filename));
+            setPdfDownloadUrl(storageUrl('library', seed.pdf_filename));
+            setCoverUrl(coverImageSrc(seed.cover_image_url, TITLE_COVER_WIDTH));
+            setCoverError(false);
+        }
+
+        const loadBook = async () => {
             if (!bookId) {
                 setError('No book ID provided.');
                 setIsLoading(false);
                 return;
             }
 
-            setIsLoading(true);
+            /* Coming back to a book already read in this session costs no
+               network: prefetchQuery hands back the cached row, so the
+               spinner is gone within a tick instead of a round trip. */
+            setIsLoading(!seed);
             try {
-                const { data: bookData, error: dbError } = await supabase
-                    .from('digital_library_books')
-                    .select('id, title, author, year, pages, description, cover_image_url, epub_filename, pdf_filename, text_edition, category')
-                    .eq('id', bookId)
-                    .single();
-
-                if (dbError) throw new Error(dbError.message || 'Book not found.');
-                if (!bookData) throw new Error('Book not found.');
+                const bookData = await prefetchQuery(bookQueryKey(bookId), () => fetchBook(bookId));
+                if (cancelled) return;
 
                 setBook(bookData);
 
@@ -74,53 +128,86 @@ const BookReaderPage = () => {
                 }
 
                 // Build EPUB URL for the reader (primary reading format)
-                if (bookData.epub_filename) {
-                    const { data: epubData } = supabase.storage.from('library').getPublicUrl(bookData.epub_filename);
-                    if (epubData?.publicUrl) setEpubUrl(epubData.publicUrl);
-                }
+                if (bookData.epub_filename) setEpubUrl(storageUrl('library', bookData.epub_filename));
 
                 // Build PDF URL for inline reading + download
-                if (bookData.pdf_filename) {
-                    const { data: pdfData } = supabase.storage.from('library').getPublicUrl(bookData.pdf_filename);
-                    if (pdfData?.publicUrl) setPdfDownloadUrl(pdfData.publicUrl);
-                }
+                if (bookData.pdf_filename) setPdfDownloadUrl(storageUrl('library', bookData.pdf_filename));
 
                 if (bookData.cover_image_url) {
-                    if (bookData.cover_image_url.includes('supabase')) {
-                        setCoverUrl(bookData.cover_image_url);
-                    } else if (bookData.cover_image_url.startsWith('/')) {
-                        const filename = bookData.cover_image_url.split('/').pop();
-                        const { data: coverData } = supabase.storage.from('covers').getPublicUrl(filename);
-                        if (coverData?.publicUrl) setCoverUrl(coverData.publicUrl);
-                    } else {
-                        setCoverUrl(bookData.cover_image_url);
-                    }
-                }
-
-                if (user && user.id !== 'dev-admin') {
-                    const [bookmarkRes, progressRes] = await Promise.all([
-                        supabase.from('user_book_bookmarks').select('id').eq('user_id', user.id).eq('book_id', bookId).maybeSingle(),
-                        supabase.from('user_book_progress').select('progress_percentage').eq('user_id', user.id).eq('book_id', bookId).maybeSingle(),
-                    ]);
-                    setIsBookmarked(!!bookmarkRes.data);
-                    if (progressRes.data) setProgress(progressRes.data.progress_percentage);
+                    const raw = bookData.cover_image_url;
+                    const resolved = raw.startsWith('/') && !raw.includes('supabase')
+                        ? storageUrl('covers', raw.split('/').pop())
+                        : raw;
+                    if (resolved) setCoverUrl(coverImageSrc(resolved, TITLE_COVER_WIDTH));
                 }
 
                 setError(null);
             } catch (err) {
+                if (cancelled) return;
                 console.error('Error fetching book:', err);
                 setError(err.message);
             } finally {
-                setIsLoading(false);
+                if (!cancelled) setIsLoading(false);
             }
         };
 
-        fetchBook();
-    }, [bookId, user, highlightQuery]);
+        loadBook();
+        return () => { cancelled = true; };
+        /* Deliberately not keyed on `user`: the book's own text is the same
+           for everyone, and re-running when the session resolves meant
+           downloading the whole text edition a second time. The reader's
+           own bookmark and progress are fetched separately below. */
+    }, [bookId, highlightQuery, initialBook]);
 
-    // Books proposed at the foot of the reading page — same shelf first.
+    /* Where this reader left off, and whether they kept the book. */
     useEffect(() => {
-        if (!bookId) return undefined;
+        if (!bookId || !isAuthed) {
+            setIsBookmarked(false);
+            setProgress(0);
+            return undefined;
+        }
+        let cancelled = false;
+        (async () => {
+            try {
+                const [bookmarkRes, progressRes] = await Promise.all([
+                    supabase.from('user_book_bookmarks').select('id').eq('user_id', user.id).eq('book_id', bookId).maybeSingle(),
+                    supabase.from('user_book_progress').select('progress_percentage').eq('user_id', user.id).eq('book_id', bookId).maybeSingle(),
+                ]);
+                if (cancelled) return;
+                setIsBookmarked(!!bookmarkRes.data);
+                if (progressRes.data) setProgress(progressRes.data.progress_percentage);
+            } catch (err) {
+                console.error('Error loading reading state:', err);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, [bookId, isAuthed, user?.id]);
+
+    /* Books proposed at the foot of the reading page — same shelf first.
+       They sit below the whole text, so they wait until the reader is on
+       their way down: fetching them on mount put a query and four cover
+       images on the wire beside the book itself, which is the one thing
+       the reader is waiting for. */
+    useEffect(() => {
+        const target = suggestedRef.current;
+        if (!target || suggestedNear || typeof IntersectionObserver !== 'function') return undefined;
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries.some((entry) => entry.isIntersecting)) {
+                    setSuggestedNear(true);
+                    observer.disconnect();
+                }
+            },
+            { rootMargin: '200px 0px' }
+        );
+        observer.observe(target);
+        return () => observer.disconnect();
+        /* `book` is a dependency because the sentinel only exists once the
+           reader has rendered — before that there is nothing to observe. */
+    }, [suggestedNear, book]);
+
+    useEffect(() => {
+        if (!bookId || !suggestedNear) return undefined;
         let cancelled = false;
         const fetchRelated = async () => {
             try {
@@ -131,18 +218,13 @@ const BookReaderPage = () => {
                     .limit(8);
                 if (cancelled || !Array.isArray(data)) return;
                 const withCovers = data.map((b) => {
-                    let cover = null;
-                    const raw = b.cover_image_url;
-                    if (raw?.includes('supabase')) {
-                        cover = raw;
-                    } else if (raw?.startsWith('/')) {
-                        const filename = raw.split('/').pop();
+                    let cover = b.cover_image_url || null;
+                    if (cover && cover.startsWith('/') && !cover.includes('supabase')) {
+                        const filename = cover.split('/').pop();
                         const { data: coverData } = supabase.storage.from('covers').getPublicUrl(filename);
                         cover = coverData?.publicUrl || null;
-                    } else {
-                        cover = raw || null;
                     }
-                    return { ...b, cover };
+                    return { ...b, cover: coverImageSrc(cover, SUGGESTED_COVER_WIDTH) };
                 });
                 const shelf = book?.category;
                 withCovers.sort((a, b) => {
@@ -157,7 +239,7 @@ const BookReaderPage = () => {
         };
         fetchRelated();
         return () => { cancelled = true; };
-    }, [bookId, book?.category]);
+    }, [bookId, suggestedNear, book?.category]);
 
     const handleToggleBookmark = useCallback(async () => {
         if (!isAuthed) return;
@@ -204,19 +286,6 @@ const BookReaderPage = () => {
         return () => { if (progressTimerRef.current) clearTimeout(progressTimerRef.current); };
     }, []);
 
-    if (isLoading) {
-        return (
-            <div className={s.page}>
-                <div className={s.loadingWrap}>
-                    <div className={s.loadingInner}>
-                        <Loader size={32} className="animate-spin text-red-500" />
-                        <span className={s.loadingText}>Loading book…</span>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     if (error) {
         return (
             <div className={s.page}>
@@ -224,6 +293,19 @@ const BookReaderPage = () => {
                     <div className={s.errorBox} data-testid="book-reader-error">
                         <AlertCircle size={18} />
                         <span>{error}</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (isLoading || !book) {
+        return (
+            <div className={s.page}>
+                <div className={s.loadingWrap}>
+                    <div className={s.loadingInner}>
+                        <Loader size={32} className="animate-spin text-red-500" />
+                        <span className={s.loadingText}>Loading book…</span>
                     </div>
                 </div>
             </div>
@@ -446,6 +528,7 @@ const BookReaderPage = () => {
                 <BookReviewSection bookId={bookId} canWrite={isAuthed} />
 
                 {/* ── Suggested reading ── */}
+                <div ref={suggestedRef} aria-hidden="true" />
                 {relatedBooks.length > 0 && (
                     <section className={s.suggested} data-testid="suggested-books">
                         <h2 className={s.suggestedTitle}>{t('book.suggestedReading')}</h2>

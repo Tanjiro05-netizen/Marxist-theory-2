@@ -1,5 +1,6 @@
 import { supabase } from '../supabaseClient';
 import { prefetchQuery } from './queryCache';
+import { fetchLibraryCatalog } from './libraryQueries';
 
 /**
  * Warms the query cache for a route before the user clicks its nav link
@@ -43,21 +44,7 @@ const ROUTE_QUERIES = {
     });
   },
   '/digital-library': () => {
-    prefetchQuery('library:all', async () => {
-      const [booksResponse, categoriesResponse, audiobooksResponse] = await Promise.all([
-        supabase.from('digital_library_books').select('*'),
-        supabase.from('digital_library_books').select('category'),
-        supabase.from('audiobooks').select('*'),
-      ]);
-      if (booksResponse.error) throw booksResponse.error;
-      if (categoriesResponse.error) throw categoriesResponse.error;
-      if (audiobooksResponse.error) throw audiobooksResponse.error;
-      return {
-        allData: booksResponse.data || [],
-        categoriesData: categoriesResponse.data || [],
-        audiobooksData: audiobooksResponse.data || [],
-      };
-    }).catch(() => {});
+    prefetchQuery('library:all', fetchLibraryCatalog).catch(() => {});
   },
 };
 
@@ -73,27 +60,61 @@ export const prefetchRouteData = (path) => {
   }
 };
 
+/* Routes already warmed in this session — the sweep is worth running once,
+   not on every navigation. */
+const swept = new Set();
+
+const QUIET_AFTER_LOAD_MS = 1500;
+const BETWEEN_ROUTES_MS = 400;
+
+const whenIdle = (fn, timeout) => {
+  if ('requestIdleCallback' in window) window.requestIdleCallback(fn, { timeout });
+  else setTimeout(fn, Math.min(timeout, 1000));
+};
+
 /**
- * Warm every known route's data during browser idle time after first paint,
- * so even quick keyboard navigations land on a hot cache. Skipped when the
- * user has data-saver enabled.
+ * Warm every other route's data once the current page has finished its own
+ * work, so a later navigation lands on a hot cache.
+ *
+ * The timing matters more than it looks. Firing these on first paint put
+ * eight queries on the wire beside the ones the page the reader is actually
+ * looking at needs — on a book, that pushed the EPUB download back by
+ * seconds. So: wait for load, then for the browser to go quiet, then walk
+ * the routes one at a time rather than opening them all at once, and skip
+ * whichever route is already on screen (it is fetching for itself).
  */
 export const prefetchAllRoutesWhenIdle = () => {
   if (typeof window === 'undefined') return;
-  const saveData = window.navigator?.connection?.saveData;
-  if (saveData) return;
+  const connection = window.navigator?.connection;
+  if (connection?.saveData) return;
+  /* Nothing speculative over a slow link — it would compete with the page. */
+  if (/(^|-)2g$/.test(connection?.effectiveType || '')) return;
 
-  const run = () => Object.keys(ROUTE_QUERIES).forEach(route => {
-    try {
-      ROUTE_QUERIES[route]();
-    } catch {
-      /* best-effort */
-    }
-  });
+  const sweep = () => {
+    const here = window.location?.pathname || '';
+    const routes = Object.keys(ROUTE_QUERIES).filter(
+      (route) => !swept.has(route) && !(here === route || here.startsWith(`${route}/`))
+    );
 
-  if ('requestIdleCallback' in window) {
-    window.requestIdleCallback(run, { timeout: 4000 });
-  } else {
-    setTimeout(run, 2500);
-  }
+    /* One route per idle slice: a queue the browser can interleave with
+       whatever the reader is doing, not a burst. */
+    const next = () => {
+      const route = routes.shift();
+      if (!route) return;
+      swept.add(route);
+      try {
+        ROUTE_QUERIES[route]();
+      } catch {
+        /* best-effort */
+      }
+      setTimeout(() => whenIdle(next, 4000), BETWEEN_ROUTES_MS);
+    };
+
+    whenIdle(next, 4000);
+  };
+
+  const start = () => setTimeout(sweep, QUIET_AFTER_LOAD_MS);
+
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start, { once: true });
 };

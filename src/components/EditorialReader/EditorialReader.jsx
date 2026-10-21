@@ -10,6 +10,12 @@ import { sanitizeEpubHtml } from '../../lib/sanitize-html.js';
 
 const TEXT_FAINT = 'var(--paper-faint)';
 
+/* How much of the book to typeset before handing it to the reader, and how
+   many sections to add per update after that. Small enough that the opening
+   appears at once; large enough that appending is not a render per chapter. */
+const FIRST_PAINT_SECTIONS = 2;
+const FLUSH_EVERY = 6;
+
 import { editorialProseCss } from './editorialProseCss';
 
 const flattenToc = (items, depth = 0) =>
@@ -87,6 +93,9 @@ const EditorialReader = ({ url, bookId, onProgressChange, fallbackUrl }) => {
     return saved ? parseInt(saved, 10) : 100;
   });
   const [status, setStatus] = useState('loading'); // loading | ready | error
+  /* True once the last section is in the DOM — the point at which a saved
+     reading position can be found and scrolled to. */
+  const [fullyLoaded, setFullyLoaded] = useState(false);
 
   const { toolbarHidden, tocOpen, openToc, closeToc } = useReaderChrome();
   const savePosition = usePositionSaver(bookId);
@@ -97,6 +106,8 @@ const EditorialReader = ({ url, bookId, onProgressChange, fallbackUrl }) => {
     if (!url) return undefined;
     let cancelled = false;
     setStatus('loading');
+    setFullyLoaded(false);
+    restoredRef.current = false;
     setSections([]);
     setToc([]);
 
@@ -117,6 +128,10 @@ const EditorialReader = ({ url, bookId, onProgressChange, fallbackUrl }) => {
         const spineItems = (book.spine?.spineItems || []).filter((sec) => sec.linear !== 'no');
         const rendered = [];
 
+        /* Typesetting a whole book takes seconds on anything the length of
+           Capital, and the reader only ever sees the top of it first. So
+           publish the opening sections as soon as they exist and let the
+           rest arrive underneath, while the reader is already reading. */
         for (const section of spineItems) {
           if (cancelled) return;
           const output = await section.render(book.load.bind(book));
@@ -127,12 +142,26 @@ const EditorialReader = ({ url, bookId, onProgressChange, fallbackUrl }) => {
           } catch { /* keep raw href */ }
           rendered.push({ index: section.index, href: section.href, canonical, html });
           section.unload();
+
+          const atFirstPaint = rendered.length === FIRST_PAINT_SECTIONS;
+          const atFlushBoundary = rendered.length > FIRST_PAINT_SECTIONS
+            && (rendered.length - FIRST_PAINT_SECTIONS) % FLUSH_EVERY === 0;
+
+          if (atFirstPaint || atFlushBoundary) {
+            if (cancelled) return;
+            setSections(rendered.slice());
+            if (atFirstPaint) {
+              setStatus('ready');
+              setActiveHref(rendered[0].canonical);
+            }
+          }
         }
 
         if (cancelled) return;
         setSections(rendered);
         setStatus('ready');
-        if (rendered.length) setActiveHref(rendered[0].canonical);
+        setFullyLoaded(true);
+        if (rendered.length) setActiveHref((current) => current || rendered[0].canonical);
       } catch (err) {
         if (cancelled) return;
         console.error('[EditorialReader] failed to load book:', err);
@@ -186,11 +215,15 @@ const EditorialReader = ({ url, bookId, onProgressChange, fallbackUrl }) => {
 
   useEffect(() => {
     if (status !== 'ready') return undefined;
-    /* Resume: jump straight back to the last resting section, silently. */
-    if (!restoredRef.current) {
+    /* Resume: jump straight back to the last resting section, silently.
+       Only once the whole book is in — a section further down does not
+       exist yet while the rest is still arriving — and only if the reader
+       has not already moved, since pulling the page out from under someone
+       who has started reading is worse than not resuming at all. */
+    if (!restoredRef.current && fullyLoaded) {
       restoredRef.current = true;
       const saved = loadReaderPosition(bookId);
-      if (saved?.canonical) {
+      if (saved?.canonical && window.scrollY < 4) {
         const target = Array.from(document.querySelectorAll('[data-section-canonical]'))
           .find((n) => {
             const c = n.getAttribute('data-section-canonical');
@@ -205,7 +238,7 @@ const EditorialReader = ({ url, bookId, onProgressChange, fallbackUrl }) => {
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [status, handleScroll, bookId]);
+  }, [status, fullyLoaded, handleScroll, bookId]);
 
   const scrollToHref = useCallback((href) => {
     if (!href) return;

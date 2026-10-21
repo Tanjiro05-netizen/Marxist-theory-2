@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../supabaseClient';
 import { prefetchQuery } from '../lib/queryCache';
+import { fetchLibraryBooks, fetchLibraryCatalog, prefetchBook } from '../lib/libraryQueries';
+import { coverImageSrc } from '../lib/coverImage';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 
@@ -154,28 +156,10 @@ const PdfUploadAction = () => (
     </Link>
 );
 
-const getCoverImageSrc = (coverUrl) => {
-    if (!coverUrl) return coverUrl;
-
-    try {
-        const parsedCoverUrl = new URL(coverUrl);
-        const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL
-            ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin
-            : null;
-
-        if (
-            supabaseOrigin &&
-            parsedCoverUrl.origin === supabaseOrigin &&
-            parsedCoverUrl.pathname.startsWith('/storage/v1/object/public/')
-        ) {
-            return `/api/cover-image?url=${encodeURIComponent(parsedCoverUrl.toString())}`;
-        }
-    } catch {
-        return coverUrl;
-    }
-
-    return coverUrl;
-};
+/* Catalogue cards draw covers at 144 × 216 CSS pixels; 384 covers that at
+   retina density without fetching the full-size plate. */
+const CARD_COVER_WIDTH = 384;
+const getCoverImageSrc = (coverUrl) => coverImageSrc(coverUrl, CARD_COVER_WIDTH);
 
 /* ── Cover character ──
    A plain grid of identical plates reads as templated, so every cover picks
@@ -301,9 +285,14 @@ const BookCard = ({ book, isAdminUser, onDelete, onPlay }) => {
         .from('library')
         .getPublicUrl(book.pdf_filename)?.data?.publicUrl : null;
     const pdfFileActionLabel = isPdfBook ? t('book.downloadPDF') : t('library.openExternal');
-    const readLabel = isPdfBook && !(book.text_edition?.sections?.length) ? t('library.open') : t('library.read');
+    const readLabel = isPdfBook && !book.has_text_edition ? t('library.open') : t('library.read');
 
     const { coverUrl, imageError, handleImageError } = useCoverUrl(book);
+
+    /* Start fetching the book while the reader is still looking at the card,
+       so the click opens something already on its way. */
+    const warm = isAudiobook ? undefined : () => prefetchBook(book.id, book.epub_filename);
+    const warmProps = warm ? { onMouseEnter: warm, onFocus: warm, onTouchStart: warm } : {};
 
     // Stable per-book character — same book always gets the same treatment.
     const seed = seedFromString(book.id || book.title || 'book');
@@ -384,7 +373,7 @@ const BookCard = ({ book, isAdminUser, onDelete, onPlay }) => {
                     <span className={s.rowChevron} aria-hidden="true"><ChevronRight size={14} /></span>
                 </button>
             ) : (
-                <Link href={`/book/${book.id}`} className={s.cardLink}>
+                <Link href={`/book/${book.id}`} className={s.cardLink} {...warmProps}>
                     {coverMarkup}
                     {bodyMarkup}
                     <span className={s.rowChevron} aria-hidden="true"><ChevronRight size={14} /></span>
@@ -397,7 +386,7 @@ const BookCard = ({ book, isAdminUser, onDelete, onPlay }) => {
                     </button>
                 ) : (
                     <>
-                        <Link href={`/book/${book.id}`} data-testid="ebook-read-link" className={s.actionRead}>
+                        <Link href={`/book/${book.id}`} data-testid="ebook-read-link" className={s.actionRead} {...warmProps}>
                             {readLabel}
                         </Link>
                         {externalViewerUrl && (
@@ -463,8 +452,16 @@ const BookRow = ({ book, isAdminUser, onDelete, onPlay }) => {
             </div>
         );
     }
+    const warm = () => prefetchBook(book.id, book.epub_filename);
     return (
-        <Link href={`/book/${book.id}`} className={s.lvRow} data-testid={testId}>
+        <Link
+            href={`/book/${book.id}`}
+            className={s.lvRow}
+            data-testid={testId}
+            onMouseEnter={warm}
+            onFocus={warm}
+            onTouchStart={warm}
+        >
             {cells}
         </Link>
     );
@@ -537,21 +534,7 @@ const DigitalLibraryPage = () => {
             setIsLoading(true);
             setError(null);
             try {
-                const { allData, categoriesData, audiobooksData } = await prefetchQuery('library:all', async () => {
-                    const [booksResponse, categoriesResponse, audiobooksResponse] = await Promise.all([
-                        supabase.from('digital_library_books').select('*'),
-                        supabase.from('digital_library_books').select('category'),
-                        supabase.from('audiobooks').select('*')
-                    ]);
-                    if (booksResponse.error) throw booksResponse.error;
-                    if (categoriesResponse.error) throw categoriesResponse.error;
-                    if (audiobooksResponse.error) throw audiobooksResponse.error;
-                    return {
-                        allData: booksResponse.data || [],
-                        categoriesData: categoriesResponse.data || [],
-                        audiobooksData: audiobooksResponse.data || [],
-                    };
-                });
+                const { allData, categoriesData, audiobooksData } = await prefetchQuery('library:all', fetchLibraryCatalog);
                 if (cancelled) return;
 
                 setAllBooks(allData);
@@ -593,12 +576,21 @@ const DigitalLibraryPage = () => {
                 'postgres_changes',
                 { event: '*', schema: 'public', table: 'digital_library_books' },
                 (payload) => {
+                    /* The replicated row carries the full text edition; the
+                       catalog never reads it, so drop it and keep only the
+                       flag the cards need. */
+                    const row = payload.new
+                        ? (({ text_edition, ...rest }) => ({
+                            ...rest,
+                            has_text_edition: !!text_edition,
+                        }))(payload.new)
+                        : null;
                     setAllBooks((prev) => {
-                        if (payload.eventType === 'INSERT' && payload.new && !prev.some((b) => b.id === payload.new.id)) {
-                            return [payload.new, ...prev];
+                        if (payload.eventType === 'INSERT' && row && !prev.some((b) => b.id === row.id)) {
+                            return [row, ...prev];
                         }
-                        if (payload.eventType === 'UPDATE' && payload.new) {
-                            return prev.map((b) => (b.id === payload.new.id ? payload.new : b));
+                        if (payload.eventType === 'UPDATE' && row) {
+                            return prev.map((b) => (b.id === row.id ? row : b));
                         }
                         if (payload.eventType === 'DELETE' && payload.old) {
                             return prev.filter((b) => b.id !== payload.old.id);
@@ -617,7 +609,7 @@ const DigitalLibraryPage = () => {
             if (inFlight || document.hidden) return;
             inFlight = true;
             try {
-                const { data } = await supabase.from('digital_library_books').select('*');
+                const data = await fetchLibraryBooks();
                 if (data) setAllBooks(data);
             } catch { /* keep showing current data */ }
             finally { inFlight = false; }

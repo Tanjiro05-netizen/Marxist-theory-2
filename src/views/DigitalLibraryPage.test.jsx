@@ -101,6 +101,32 @@ jest.mock('../supabaseClient', () => {
     };
 });
 
+/* The catalog is read with named columns (never `*` — that would drag every
+   book's full text over the wire), plus a tiny id-only query for which books
+   have a text edition. This builds a Supabase double matching both. */
+const mockCatalog = (books, audiobooks = []) => {
+    const result = (data) => {
+        const thenable = Promise.resolve({ data, error: null });
+        thenable.not = () => Promise.resolve({ data, error: null });
+        return thenable;
+    };
+
+    supabase.from.mockImplementation((tableName) => ({
+        select: jest.fn((columns) => {
+            if (tableName === 'digital_library_books' && columns === 'id') {
+                return result(books.filter((b) => b.text_edition).map(({ id }) => ({ id })));
+            }
+            if (tableName === 'digital_library_books') {
+                return result(books);
+            }
+            if (tableName === 'audiobooks') {
+                return result(audiobooks);
+            }
+            throw new Error(`Unexpected select ${tableName}.${columns}`);
+        }),
+    }));
+};
+
 describe('DigitalLibraryPage', () => {
     const originalSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
@@ -131,20 +157,7 @@ describe('DigitalLibraryPage', () => {
             cover_image_url: null,
         };
 
-        supabase.from.mockImplementation((tableName) => ({
-            select: jest.fn((columns) => {
-                if (tableName === 'digital_library_books' && columns === '*') {
-                    return Promise.resolve({ data: [bookWithoutPdf], error: null });
-                }
-                if (tableName === 'digital_library_books' && columns === 'category') {
-                    return Promise.resolve({ data: [{ category: 'History' }], error: null });
-                }
-                if (tableName === 'audiobooks') {
-                    return Promise.resolve({ data: [], error: null });
-                }
-                throw new Error(`Unexpected select ${tableName}.${columns}`);
-            }),
-        }));
+        mockCatalog([bookWithoutPdf]);
 
         supabase.storage.from.mockReturnValue({
             getPublicUrl: jest.fn((path) => ({ data: { publicUrl: `https://library.test/${path}` } })),
@@ -163,7 +176,7 @@ describe('DigitalLibraryPage', () => {
         });
     });
 
-    test('serves Supabase cover images through the same-origin cover proxy', async () => {
+    test('serves Supabase cover images resized through the image optimizer', async () => {
         const coverUrl = 'https://example.supabase.co/storage/v1/object/public/covers/covered-book.png';
         const bookWithCover = {
             id: 'book-2',
@@ -180,20 +193,7 @@ describe('DigitalLibraryPage', () => {
             cover_image_url: coverUrl,
         };
 
-        supabase.from.mockImplementation((tableName) => ({
-            select: jest.fn((columns) => {
-                if (tableName === 'digital_library_books' && columns === '*') {
-                    return Promise.resolve({ data: [bookWithCover], error: null });
-                }
-                if (tableName === 'digital_library_books' && columns === 'category') {
-                    return Promise.resolve({ data: [{ category: 'History' }], error: null });
-                }
-                if (tableName === 'audiobooks') {
-                    return Promise.resolve({ data: [], error: null });
-                }
-                throw new Error(`Unexpected select ${tableName}.${columns}`);
-            }),
-        }));
+        mockCatalog([bookWithCover]);
 
         const { container } = render(<DigitalLibraryPage />);
 
@@ -201,9 +201,11 @@ describe('DigitalLibraryPage', () => {
         // The default list view renders the cover as a small decorative plate
         // (alt=""), so query the img element directly.
         const coverImg = container.querySelector('img');
+        // Same-origin, and scaled to the size the card actually draws rather
+        // than the full-size plate in storage.
         expect(coverImg).toHaveAttribute(
             'src',
-            `/api/cover-image?url=${encodeURIComponent(coverUrl)}`
+            `/_next/image?url=${encodeURIComponent(coverUrl)}&w=384&q=70`
         );
     });
 
@@ -237,20 +239,7 @@ describe('DigitalLibraryPage', () => {
             cover_image_url: null,
         };
 
-        supabase.from.mockImplementation((tableName) => ({
-            select: jest.fn((columns) => {
-                if (tableName === 'digital_library_books' && columns === '*') {
-                    return Promise.resolve({ data: [epubBook, pdfBook], error: null });
-                }
-                if (tableName === 'digital_library_books' && columns === 'category') {
-                    return Promise.resolve({ data: [{ category: 'History' }, { category: 'History' }], error: null });
-                }
-                if (tableName === 'audiobooks') {
-                    return Promise.resolve({ data: [], error: null });
-                }
-                throw new Error(`Unexpected select ${tableName}.${columns}`);
-            }),
-        }));
+        mockCatalog([epubBook, pdfBook]);
 
         supabase.storage.from.mockReturnValue({
             getPublicUrl: jest.fn((path) => ({ data: { publicUrl: `https://library.test/${path}` } })),
@@ -309,20 +298,7 @@ describe('DigitalLibraryPage', () => {
             cover_image_url: null,
         };
 
-        supabase.from.mockImplementation((tableName) => ({
-            select: jest.fn((columns) => {
-                if (tableName === 'digital_library_books' && columns === '*') {
-                    return Promise.resolve({ data: [epubBook, pdfBook], error: null });
-                }
-                if (tableName === 'digital_library_books' && columns === 'category') {
-                    return Promise.resolve({ data: [{ category: 'History' }, { category: 'History' }], error: null });
-                }
-                if (tableName === 'audiobooks') {
-                    return Promise.resolve({ data: [], error: null });
-                }
-                throw new Error(`Unexpected select ${tableName}.${columns}`);
-            }),
-        }));
+        mockCatalog([epubBook, pdfBook]);
         supabase.storage.from.mockReturnValue({
             getPublicUrl: jest.fn((path) => ({ data: { publicUrl: `https://library.test/${path}` } })),
         });
@@ -381,20 +357,7 @@ describe('DigitalLibraryPage', () => {
             cover_image_url: null,
         };
 
-        supabase.from.mockImplementation((tableName) => ({
-            select: jest.fn((columns) => {
-                if (tableName === 'digital_library_books' && columns === '*') {
-                    return Promise.resolve({ data: [epubBook, pdfBook], error: null });
-                }
-                if (tableName === 'digital_library_books' && columns === 'category') {
-                    return Promise.resolve({ data: [{ category: 'History' }, { category: 'History' }], error: null });
-                }
-                if (tableName === 'audiobooks') {
-                    return Promise.resolve({ data: [], error: null });
-                }
-                throw new Error(`Unexpected select ${tableName}.${columns}`);
-            }),
-        }));
+        mockCatalog([epubBook, pdfBook]);
         supabase.storage.from.mockReturnValue({
             getPublicUrl: jest.fn((path) => ({ data: { publicUrl: `https://library.test/${path}` } })),
         });
@@ -452,20 +415,7 @@ describe('DigitalLibraryPage full-text search', () => {
         process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.supabase.co';
         window.history.replaceState(null, '', '/digital-library');
 
-        supabase.from.mockImplementation((tableName) => ({
-            select: jest.fn((columns) => {
-                if (tableName === 'digital_library_books' && columns === '*') {
-                    return Promise.resolve({ data: [searchableBook], error: null });
-                }
-                if (tableName === 'digital_library_books' && columns === 'category') {
-                    return Promise.resolve({ data: [{ category: 'History' }], error: null });
-                }
-                if (tableName === 'audiobooks') {
-                    return Promise.resolve({ data: [], error: null });
-                }
-                throw new Error(`Unexpected select ${tableName}.${columns}`);
-            }),
-        }));
+        mockCatalog([searchableBook]);
     });
 
     test('prefills from ?q=, renders highlighted passages and deep-links into the reader', async () => {

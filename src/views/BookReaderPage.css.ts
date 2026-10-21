@@ -29,6 +29,11 @@ export const backLink = style({
 });
 
 export const loadingWrap = style({ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' });
+/* The reading surface reserves close to a screen while its text arrives, so
+   the page does not jump when the book lands — and so what belongs below a
+   book (the suggested shelf) stays below the fold instead of loading over
+   the reader's shoulder. */
+export const readerLoadingWrap = style({ minHeight: '85vh', display: 'flex', alignItems: 'center', justifyContent: 'center' });
 export const loadingInner = style({ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: vars.space.sm });
 export const loadingText = style({ fontFamily: vars.font.label, fontSize: '11px', letterSpacing: '0.22em', textTransform: 'uppercase', color: vars.color.textMuted });
 export const errorWrap = style({ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' });

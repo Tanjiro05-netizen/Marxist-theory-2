@@ -4,6 +4,29 @@ const IMAGE_CACHE = 'images-v2';
 const IMAGE_MAX_ENTRIES = 60;
 const IMAGE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 
+/* One book's own row, text edition and all — by far the heaviest thing the
+   site fetches, and a published text that does not change between two
+   readings. Opening a book you have read before should cost nothing, so
+   these are served from the cache and refreshed behind the reader.
+   Catalog LISTS deliberately stay uncached (see below): they change as the
+   shelf is edited, and they are small. */
+const BOOK_CACHE = 'library-book-v1';
+const BOOK_MAX_ENTRIES = 40;
+const BOOK_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const isSingleBookRead = (url) =>
+  url.pathname.startsWith('/rest/v1/digital_library_books') &&
+  /(^|&)id=eq\./.test(url.search.slice(1));
+
+/* The EPUB and PDF files themselves. Storage serves the older ones with
+   `private, no-cache`, so the browser re-downloaded a whole book — a
+   megabyte or more — every time it was opened. Each upload path carries its
+   own timestamp and is never rewritten, so the copy on disk is always the
+   right one: serve it and skip the network entirely. */
+const BOOK_FILE_CACHE = 'library-files-v1';
+const BOOK_FILE_MAX_ENTRIES = 12;
+const BOOK_FILE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+const isBookFile = (url) => url.pathname.startsWith('/storage/v1/object/public/library/');
+
 const trimCache = async (cacheName, maxEntries) => {
   const cache = await caches.open(cacheName);
   const keys = await cache.keys();
@@ -78,7 +101,10 @@ self.addEventListener('activate', (event) => {
       caches.keys().then((cacheNames) =>
         Promise.all(
           cacheNames
-            .filter((name) => ![STATIC_CACHE, GOOGLE_FONTS_CACHE, IMAGE_CACHE].includes(name))
+            .filter(
+              (name) =>
+                ![STATIC_CACHE, GOOGLE_FONTS_CACHE, IMAGE_CACHE, BOOK_CACHE, BOOK_FILE_CACHE].includes(name)
+            )
             .map((name) => caches.delete(name))
         )
       ),
@@ -115,6 +141,16 @@ self.addEventListener('fetch', (event) => {
 
   if (request.destination === 'image') {
     event.respondWith(cacheFirst(request, IMAGE_CACHE, IMAGE_MAX_ENTRIES, IMAGE_MAX_AGE_MS));
+    return;
+  }
+
+  if (isSupabase && isBookFile(url)) {
+    event.respondWith(cacheFirst(request, BOOK_FILE_CACHE, BOOK_FILE_MAX_ENTRIES, BOOK_FILE_MAX_AGE_MS));
+    return;
+  }
+
+  if (isSupabase && isSingleBookRead(url)) {
+    event.respondWith(staleWhileRevalidate(request, BOOK_CACHE, BOOK_MAX_ENTRIES, BOOK_MAX_AGE_MS));
     return;
   }
 

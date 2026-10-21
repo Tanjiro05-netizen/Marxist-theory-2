@@ -1538,4 +1538,15 @@ export const experimentalReaderLink = style([uploadAction, {
   maxWidth: '100%',
   lineHeight: 1.6,
   padding: '6px 12px',
+  // Sit clear of the hero's meta line instead of crowding it.
+  marginTop: '18px',
+  color: vars.color.accentHover,
+  borderColor: 'rgba(155, 16, 34, 0.4)',
+  selectors: {
+    '&:hover': {
+      background: vars.color.accent,
+      borderColor: vars.color.accent,
+      color: '#f5f0e6',
+    },
+  },
 }]);

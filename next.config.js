@@ -37,6 +37,14 @@ const securityHeaders = [
     : []),
 ];
 
+const SUPABASE_IMAGE_HOST = (() => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname;
+  } catch {
+    return null;
+  }
+})();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -49,6 +57,8 @@ const nextConfig = {
     : '.next',
   outputFileTracingRoot: __dirname,
   images: {
+    // Widths the optimizer may emit — see src/lib/coverImage.js.
+    imageSizes: [96, 128, 256, 384],
     remotePatterns: [
       {
         protocol: 'https',
@@ -59,6 +69,22 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.substackcdn.com',
       },
+      // Book and audiobook covers. Scoped to those two buckets so the
+      // optimizer cannot be pointed at anything else in storage.
+      ...(SUPABASE_IMAGE_HOST
+        ? [
+            {
+              protocol: 'https',
+              hostname: SUPABASE_IMAGE_HOST,
+              pathname: '/storage/v1/object/public/covers/**',
+            },
+            {
+              protocol: 'https',
+              hostname: SUPABASE_IMAGE_HOST,
+              pathname: '/storage/v1/object/public/audiobooks/**',
+            },
+          ]
+        : []),
     ],
   },
   async headers() {

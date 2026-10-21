@@ -139,11 +139,17 @@
 .landing-hero-emblem {
   position: absolute;
   left: 0;
-  bottom: -40px;
+  bottom: 0;
   width: 240px;
   opacity: 0.07;
   pointer-events: none;
   user-select: none;
+}
+/* The artwork is black-on-transparent, which disappears on the ink ground —
+   recolor it to the crimson accent there instead of just raising opacity. */
+html[data-theme='dark'] .landing-hero-emblem {
+  filter: invert(18%) sepia(90%) saturate(2400%) hue-rotate(-35deg) brightness(0.9);
+  opacity: 0.22;
 }
 .landing-hero-copy { position: relative; }
 .landing-hero-copy h2 {
@@ -383,7 +389,7 @@
   .landing-hero { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 36px 0 44px; }
   .landing-hero-portrait { max-width: 300px; margin: 0 auto; }
   .landing-hero-portrait img { height: auto; -webkit-mask-image: none; mask-image: none; }
-  .landing-hero-emblem { left: 0; bottom: -24px; width: 160px; }
+  .landing-hero-emblem { left: 0; bottom: 0; width: 160px; }
   .landing-corners { margin-bottom: 24px; }
   .landing-front { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .landing-index h2 { font-size: 30px; margin-bottom: 16px; }

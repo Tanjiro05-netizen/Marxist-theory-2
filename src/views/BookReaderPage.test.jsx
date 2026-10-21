@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { useParams, useSearchParams } from 'next/navigation';
 import BookReaderPage from './BookReaderPage';
 import { supabase } from '../supabaseClient';
+import { invalidateQuery } from '../lib/queryCache';
 import { useAuth } from '../context/AuthContext';
 
 jest.mock('../context/AuthContext', () => ({
@@ -115,6 +116,10 @@ describe('BookReaderPage bookmarks', () => {
       maybeSingle: jest.fn().mockResolvedValue({ data: null, error: null }),
     });
 
+    /* The query cache lives at module scope and would otherwise carry one
+       test's book into the next. */
+    invalidateQuery();
+
     supabase.from.mockImplementation((table) => {
       if (table === 'digital_library_books') return bookQuery;
       if (table === 'user_book_bookmarks') return bookmarkQuery;
@@ -212,6 +217,10 @@ describe('BookReaderPage search deep link', () => {
         error: null,
       }),
     });
+    /* The query cache lives at module scope and would otherwise carry one
+       test's book into the next. */
+    invalidateQuery();
+
     supabase.from.mockImplementation((table) => {
       if (table === 'digital_library_books') return bookQuery;
       throw new Error(`Unexpected table: ${table}`);

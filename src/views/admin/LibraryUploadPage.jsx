@@ -80,7 +80,11 @@ const uploadWithSignedUrl = async (bucket, path, file) => {
     const { error } = await supabase.storage
         .from(bucket)
         .uploadToSignedUrl(path, token, file, {
-            cacheControl: '3600',
+            /* Every uploaded name carries its own timestamp, so a given
+               path never changes contents. An hour meant readers
+               re-downloaded whole books; a year lets the CDN and the
+               browser keep them. */
+            cacheControl: '31536000',
             contentType: file.type || 'application/octet-stream',
             upsert: false,
         });
